@@ -1,3 +1,5 @@
+import { createHmac } from 'node:crypto';
+
 import { ForgejoActionsAdapter, ForgejoActionsUnsupportedError } from './forgejo-actions.adapter.js';
 
 describe('ForgejoActionsAdapter', () => {
@@ -34,5 +36,21 @@ describe('ForgejoActionsAdapter', () => {
     await expect(
       adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'org', name: 'repo' }),
     ).rejects.toBeInstanceOf(ForgejoActionsUnsupportedError);
+  });
+  it('verifies Forgejo HMAC signatures while retaining Gitea header compatibility', async () => {
+    const adapter = new ForgejoActionsAdapter();
+    const payload = Buffer.from('{"repository":{"id":42}}');
+    const signature = createHmac('sha256', 'webhook-secret').update(payload).digest('hex');
+
+    await expect(
+      adapter.verifyWebhook({
+        headers: {
+          'x-forgejo-event': 'push',
+          'x-forgejo-signature': signature,
+        },
+        payload,
+        signingSecret: 'webhook-secret',
+      }),
+    ).resolves.toEqual({ event: 'push', providerRepositoryId: '42' });
   });
 });

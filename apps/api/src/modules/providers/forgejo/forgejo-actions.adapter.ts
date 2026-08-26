@@ -88,8 +88,8 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
     return this.toWorkflowRun((await response.json()) as ForgejoRun);
   }
   async verifyWebhook(request: ProviderWebhookRequest): Promise<VerifiedWebhook | null> {
-    const signature = request.headers['x-gitea-signature'];
-    const event = request.headers['x-gitea-event'];
+    const signature = request.headers['x-forgejo-signature'] ?? request.headers['x-gitea-signature'];
+    const event = request.headers['x-forgejo-event'] ?? request.headers['x-gitea-event'];
     if (typeof signature !== 'string' || typeof event !== 'string') return null;
     const expected = createHmac('sha256', request.signingSecret).update(request.payload).digest('hex');
     if (signature.length !== expected.length || !timingSafeEqual(Buffer.from(signature), Buffer.from(expected)))
