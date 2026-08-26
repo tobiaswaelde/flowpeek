@@ -12,6 +12,7 @@ import type {
   ProviderWorkflowRun,
   VerifiedWebhook,
 } from '../provider-adapter.js';
+import { normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 interface GitLabProject {
@@ -121,26 +122,8 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
             ? completedAt.getTime() - startedAt.getTime()
             : null
           : pipeline.duration * 1000,
-      status: this.status(pipeline.status),
+      status: normalizeWorkflowRunStatus('GITLAB', pipeline.status),
       rawStatus: pipeline.status,
     };
-  }
-  private status(status: string): ProviderWorkflowRun['status'] {
-    return (
-      (
-        {
-          success: 'SUCCESS',
-          failed: 'FAILED',
-          canceled: 'CANCELLED',
-          skipped: 'SKIPPED',
-          running: 'RUNNING',
-          pending: 'QUEUED',
-          created: 'QUEUED',
-          waiting_for_resource: 'QUEUED',
-          preparing: 'QUEUED',
-          scheduled: 'QUEUED',
-        } as const
-      )[status] ?? 'UNKNOWN'
-    );
   }
 }
