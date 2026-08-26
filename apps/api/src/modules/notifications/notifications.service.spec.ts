@@ -26,6 +26,9 @@ describe('NotificationsService', () => {
         findUnique: jest.fn(),
         update: jest.fn(),
       },
+      notificationDelivery: {
+        createMany: jest.fn().mockResolvedValue({ count: 1 }),
+      },
       repositoryMembership: {
         findMany: jest.fn().mockResolvedValue([{ repositoryId: 'repository-a', role: 'VIEWER' }]),
         findUnique: jest.fn(),
@@ -131,20 +134,25 @@ describe('NotificationsService', () => {
   it('evaluates only enabled rules matching a terminal run outcome and workflow glob', async () => {
     const { prisma, service } = createService();
     prisma.notificationRule.findMany.mockResolvedValue([
-      { channelLinks: [], workflowPattern: 'Deploy*' },
-      { channelLinks: [], workflowPattern: 'Test*' },
+      { channelLinks: [], id: 'rule-a', workflowPattern: 'Deploy*' },
+      { channelLinks: [], id: 'rule-b', workflowPattern: 'Test*' },
     ]);
 
     const rules = await service.evaluateRulesForRun({
+      id: 'run-a',
       repositoryId: 'repository-a',
       status: 'FAILED',
       workflowName: 'Deploy production',
     });
 
-    expect(rules).toEqual([{ channelLinks: [], workflowPattern: 'Deploy*' }]);
+    expect(rules).toEqual([{ channelLinks: [], id: 'rule-a', workflowPattern: 'Deploy*' }]);
     expect(prisma.notificationRule.findMany).toHaveBeenCalledWith({
       include: expect.any(Object),
       where: { enabled: true, outcome: 'FAILED', repositoryId: 'repository-a' },
+    });
+    expect(prisma.notificationDelivery.createMany).toHaveBeenCalledWith({
+      data: [{ notificationRuleId: 'rule-a', workflowRunId: 'run-a' }],
+      skipDuplicates: true,
     });
   });
 });

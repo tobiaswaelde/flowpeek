@@ -25,6 +25,7 @@ model WorkflowRun {
 
   repositoryId String     @db.Uuid
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  notificationDeliveries NotificationDelivery[]
 
   @@unique([repositoryId, providerRunId])
   @@index([repositoryId, providerCreatedAt])
