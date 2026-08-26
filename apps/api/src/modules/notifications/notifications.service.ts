@@ -156,6 +156,7 @@ export class NotificationsService {
    * independently and persisted idempotently by the delivery workflow.
    */
   async evaluateRulesForRun(run: {
+    id: string;
     repositoryId: string;
     status: 'SUCCESS' | 'FAILED' | 'QUEUED' | 'RUNNING' | 'CANCELLED' | 'SKIPPED' | 'UNKNOWN';
     workflowName: string;
@@ -165,7 +166,16 @@ export class NotificationsService {
       include: notificationRuleInclude,
       where: { enabled: true, outcome: run.status, repositoryId: run.repositoryId },
     });
-    return rules.filter((rule) => picomatch.isMatch(run.workflowName, rule.workflowPattern, { bash: true }));
+    const matchingRules = rules.filter((rule) =>
+      picomatch.isMatch(run.workflowName, rule.workflowPattern, { bash: true }),
+    );
+    if (matchingRules.length > 0) {
+      await this.prisma.notificationDelivery.createMany({
+        data: matchingRules.map((rule) => ({ notificationRuleId: rule.id, workflowRunId: run.id })),
+        skipDuplicates: true,
+      });
+    }
+    return matchingRules;
   }
 
   private async getAbility(user: AuthenticatedUser) {

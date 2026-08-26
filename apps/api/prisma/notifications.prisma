@@ -25,6 +25,7 @@ model NotificationChannel {
   repositoryId String     @db.Uuid
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
   ruleLinks    NotificationRuleChannel[]
+  deliveryAttempts NotificationDeliveryAttempt[]
 
   @@unique([repositoryId, name])
   @@index([repositoryId, enabled])
@@ -50,6 +51,7 @@ model NotificationRule {
   repositoryId String     @db.Uuid
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
   channelLinks NotificationRuleChannel[]
+  deliveries   NotificationDelivery[]
 
   @@index([repositoryId, enabled, outcome])
   @@map("notification_rules")
@@ -66,4 +68,53 @@ model NotificationRuleChannel {
   @@id([notificationRuleId, notificationChannelId])
   @@index([notificationChannelId])
   @@map("notification_rule_channels")
+}
+
+/** Lifecycle states for a delivery created from one rule and workflow run. */
+enum NotificationDeliveryStatus {
+  PENDING
+  DELIVERED
+  FAILED
+}
+
+/** One idempotent notification operation for a rule and a workflow run. */
+model NotificationDelivery {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status     NotificationDeliveryStatus @default(PENDING)
+  finalError String?                    @db.Text
+
+  notificationRuleId String           @db.Uuid
+  notificationRule   NotificationRule @relation(fields: [notificationRuleId], references: [id], onDelete: Cascade)
+
+  workflowRunId String      @db.Uuid
+  workflowRun   WorkflowRun @relation(fields: [workflowRunId], references: [id], onDelete: Cascade)
+
+  attempts NotificationDeliveryAttempt[]
+
+  @@unique([notificationRuleId, workflowRunId])
+  @@index([status, createdAt])
+  @@map("notification_deliveries")
+}
+
+/** A per-channel attempt belonging to one idempotent delivery. */
+model NotificationDeliveryAttempt {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+
+  attempt       Int
+  deliveredAt   DateTime?
+  error         String? @db.Text
+
+  notificationDeliveryId String               @db.Uuid
+  notificationDelivery   NotificationDelivery @relation(fields: [notificationDeliveryId], references: [id], onDelete: Cascade)
+
+  notificationChannelId String              @db.Uuid
+  notificationChannel   NotificationChannel @relation(fields: [notificationChannelId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationDeliveryId, notificationChannelId, attempt])
+  @@index([notificationChannelId, createdAt])
+  @@map("notification_delivery_attempts")
 }
