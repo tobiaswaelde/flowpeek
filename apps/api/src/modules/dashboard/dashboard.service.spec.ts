@@ -44,13 +44,13 @@ describe('DashboardService', () => {
       expect.objectContaining({ repositoryId: 'repository-a', status: 'FAILED', workflowName: 'Test' }),
     ]);
     expect(workflowRuns.findMany).toHaveBeenCalledWith(
-      {
+      expect.objectContaining({
         orderBy: [{ completedAt: 'desc' }, { providerCreatedAt: 'desc' }, { id: 'desc' }],
         where: {
           completedAt: { not: null },
           status: { in: ['SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED'] },
         },
-      },
+      }),
       ability,
     );
   });
@@ -72,10 +72,10 @@ describe('DashboardService', () => {
 
     await expect(service.getLatestRuns({ id: 'viewer', role: 'VIEWER', username: 'viewer' })).resolves.toHaveLength(1);
     expect(workflowRuns.findMany).toHaveBeenCalledWith(
-      {
+      expect.objectContaining({
         orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
         take: 10,
-      },
+      }),
       ability,
     );
   });
@@ -112,7 +112,7 @@ describe('DashboardService', () => {
       { bucketStart: new Date('2026-08-27T00:00:00.000Z'), errorCount: 0, successCount: 0 },
     ]);
     expect(workflowRuns.findMany).toHaveBeenCalledWith(
-      {
+      expect.objectContaining({
         where: {
           completedAt: {
             gte: new Date('2026-08-25T10:00:00.000Z'),
@@ -120,7 +120,7 @@ describe('DashboardService', () => {
           },
           status: { in: ['SUCCESS', 'FAILED'] },
         },
-      },
+      }),
       ability,
     );
   });

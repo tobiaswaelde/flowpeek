@@ -1,12 +1,24 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import type { QueryOptionsMap } from '@querry-kit/nest';
 
-import type { WorkflowRun } from '../../generated/prisma/client.js';
+import type { Prisma } from '../../generated/prisma/client.js';
 import type { AuthenticatedUser } from '../auth/types.js';
 import { WorkflowRunsQueryService, type WorkflowRunTypeMap } from '../workflow-runs/workflow-runs-query.service.js';
+import type { DashboardWorkflowRunModel } from './dto/dashboard-workflow-run.dto.js';
 import type { TrendBucketSize, WorkflowRunTrendQueryDto } from './dto/workflow-run-trend.dto.js';
 
 const terminalStatuses = ['SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED'] as const;
+const dashboardRunInclude = {
+  repository: {
+    select: {
+      id: true,
+      name: true,
+      owner: true,
+      providerAccount: { select: { displayName: true, id: true, providerType: true } },
+      url: true,
+    },
+  },
+} satisfies Prisma.WorkflowRunInclude;
 
 /** Success and error counts for a UTC workflow-run trend interval. */
 export interface WorkflowRunTrendBucket {
@@ -26,7 +38,7 @@ export class DashboardService {
    * @param user - Authenticated user requesting the dashboard.
    * @returns The latest failed run for every currently failing repository workflow.
    */
-  async getLatestFailures(user: AuthenticatedUser): Promise<WorkflowRun[]> {
+  async getLatestFailures(user: AuthenticatedUser): Promise<DashboardWorkflowRunModel[]> {
     const terminalRuns = await this.findVisibleRuns(user, {
       orderBy: [{ completedAt: 'desc' }, { providerCreatedAt: 'desc' }, { id: 'desc' }],
       where: {
@@ -34,7 +46,7 @@ export class DashboardService {
         status: { in: [...terminalStatuses] },
       },
     });
-    const latestByWorkflow = new Map<string, WorkflowRun>();
+    const latestByWorkflow = new Map<string, DashboardWorkflowRunModel>();
     for (const run of terminalRuns) {
       const key = `${run.repositoryId}\u0000${run.workflowName}`;
       if (!latestByWorkflow.has(key)) latestByWorkflow.set(key, run);
@@ -49,7 +61,7 @@ export class DashboardService {
    * @param user - Authenticated user requesting the dashboard.
    * @returns The latest visible provider workflow runs.
    */
-  async getLatestRuns(user: AuthenticatedUser): Promise<WorkflowRun[]> {
+  async getLatestRuns(user: AuthenticatedUser): Promise<DashboardWorkflowRunModel[]> {
     return this.findVisibleRuns(user, {
       orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
       take: 10,
@@ -106,9 +118,9 @@ export class DashboardService {
   private async findVisibleRuns(
     user: AuthenticatedUser,
     options: QueryOptionsMap<WorkflowRunTypeMap>['findMany'],
-  ): Promise<WorkflowRun[]> {
+  ): Promise<DashboardWorkflowRunModel[]> {
     const ability = await this.workflowRuns.getReadAbility(user);
-    return this.workflowRuns.findMany<WorkflowRun>(options, ability);
+    return this.workflowRuns.findMany<DashboardWorkflowRunModel>({ ...options, include: dashboardRunInclude }, ability);
   }
 
   private floorBucket(value: Date, size: TrendBucketSize): Date {
