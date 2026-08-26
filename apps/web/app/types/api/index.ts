@@ -1,2 +1,3 @@
-/** Shared API type namespace populated by typed resource contracts. */
-export {};
+export * from './auth';
+export * from './endpoints';
+export * from './resources';
