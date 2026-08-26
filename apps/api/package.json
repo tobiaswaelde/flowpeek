@@ -10,5 +10,8 @@
     "lint": "eslint .",
     "test": "jest --runInBand",
     "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
   }
 }

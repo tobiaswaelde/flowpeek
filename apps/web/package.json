@@ -9,5 +9,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "typecheck": "nuxt typecheck"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
   }
 }
