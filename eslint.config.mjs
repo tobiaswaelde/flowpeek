@@ -5,7 +5,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['**/node_modules/**', '**/dist/**', '**/.nuxt/**', '**/coverage/**', '.nx/**'],
+    ignores: ['**/node_modules/**', '**/dist/**', '**/.nuxt/**', '**/coverage/**', '**/generated/**', '.nx/**'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,

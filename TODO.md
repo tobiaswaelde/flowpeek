@@ -32,7 +32,7 @@ in order unless a dependency is explicitly marked as parallelizable.
 - [x] Add validated environment configuration for database access, CORS,
       JWT, bootstrap-admin credentials, token-encryption key, scheduler
       settings, SMTP, and public Flowpeek URL.
-- [ ] Configure Prisma 7 for PostgreSQL with generated client output under the
+- [x] Configure Prisma 7 for PostgreSQL with generated client output under the
       API source tree and migration commands suitable for local development,
       CI, and Docker deployment.
 - [ ] Create a split Prisma schema covering shared timestamps/IDs and the
