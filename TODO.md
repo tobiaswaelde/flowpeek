@@ -39,7 +39,7 @@ in order unless a dependency is explicitly marked as parallelizable.
       domains listed below.
 - [x] Add a Prisma module/service, transaction support, database-exception
       mapping, test-database configuration, and deterministic test cleanup.
-- [ ] Add global validation, serialization, error-response, CORS, rate-limit,
+- [x] Add global validation, serialization, error-response, CORS, rate-limit,
       and API-documentation configuration.
 - [ ] Add Nest Scheduler and an application-level job abstraction that can be
       disabled for tests and controlled through environment configuration.
