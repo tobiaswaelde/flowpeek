@@ -1,7 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
 
+import { CaslAbilityFactory } from '../../casl/casl-ability.factory.js';
 import type { WorkflowRun } from '../../generated/prisma/client.js';
-import type { WorkflowRunsQueryService } from '../workflow-runs/workflow-runs-query.service.js';
+import type { PrismaService } from '../../prisma/prisma.service.js';
+import { WorkflowRunsQueryService } from '../workflow-runs/workflow-runs-query.service.js';
 import { DashboardService } from './dashboard.service.js';
 
 describe('DashboardService', () => {
@@ -133,6 +135,54 @@ describe('DashboardService', () => {
       ),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(workflowRuns.getReadAbility).not.toHaveBeenCalled();
+  });
+
+  it('does not aggregate workflow activity from repositories outside the user membership', async () => {
+    const visibleRuns = [
+      run({
+        completedAt: '2026-08-26T10:00:00.000Z',
+        repositoryId: 'repository-a',
+        status: 'FAILED',
+        workflowName: 'Visible test',
+      }),
+      run({
+        completedAt: '2026-08-26T10:00:00.000Z',
+        repositoryId: 'repository-b',
+        status: 'FAILED',
+        workflowName: 'Private test',
+      }),
+    ];
+    const prisma = {
+      repositoryMembership: {
+        findMany: jest.fn().mockResolvedValue([{ repositoryId: 'repository-a', role: 'VIEWER' }]),
+      },
+      workflowRun: {
+        findMany: jest.fn().mockImplementation((args: { take?: number; where: { AND: unknown[] } }) => {
+          const accessCondition = args.where.AND[0] as { OR: { repositoryId: { in: string[] } }[] };
+          const allowedRepositoryIds = accessCondition.OR.flatMap((condition) => condition.repositoryId.in);
+          return visibleRuns
+            .filter((workflowRun) => allowedRepositoryIds.includes(workflowRun.repositoryId))
+            .slice(0, args.take);
+        }),
+      },
+    } as unknown as PrismaService;
+    const dashboard = new DashboardService(new WorkflowRunsQueryService(prisma, new CaslAbilityFactory()));
+    const user = { id: 'viewer', role: 'VIEWER' as const, username: 'viewer' };
+
+    await expect(dashboard.getLatestFailures(user)).resolves.toEqual([
+      expect.objectContaining({ repositoryId: 'repository-a', workflowName: 'Visible test' }),
+    ]);
+    await expect(dashboard.getLatestRuns(user)).resolves.toEqual([
+      expect.objectContaining({ repositoryId: 'repository-a', workflowName: 'Visible test' }),
+    ]);
+    await expect(
+      dashboard.getTrend(user, {
+        bucket: 'day',
+        from: '2026-08-26T00:00:00.000Z',
+        to: '2026-08-26T23:59:59.999Z',
+      }),
+    ).resolves.toEqual([{ bucketStart: new Date('2026-08-26T00:00:00.000Z'), errorCount: 1, successCount: 0 }]);
+    expect(prisma.workflowRun.findMany).toHaveBeenCalledTimes(3);
   });
 });
 

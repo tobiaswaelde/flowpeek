@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import type { QueryOptionsMap } from '@querry-kit/nest';
 
 import type { WorkflowRun } from '../../generated/prisma/client.js';
 import type { AuthenticatedUser } from '../auth/types.js';
-import { WorkflowRunsQueryService } from '../workflow-runs/workflow-runs-query.service.js';
+import { WorkflowRunsQueryService, type WorkflowRunTypeMap } from '../workflow-runs/workflow-runs-query.service.js';
 import type { TrendBucketSize, WorkflowRunTrendQueryDto } from './dto/workflow-run-trend.dto.js';
 
 const terminalStatuses = ['SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED'] as const;
@@ -26,17 +27,13 @@ export class DashboardService {
    * @returns The latest failed run for every currently failing repository workflow.
    */
   async getLatestFailures(user: AuthenticatedUser): Promise<WorkflowRun[]> {
-    const ability = await this.workflowRuns.getReadAbility(user);
-    const terminalRuns = await this.workflowRuns.findMany<WorkflowRun>(
-      {
-        orderBy: [{ completedAt: 'desc' }, { providerCreatedAt: 'desc' }, { id: 'desc' }],
-        where: {
-          completedAt: { not: null },
-          status: { in: [...terminalStatuses] },
-        },
+    const terminalRuns = await this.findVisibleRuns(user, {
+      orderBy: [{ completedAt: 'desc' }, { providerCreatedAt: 'desc' }, { id: 'desc' }],
+      where: {
+        completedAt: { not: null },
+        status: { in: [...terminalStatuses] },
       },
-      ability,
-    );
+    });
     const latestByWorkflow = new Map<string, WorkflowRun>();
     for (const run of terminalRuns) {
       const key = `${run.repositoryId}\u0000${run.workflowName}`;
@@ -53,14 +50,10 @@ export class DashboardService {
    * @returns The latest visible provider workflow runs.
    */
   async getLatestRuns(user: AuthenticatedUser): Promise<WorkflowRun[]> {
-    const ability = await this.workflowRuns.getReadAbility(user);
-    return this.workflowRuns.findMany<WorkflowRun>(
-      {
-        orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
-        take: 10,
-      },
-      ability,
-    );
+    return this.findVisibleRuns(user, {
+      orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+      take: 10,
+    });
   }
 
   /**
@@ -78,16 +71,12 @@ export class DashboardService {
       throw new BadRequestException('The trend start timestamp must not be after the end timestamp.');
     }
 
-    const ability = await this.workflowRuns.getReadAbility(user);
-    const runs = await this.workflowRuns.findMany<WorkflowRun>(
-      {
-        where: {
-          completedAt: { gte: from, lte: to },
-          status: { in: ['SUCCESS', 'FAILED'] },
-        },
+    const runs = await this.findVisibleRuns(user, {
+      where: {
+        completedAt: { gte: from, lte: to },
+        status: { in: ['SUCCESS', 'FAILED'] },
       },
-      ability,
-    );
+    });
     const buckets = this.createBuckets(from, to, query.bucket);
     const counts = new Map(buckets.map((bucket) => [bucket.bucketStart.toISOString(), bucket]));
 
@@ -112,6 +101,14 @@ export class DashboardService {
       buckets.push({ bucketStart, errorCount: 0, successCount: 0 });
     }
     return buckets;
+  }
+
+  private async findVisibleRuns(
+    user: AuthenticatedUser,
+    options: QueryOptionsMap<WorkflowRunTypeMap>['findMany'],
+  ): Promise<WorkflowRun[]> {
+    const ability = await this.workflowRuns.getReadAbility(user);
+    return this.workflowRuns.findMany<WorkflowRun>(options, ability);
   }
 
   private floorBucket(value: Date, size: TrendBucketSize): Date {
