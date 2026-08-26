@@ -16,10 +16,14 @@ requests that will be added with the auth module.
 ## Current manual check
 
 Start the API with the required values from `.env.example`, then run
-`health/get health status`. It must return HTTP `200` and:
+`health/get health status`. It must return HTTP `200` with an `api` value of
+`"ok"`, a `database` value of `"ok"`, and the persisted provider sync state:
 
 ```json
 {
+  "api": "ok",
+  "database": "ok",
+  "providers": [],
   "status": "ok"
 }
 ```

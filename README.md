@@ -60,6 +60,7 @@ matching API and web Docker images to GitHub Container Registry.
 - `apps/api`: NestJS, Prisma, PostgreSQL, CASL, and `@querry-kit/nest`.
 - `apps/web`: Nuxt 4 SPA, Pinia, Nuxt UI, and `@querry-kit/nuxt`.
 - `PLAN.md`: approved architecture and release design.
+- `docs/provider-webhooks.md`: manual read-only webhook setup for each provider.
 - [GitHub Issues](https://github.com/tobiaswaelde/flowpeek/issues): ordered
   implementation epics and tasks.
 - `AGENTS.md`: repository-specific instructions for coding agents.
