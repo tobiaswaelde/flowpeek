@@ -5,7 +5,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "docker:build": "docker build -t flowpeek-web:local .",
+    "docker:build": "docker build -f apps/web/Dockerfile -t flowpeek-web:local .",
     "lint": "eslint app nuxt.config.ts --max-warnings=0",
     "test": "vitest run",
     "typecheck": "nuxt typecheck"

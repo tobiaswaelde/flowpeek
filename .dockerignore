@@ -1,0 +1,8 @@
+node_modules
+.git
+.nx
+apps/*/.nuxt
+apps/*/.output
+apps/*/dist
+.env
+*.log
