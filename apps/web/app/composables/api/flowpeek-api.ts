@@ -15,6 +15,7 @@ import type {
   UpdateNotificationChannel,
   UpdateNotificationRule,
   UpdateProviderAccount,
+  User,
   WorkflowRunTrendBucket,
   WorkflowRunTrendQuery,
 } from '~/types/api/resources';
@@ -68,6 +69,10 @@ export function useFlowpeekApi() {
         id: string,
         input: Pick<Repository, 'enabled' | 'workflowRunRetentionDays'>,
       ): Promise<AxiosResponse<Repository>> => api.patch(`${apiEndpoints.repositories}/${id}`, input),
+    },
+    users: {
+      list: (): Promise<AxiosResponse<User[]>> => api.get(apiEndpoints.users),
+      delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.users}/${id}`),
     },
   };
 }

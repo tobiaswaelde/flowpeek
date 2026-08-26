@@ -45,6 +45,15 @@ export interface Repository {
   workflowRunRetentionDays: number | null;
 }
 
+/** Safe system user representation. */
+export interface User {
+  id: string;
+  username: string;
+  role: 'SYSTEM_ADMIN' | 'VIEWER' | 'MANAGER';
+  createdAt: ApiTimestamp;
+  updatedAt: ApiTimestamp;
+}
+
 /** Normalized lifecycle status of a provider workflow run. */
 export type WorkflowRunStatus = 'QUEUED' | 'RUNNING' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'SKIPPED' | 'UNKNOWN';
 
