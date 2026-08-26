@@ -1,0 +1,9 @@
+{
+  "auth": {
+    "signIn": "Sign in",
+    "signInPlaceholder": "Authentication will be available here."
+  },
+  "dashboard": {
+    "title": "Workflow dashboard"
+  }
+}

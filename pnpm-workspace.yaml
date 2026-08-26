@@ -9,6 +9,8 @@ allowBuilds:
   unrs-resolver: false
   nx: true
   prisma: true
+  esbuild: true
+  vue-demi: false
 
 minimumReleaseAgeExclude:
   - '@nestjs/common@11.2.3'

@@ -1,0 +1,9 @@
+{
+  "auth": {
+    "signIn": "Anmelden",
+    "signInPlaceholder": "Die Anmeldung wird hier verfügbar sein."
+  },
+  "dashboard": {
+    "title": "Workflow-Dashboard"
+  }
+}
