@@ -23,6 +23,9 @@ describe('CaslAbilityFactory', () => {
 
     expect(ability.can(CaslAction.Read, subject(CaslSubject.Repository, { id: 'repository-a' }))).toBe(true);
     expect(ability.can(CaslAction.Read, subject(CaslSubject.WorkflowRun, { repositoryId: 'repository-b' }))).toBe(true);
+    expect(
+      ability.can(CaslAction.Read, subject(CaslSubject.NotificationChannel, { repositoryId: 'repository-a' })),
+    ).toBe(true);
     expect(ability.can(CaslAction.Read, subject(CaslSubject.Repository, { id: 'repository-c' }))).toBe(false);
     expect(ability.can(CaslAction.Update, subject(CaslSubject.Repository, { id: 'repository-b' }))).toBe(false);
   });
@@ -31,6 +34,9 @@ describe('CaslAbilityFactory', () => {
     const ability = factory.createForUser({ id: 'manager', role: 'MANAGER', username: 'manager' }, memberships);
 
     expect(ability.can(CaslAction.Update, subject(CaslSubject.Repository, { id: 'repository-b' }))).toBe(true);
+    expect(
+      ability.can(CaslAction.Update, subject(CaslSubject.NotificationChannel, { repositoryId: 'repository-b' })),
+    ).toBe(true);
     expect(ability.can(CaslAction.Update, subject(CaslSubject.Repository, { id: 'repository-a' }))).toBe(false);
     expect(ability.can(CaslAction.Update, subject(CaslSubject.Repository, { id: 'repository-c' }))).toBe(false);
   });

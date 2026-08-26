@@ -30,6 +30,7 @@ export class CaslAbilityFactory {
 
     can(CaslAction.Read, CaslSubject.Repository, { id: { in: repositoryIds } });
     can(CaslAction.Read, CaslSubject.WorkflowRun, { repositoryId: { in: repositoryIds } });
+    can(CaslAction.Read, CaslSubject.NotificationChannel, { repositoryId: { in: repositoryIds } });
 
     if (user.role === 'MANAGER') {
       const managedRepositoryIds = memberships
@@ -38,6 +39,7 @@ export class CaslAbilityFactory {
 
       if (managedRepositoryIds.length > 0) {
         can(CaslAction.Update, CaslSubject.Repository, { id: { in: managedRepositoryIds } });
+        can(CaslAction.Manage, CaslSubject.NotificationChannel, { repositoryId: { in: managedRepositoryIds } });
       }
     }
 

@@ -14,9 +14,14 @@ export interface WorkflowRunAbilitySubject extends ForcedSubject<CaslSubject.Wor
   repositoryId: string;
 }
 
+/** Repository-scoped notification channel properties used by CASL conditions. */
+export interface NotificationChannelAbilitySubject extends ForcedSubject<CaslSubject.NotificationChannel> {
+  repositoryId: string;
+}
+
 /** The CASL ability used by Flowpeek API policies and query restrictions. */
 export type AppAbility = Ability<
-  [CaslAction, CaslSubject | RepositoryAbilitySubject | WorkflowRunAbilitySubject],
+  [CaslAction, CaslSubject | RepositoryAbilitySubject | WorkflowRunAbilitySubject | NotificationChannelAbilitySubject],
   FlowpeekPrismaQuery
 >;
 
