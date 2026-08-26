@@ -12,6 +12,7 @@ import type {
   ProviderWorkflowRun,
   VerifiedWebhook,
 } from '../provider-adapter.js';
+import { normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
@@ -121,17 +122,8 @@ export class GitHubActionsAdapter implements ProviderAdapter {
       startedAt,
       completedAt,
       durationMs: startedAt && completedAt ? completedAt.getTime() - startedAt.getTime() : null,
-      status: this.status(run),
+      status: normalizeWorkflowRunStatus('GITHUB', run.status, run.conclusion),
       rawStatus: run.conclusion ?? run.status,
     };
-  }
-  private status(run: GitHubWorkflowRunResponse): ProviderWorkflowRun['status'] {
-    if (run.status === 'in_progress') return 'RUNNING';
-    if (run.status !== 'completed') return 'QUEUED';
-    return (
-      ({ success: 'SUCCESS', failure: 'FAILED', cancelled: 'CANCELLED', skipped: 'SKIPPED' } as const)[
-        run.conclusion ?? ''
-      ] ?? 'UNKNOWN'
-    );
   }
 }
