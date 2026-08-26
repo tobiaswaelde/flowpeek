@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import type {
   ProviderAccountContext,
@@ -12,6 +12,7 @@ import type {
   ProviderWorkflowRun,
   VerifiedWebhook,
 } from '../provider-adapter.js';
+import { PROVIDER_FETCH } from '../provider-adapter.js';
 import { normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
@@ -46,7 +47,7 @@ export class ForgejoActionsUnsupportedError extends Error {
 @Injectable()
 export class ForgejoActionsAdapter implements ProviderAdapter {
   readonly providerType = 'FORGEJO' as const;
-  constructor(private readonly fetchFn: FetchLike = fetch) {}
+  constructor(@Inject(PROVIDER_FETCH) private readonly fetchFn: FetchLike = fetch) {}
 
   async validateAccount(context: ProviderAccountContext): Promise<ProviderAccountValidation> {
     const user = await this.request<{ login: string }>(context, '/user');
