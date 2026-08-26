@@ -5,7 +5,7 @@ in order unless a dependency is explicitly marked as parallelizable.
 
 ## 1. Bootstrap the Monorepo
 
-- [ ] Rename the root package to `flowpeek`, set an initial `0.1.0` version,
+- [x] Rename the root package to `flowpeek`, set an initial `0.1.0` version,
       and configure it as the single private Changesets release package.
 - [ ] Create a pnpm workspace with `apps/api` and `apps/web`.
 - [ ] Add Nx project definitions and root targets for linting, typechecking,
@@ -17,7 +17,7 @@ in order unless a dependency is explicitly marked as parallelizable.
       120-character print width.
 - [ ] Add `.editorconfig`, `.gitignore`, `.env.example`, Node 24 and pnpm
       version metadata, and a root README with local-development prerequisites.
-- [ ] Configure Changesets for one versioned private package and document how
+- [x] Configure Changesets for one versioned private package and document how
       feature changes receive a Changeset.
 
 ## 2. Create the API Foundation
