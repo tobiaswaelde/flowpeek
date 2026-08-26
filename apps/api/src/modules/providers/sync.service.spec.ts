@@ -1,5 +1,6 @@
 import type { JobRunnerService } from '../../jobs/job-runner.service.js';
 import type { PrismaService } from '../../prisma/prisma.service.js';
+import type { NotificationsService } from '../notifications/notifications.service.js';
 import type { WorkflowFilterService } from '../repositories/workflow-filter.service.js';
 import type { ProviderAdapterRegistry } from './provider-adapter.registry.js';
 import type { ProviderCredentialService } from './provider-credential.service.js';
@@ -16,13 +17,14 @@ describe('ProviderSyncService', () => {
           findMany: jest.fn().mockResolvedValue([firstRepository, secondRepository]),
           update: jest.fn().mockResolvedValue(undefined),
         },
-        workflowRun: { upsert: jest.fn().mockResolvedValue(undefined) },
+        workflowRun: { upsert: jest.fn(({ create }) => Promise.resolve({ id: 'run-id', ...create })) },
       },
       adapter: {
         listWorkflowRuns: jest.fn().mockResolvedValue([createWorkflowRun()]),
       },
       credentials: { decrypt: jest.fn().mockReturnValue('access-token') },
       filters: { shouldTrack: jest.fn().mockReturnValue(true) },
+      notifications: { evaluateRulesForRun: jest.fn().mockResolvedValue([]) },
     };
     const service = new ProviderSyncService(
       mocks.prisma as unknown as PrismaService,
@@ -30,6 +32,7 @@ describe('ProviderSyncService', () => {
       { get: jest.fn().mockReturnValue(mocks.adapter) } as unknown as ProviderAdapterRegistry,
       mocks.credentials as unknown as ProviderCredentialService,
       mocks.filters as unknown as WorkflowFilterService,
+      mocks.notifications as unknown as NotificationsService,
     );
 
     await service.syncEnabledRepositories();
@@ -56,6 +59,7 @@ describe('ProviderSyncService', () => {
         },
       },
     });
+    expect(mocks.notifications.evaluateRulesForRun).toHaveBeenCalledTimes(4);
   });
 });
 

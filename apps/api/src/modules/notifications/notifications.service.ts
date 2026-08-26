@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { isEmail } from 'class-validator';
+import picomatch from 'picomatch';
 
 import { CaslAbilityFactory } from '../../casl/casl-ability.factory.js';
 import { CaslAction } from '../../casl/casl-action.js';
@@ -7,8 +8,8 @@ import { accessibleBy } from '../../casl/casl-prisma.js';
 import { CaslSubject } from '../../casl/casl-subject.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { CredentialEncryptionService } from '../../security/credential-encryption.service.js';
 import type { AuthenticatedUser } from '../auth/types.js';
-import { ProviderCredentialService } from '../providers/provider-credential.service.js';
 import { WorkflowFilterService } from '../repositories/workflow-filter.service.js';
 import type { CreateNotificationChannelDto, UpdateNotificationChannelDto } from './dto/notification-channel.dto.js';
 import type { CreateNotificationRuleDto, UpdateNotificationRuleDto } from './dto/notification-rule.dto.js';
@@ -23,7 +24,7 @@ export class NotificationsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly abilityFactory: CaslAbilityFactory,
-    private readonly credentials: ProviderCredentialService,
+    private readonly credentials: CredentialEncryptionService,
     private readonly workflowFilters: WorkflowFilterService,
   ) {}
 
@@ -146,6 +147,25 @@ export class NotificationsService {
     const rule = await this.findRule(id);
     await this.assertCanManageRepository(user, rule.repositoryId);
     await this.prisma.notificationRule.delete({ where: { id } });
+  }
+
+  /**
+   * Resolve enabled rules that match one persisted terminal run.
+   *
+   * Delivery creation intentionally remains separate so matching can be tested
+   * independently and persisted idempotently by the delivery workflow.
+   */
+  async evaluateRulesForRun(run: {
+    repositoryId: string;
+    status: 'SUCCESS' | 'FAILED' | 'QUEUED' | 'RUNNING' | 'CANCELLED' | 'SKIPPED' | 'UNKNOWN';
+    workflowName: string;
+  }) {
+    if (run.status !== 'SUCCESS' && run.status !== 'FAILED') return [];
+    const rules = await this.prisma.notificationRule.findMany({
+      include: notificationRuleInclude,
+      where: { enabled: true, outcome: run.status, repositoryId: run.repositoryId },
+    });
+    return rules.filter((rule) => picomatch.isMatch(run.workflowName, rule.workflowPattern, { bash: true }));
   }
 
   private async getAbility(user: AuthenticatedUser) {

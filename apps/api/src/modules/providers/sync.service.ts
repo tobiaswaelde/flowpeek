@@ -5,7 +5,9 @@ import { ENV } from '../../config/env.js';
 import type { ProviderType } from '../../generated/prisma/client.js';
 import { JobRunnerService } from '../../jobs/job-runner.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
 import { WorkflowFilterService } from '../repositories/workflow-filter.service.js';
+import type { ProviderWorkflowRun } from './provider-adapter.js';
 import { ProviderAdapterRegistry } from './provider-adapter.registry.js';
 import { ProviderCredentialService } from './provider-credential.service.js';
 
@@ -33,6 +35,7 @@ export class ProviderSyncService {
     private readonly adapters: ProviderAdapterRegistry,
     private readonly credentials: ProviderCredentialService,
     private readonly filters: WorkflowFilterService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   @Interval(ENV.SCHEDULER_SYNC_INTERVAL_SECONDS * 1000)
@@ -92,11 +95,7 @@ export class ProviderSyncService {
       );
       for (const run of runs)
         if (this.filters.shouldTrack(run.workflowName, repository.workflowFilters))
-          await this.prisma.workflowRun.upsert({
-            where: { repositoryId_providerRunId: { repositoryId: repository.id, providerRunId: run.providerRunId } },
-            create: { ...run, repositoryId: repository.id },
-            update: { ...run },
-          });
+          await this.persistRunAndEvaluateRules(repository.id, run);
       await this.prisma.repository.update({ where: { id: repository.id }, data: { lastSyncAt: new Date() } });
       await this.prisma.providerAccount.update({
         where: { id: repository.providerAccount.id },
@@ -112,5 +111,14 @@ export class ProviderSyncService {
       });
       this.logger.warn(`Synchronization failed for provider account ${repository.providerAccount.id}.`);
     }
+  }
+
+  private async persistRunAndEvaluateRules(repositoryId: string, run: ProviderWorkflowRun): Promise<void> {
+    const workflowRun = await this.prisma.workflowRun.upsert({
+      where: { repositoryId_providerRunId: { repositoryId, providerRunId: run.providerRunId } },
+      create: { ...run, repositoryId },
+      update: run,
+    });
+    await this.notifications.evaluateRulesForRun(workflowRun);
   }
 }
