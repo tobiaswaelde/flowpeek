@@ -27,6 +27,7 @@ export const apiEndpoints = {
   notificationChannels: '/notification-channels',
   notificationDeliveries: '/notification-deliveries',
   notificationRules: '/notification-rules',
+  providerAccounts: '/provider-accounts',
   workflowRuns: 'workflow-runs',
 } as const;
 

@@ -4,6 +4,36 @@ export type ApiTimestamp = string;
 /** Source forge type for a configured provider account. */
 export type ProviderType = 'GITHUB' | 'GITLAB' | 'FORGEJO';
 
+/** Safe configured provider account. Credentials are never returned by the API. */
+export interface ProviderAccount {
+  baseUrl: string | null;
+  displayName: string;
+  enabled: boolean;
+  id: string;
+  lastSyncAt: ApiTimestamp | null;
+  providerType: ProviderType;
+}
+
+/** Write-only input for a new provider account. */
+export interface CreateProviderAccount {
+  accessToken: string;
+  baseUrl?: string;
+  displayName: string;
+  enabled?: boolean;
+  providerType: ProviderType;
+  webhookSecret?: string;
+}
+
+/** Write-only changes for an existing provider account. */
+export interface UpdateProviderAccount {
+  accessToken?: string;
+  baseUrl?: string | null;
+  clearWebhookSecret?: boolean;
+  displayName?: string;
+  enabled?: boolean;
+  webhookSecret?: string;
+}
+
 /** Normalized lifecycle status of a provider workflow run. */
 export type WorkflowRunStatus = 'QUEUED' | 'RUNNING' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'SKIPPED' | 'UNKNOWN';
 

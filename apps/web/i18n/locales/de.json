@@ -39,5 +39,22 @@
     "MANAGER": "Repository-Verwaltung",
     "SYSTEM_ADMIN": "Systemadministration",
     "VIEWER": "Leseberechtigung"
+  },
+  "providers": {
+    "accessToken": "Zugriffstoken",
+    "add": "Anbieter hinzufügen",
+    "defaultUrl": "Standard-URL des Anbieters",
+    "delete": "Löschen",
+    "description": "Verwalte schreibgeschützte Workflow-Anbieter-Verbindungen.",
+    "disable": "Deaktivieren",
+    "disabled": "Deaktiviert",
+    "empty": "Es sind keine Anbieter-Konten konfiguriert.",
+    "enabled": "Aktiviert",
+    "enable": "Aktivieren",
+    "loadError": "Anbieter-Konten konnten nicht geladen werden.",
+    "name": "Name",
+    "refresh": "Aktualisieren",
+    "title": "Anbieter-Konten",
+    "type": "Anbieter-Typ"
   }
 }
