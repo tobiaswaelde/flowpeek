@@ -1,8 +1,9 @@
-import { AbilityBuilder, createMongoAbility } from '@casl/ability';
+import { AbilityBuilder } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 
 import type { AuthenticatedUser } from '../modules/auth/types.js';
 import { CaslAction } from './casl-action.js';
+import { createPrismaAbility } from './casl-prisma.js';
 import { CaslSubject } from './casl-subject.js';
 import type { AppAbility, RepositoryAccess } from './types.js';
 
@@ -17,7 +18,7 @@ export class CaslAbilityFactory {
    * authorization scopes explicit.
    */
   createForUser(user: AuthenticatedUser, memberships: RepositoryAccess[]): AppAbility {
-    const { build, can } = new AbilityBuilder<AppAbility>(createMongoAbility);
+    const { build, can } = new AbilityBuilder<AppAbility>(createPrismaAbility);
 
     if (user.role === 'SYSTEM_ADMIN') {
       can(CaslAction.Manage, CaslSubject.All);
@@ -27,8 +28,8 @@ export class CaslAbilityFactory {
     const repositoryIds = memberships.map(({ repositoryId }) => repositoryId);
     if (repositoryIds.length === 0) return build();
 
-    can(CaslAction.Read, CaslSubject.Repository, { id: { $in: repositoryIds } });
-    can(CaslAction.Read, CaslSubject.WorkflowRun, { repositoryId: { $in: repositoryIds } });
+    can(CaslAction.Read, CaslSubject.Repository, { id: { in: repositoryIds } });
+    can(CaslAction.Read, CaslSubject.WorkflowRun, { repositoryId: { in: repositoryIds } });
 
     if (user.role === 'MANAGER') {
       const managedRepositoryIds = memberships
@@ -36,7 +37,7 @@ export class CaslAbilityFactory {
         .map(({ repositoryId }) => repositoryId);
 
       if (managedRepositoryIds.length > 0) {
-        can(CaslAction.Update, CaslSubject.Repository, { id: { $in: managedRepositoryIds } });
+        can(CaslAction.Update, CaslSubject.Repository, { id: { in: managedRepositoryIds } });
       }
     }
 
