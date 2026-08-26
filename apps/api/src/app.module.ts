@@ -9,6 +9,7 @@ import { HealthModule } from './modules/health/health.module.js';
 import { InitModule } from './modules/init/init.module.js';
 import { ProvidersModule } from './modules/providers/providers.module.js';
 import { RepositoriesModule } from './modules/repositories/repositories.module.js';
+import { WebhooksModule } from './modules/webhooks/webhooks.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 
 @Module({
@@ -22,6 +23,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     JobsModule,
     AuthModule,
     HealthModule,
+    WebhooksModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
