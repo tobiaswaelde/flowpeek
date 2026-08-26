@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
 import { DashboardModule } from './modules/dashboard/dashboard.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { InitModule } from './modules/init/init.module.js';
+import { NotificationsModule } from './modules/notifications/notifications.module.js';
 import { ProvidersModule } from './modules/providers/providers.module.js';
 import { RepositoriesModule } from './modules/repositories/repositories.module.js';
 import { WebhooksModule } from './modules/webhooks/webhooks.module.js';
@@ -20,6 +21,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     PrismaModule,
     CaslModule,
     InitModule,
+    NotificationsModule,
     RepositoriesModule,
     ProvidersModule,
     JobsModule,
