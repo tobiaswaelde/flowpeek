@@ -29,7 +29,7 @@ in order unless a dependency is explicitly marked as parallelizable.
 - [ ] Create and maintain an `apps/api/bruno` collection with a documented
       development environment, secret variables, and manual-test requests for
       every API module as its endpoints are implemented.
-- [ ] Add validated environment configuration for database access, CORS,
+- [x] Add validated environment configuration for database access, CORS,
       JWT, bootstrap-admin credentials, token-encryption key, scheduler
       settings, SMTP, and public Flowpeek URL.
 - [ ] Configure Prisma 7 for PostgreSQL with generated client output under the
