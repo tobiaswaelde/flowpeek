@@ -7,13 +7,17 @@ import { RepositoriesModule } from '../repositories/repositories.module.js';
 import { ForgejoActionsAdapter } from './forgejo/forgejo-actions.adapter.js';
 import { GitHubActionsAdapter } from './github/github-actions.adapter.js';
 import { GitLabPipelinesAdapter } from './gitlab/gitlab-pipelines.adapter.js';
+import { ProviderAccountsController } from './provider-accounts.controller.js';
+import { ProviderAccountsService } from './provider-accounts.service.js';
 import { ProviderAdapterRegistry } from './provider-adapter.registry.js';
 import { ProviderCredentialService } from './provider-credential.service.js';
 import { ProviderSyncService } from './sync.service.js';
 
 @Module({
   imports: [JobsModule, NotificationsModule, RepositoriesModule, SecurityModule],
+  controllers: [ProviderAccountsController],
   providers: [
+    ProviderAccountsService,
     ProviderCredentialService,
     GitHubActionsAdapter,
     GitLabPipelinesAdapter,
