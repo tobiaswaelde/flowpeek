@@ -1,10 +1,10 @@
-import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpCode, Post, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service.js';
+import { Authenticated } from './authenticated.decorator.js';
 import { SignInDto } from './dto/sign-in.dto.js';
 import { UpdatePasswordDto } from './dto/update-password.dto.js';
-import { JwtAuthGuard } from './jwt-auth.guard.js';
 import type { AuthenticatedUser } from './types.js';
 
 @ApiTags('auth')
@@ -19,22 +19,19 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @Authenticated()
   me(@Req() request: { user: AuthenticatedUser }) {
     return request.user;
   }
 
   @Post('signout')
   @HttpCode(204)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @Authenticated()
   signOut(): void {}
 
   @Post('password')
   @HttpCode(204)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @Authenticated()
   async updatePassword(@Req() request: { user: AuthenticatedUser }, @Body() body: UpdatePasswordDto): Promise<void> {
     await this.auth.updatePassword(request.user.id, body.currentPassword, body.newPassword);
   }
