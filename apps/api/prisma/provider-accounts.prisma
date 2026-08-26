@@ -1,1 +1,22 @@
-// Provider account records and their encrypted read-only credentials are defined here.
+enum ProviderType {
+  GITHUB
+  GITLAB
+  FORGEJO
+}
+
+model ProviderAccount {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  providerType           ProviderType
+  displayName            String   @db.VarChar(255)
+  baseUrl                String?  @db.VarChar(2048)
+  encryptedAccessToken   String   @db.Text
+  enabled                Boolean  @default(true)
+  lastSyncAt             DateTime?
+  lastSyncError          String?  @db.Text
+
+  @@unique([providerType, displayName])
+  @@map("provider_accounts")
+}
