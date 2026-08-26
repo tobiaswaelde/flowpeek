@@ -64,7 +64,10 @@
 - Every substantive implementation commit requires exactly one focused
   Changeset for the `flowpeek` package. Do not add Changesets for generated
   version-release output.
-- Commit only when explicitly requested. A request to commit does not authorize
-  a push; a request to commit and push authorizes only the reviewed scope.
+- Push the current branch to its configured remote after every commit unless
+  the user explicitly requests a local-only commit or a different remote
+  workflow.
+- Commit only when explicitly requested. Once a requested commit succeeds,
+  apply the preceding push rule only to the reviewed scope.
 - Report unverified provider, browser, Docker, or remote GitHub Actions
   behavior honestly.
