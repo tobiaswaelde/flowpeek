@@ -37,4 +37,21 @@ export class DashboardService {
 
     return [...latestByWorkflow.values()].filter((run) => run.status === 'FAILED');
   }
+
+  /**
+   * Return the ten newest workflow runs visible to the user.
+   *
+   * @param user - Authenticated user requesting the dashboard.
+   * @returns The latest visible provider workflow runs.
+   */
+  async getLatestRuns(user: AuthenticatedUser): Promise<WorkflowRun[]> {
+    const ability = await this.workflowRuns.getReadAbility(user);
+    return this.workflowRuns.findMany<WorkflowRun>(
+      {
+        orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+        take: 10,
+      },
+      ability,
+    );
+  }
 }

@@ -30,4 +30,18 @@ export class DashboardController {
     const failures = await this.dashboard.getLatestFailures(request.user);
     return failures.map((workflowRun) => WorkflowRunDto.fromModel(workflowRun));
   }
+
+  /**
+   * List the ten newest workflow runs visible to the caller.
+   *
+   * @param request - Authenticated request user.
+   * @returns The ten most recently created visible provider runs.
+   */
+  @Get('latest-runs')
+  @ApiOperation({ summary: 'List the ten newest visible workflow runs' })
+  @ApiOkResponse({ description: 'The ten newest visible workflow runs.', type: WorkflowRunDto, isArray: true })
+  async getLatestRuns(@Req() request: AuthenticatedRequest): Promise<WorkflowRunDto[]> {
+    const workflowRuns = await this.dashboard.getLatestRuns(request.user);
+    return workflowRuns.map((workflowRun) => WorkflowRunDto.fromModel(workflowRun));
+  }
 }

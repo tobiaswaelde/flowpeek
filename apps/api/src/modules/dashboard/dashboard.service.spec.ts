@@ -50,6 +50,31 @@ describe('DashboardService', () => {
       ability,
     );
   });
+
+  it('limits the latest-run dashboard result to ten visible runs', async () => {
+    const ability = {};
+    const workflowRuns = {
+      findMany: jest.fn().mockResolvedValue([
+        run({
+          completedAt: '2026-08-26T11:00:00.000Z',
+          repositoryId: 'repository-a',
+          status: 'RUNNING',
+          workflowName: 'Test',
+        }),
+      ]),
+      getReadAbility: jest.fn().mockResolvedValue(ability),
+    } as unknown as WorkflowRunsQueryService;
+    const service = new DashboardService(workflowRuns);
+
+    await expect(service.getLatestRuns({ id: 'viewer', role: 'VIEWER', username: 'viewer' })).resolves.toHaveLength(1);
+    expect(workflowRuns.findMany).toHaveBeenCalledWith(
+      {
+        orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+        take: 10,
+      },
+      ability,
+    );
+  });
 });
 
 function run(input: {
