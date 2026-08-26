@@ -37,7 +37,7 @@ in order unless a dependency is explicitly marked as parallelizable.
       CI, and Docker deployment.
 - [x] Create a split Prisma schema covering shared timestamps/IDs and the
       domains listed below.
-- [ ] Add a Prisma module/service, transaction support, database-exception
+- [x] Add a Prisma module/service, transaction support, database-exception
       mapping, test-database configuration, and deterministic test cleanup.
 - [ ] Add global validation, serialization, error-response, CORS, rate-limit,
       and API-documentation configuration.
