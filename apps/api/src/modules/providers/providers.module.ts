@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 
 import { JobsModule } from '../../jobs/jobs.module.js';
+import { SecurityModule } from '../../security/security.module.js';
+import { NotificationsModule } from '../notifications/notifications.module.js';
 import { RepositoriesModule } from '../repositories/repositories.module.js';
 import { ForgejoActionsAdapter } from './forgejo/forgejo-actions.adapter.js';
 import { GitHubActionsAdapter } from './github/github-actions.adapter.js';
@@ -10,7 +12,7 @@ import { ProviderCredentialService } from './provider-credential.service.js';
 import { ProviderSyncService } from './sync.service.js';
 
 @Module({
-  imports: [JobsModule, RepositoriesModule],
+  imports: [JobsModule, NotificationsModule, RepositoriesModule, SecurityModule],
   providers: [
     ProviderCredentialService,
     GitHubActionsAdapter,

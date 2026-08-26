@@ -3,7 +3,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { CaslAbilityFactory } from '../../casl/casl-ability.factory.js';
 import { NotificationChannelType } from '../../generated/prisma/client.js';
 import type { PrismaService } from '../../prisma/prisma.service.js';
-import type { ProviderCredentialService } from '../providers/provider-credential.service.js';
+import type { CredentialEncryptionService } from '../../security/credential-encryption.service.js';
 import { WorkflowFilterService } from '../repositories/workflow-filter.service.js';
 import { NotificationsService } from './notifications.service.js';
 
@@ -39,7 +39,7 @@ describe('NotificationsService', () => {
         {
           decrypt: jest.fn(),
           encrypt: jest.fn((secret: string) => `encrypted:${secret}`),
-        } as unknown as ProviderCredentialService,
+        } as unknown as CredentialEncryptionService,
         new WorkflowFilterService(),
       ),
     };
@@ -126,5 +126,25 @@ describe('NotificationsService', () => {
         }),
       }),
     );
+  });
+
+  it('evaluates only enabled rules matching a terminal run outcome and workflow glob', async () => {
+    const { prisma, service } = createService();
+    prisma.notificationRule.findMany.mockResolvedValue([
+      { channelLinks: [], workflowPattern: 'Deploy*' },
+      { channelLinks: [], workflowPattern: 'Test*' },
+    ]);
+
+    const rules = await service.evaluateRulesForRun({
+      repositoryId: 'repository-a',
+      status: 'FAILED',
+      workflowName: 'Deploy production',
+    });
+
+    expect(rules).toEqual([{ channelLinks: [], workflowPattern: 'Deploy*' }]);
+    expect(prisma.notificationRule.findMany).toHaveBeenCalledWith({
+      include: expect.any(Object),
+      where: { enabled: true, outcome: 'FAILED', repositoryId: 'repository-a' },
+    });
   });
 });
