@@ -1,1 +1,10 @@
-// Global settings and repository-specific overrides are defined here.
+model ApplicationSettings {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  key                      String @unique @default("global") @db.VarChar(64)
+  workflowRunRetentionDays Int    @default(90)
+
+  @@map("application_settings")
+}

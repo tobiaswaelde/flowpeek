@@ -9,6 +9,7 @@ model Repository {
   url                  String   @db.VarChar(2048)
   enabled              Boolean  @default(true)
   lastSyncAt           DateTime?
+  workflowRunRetentionDays Int?
 
   providerAccountId String          @db.Uuid
   providerAccount   ProviderAccount @relation(fields: [providerAccountId], references: [id], onDelete: Cascade)
