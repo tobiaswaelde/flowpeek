@@ -8,10 +8,29 @@
     "dev": "nest start --watch",
     "docker:build": "docker build -t flowpeek-api:local .",
     "lint": "eslint .",
-    "test": "jest --runInBand",
-    "typecheck": "tsc --noEmit"
+    "start": "nest start",
+    "start:prod": "node dist/main.js",
+    "test": "jest --config jest.config.ts --runInBand",
+    "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "devDependencies": {
+    "@nestjs/cli": "^11.0.24",
+    "@nestjs/schematics": "^11.1.0",
+    "@nestjs/testing": "^11.2.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.13.3",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.12",
+    "ts-node": "^10.9.2",
     "typescript": "6.0.3"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.2.3",
+    "@nestjs/core": "^11.2.3",
+    "@nestjs/platform-express": "^11.2.3",
+    "@nestjs/swagger": "^11.4.7",
+    "@scalar/nestjs-api-reference": "^1.2.16",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
   }
 }
