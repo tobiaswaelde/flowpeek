@@ -180,7 +180,7 @@ in order unless a dependency is explicitly marked as parallelizable.
 - [x] Add `lint.yml` for pull requests and `main` pushes with checkout,
       Node 24, Corepack, frozen install, API lint, web lint, API typecheck,
       and Nuxt typecheck.
-- [ ] Add `test.yml` for pull requests and `main` pushes with PostgreSQL,
+- [x] Add `test.yml` for pull requests and `main` pushes with PostgreSQL,
       Prisma generation/migrations, API Jest tests, and web tests.
 - [ ] Add `deploy.yml` for `main` pushes and manual dispatch using
       `changesets/action`.

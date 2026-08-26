@@ -1,0 +1,80 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test applications
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DATABASE_URL: postgresql://flowpeek:flowpeek@localhost:5432/flowpeek_test?schema=public
+      SHADOW_DATABASE_URL: postgresql://flowpeek:flowpeek@localhost:5432/flowpeek_shadow?schema=public
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: flowpeek_test
+          POSTGRES_USER: flowpeek
+          POSTGRES_PASSWORD: flowpeek
+        options: >-
+          --health-cmd "pg_isready -U flowpeek -d flowpeek_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.15.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.18.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create Prisma shadow database
+        run: >-
+          docker exec ${{ job.services.postgres.id }} psql -U flowpeek -d postgres
+          -c 'CREATE DATABASE flowpeek_shadow;'
+
+      - name: Validate Changesets configuration
+        run: pnpm changeset status
+
+      - name: Generate Prisma client
+        if: hashFiles('apps/api/prisma/schema.prisma') != ''
+        run: pnpm nx run api:db:generate
+
+      - name: Apply Prisma migrations
+        if: hashFiles('apps/api/prisma/migrations/**/migration.sql') != ''
+        run: pnpm --dir apps/api exec prisma migrate deploy
+
+      - name: Test API
+        if: hashFiles('apps/api/jest.config.ts') != ''
+        run: pnpm nx run api:test
+
+      - name: Test web app
+        if: hashFiles('apps/web/vitest.config.ts') != ''
+        run: pnpm nx run web:test
