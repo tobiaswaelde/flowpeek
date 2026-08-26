@@ -5,4 +5,5 @@ coverage/
 .nuxt/
 .output/
 apps/api/src/generated/
+apps/api/bruno/**/*.bru
 pnpm-lock.yaml
