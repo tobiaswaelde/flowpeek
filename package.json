@@ -1,6 +1,6 @@
 {
   "name": "flowpeek",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Read-only workflow status dashboard for GitHub, GitLab, and Forgejo.",
   "license": "MIT",
