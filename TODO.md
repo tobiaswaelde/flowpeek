@@ -35,7 +35,7 @@ in order unless a dependency is explicitly marked as parallelizable.
 - [x] Configure Prisma 7 for PostgreSQL with generated client output under the
       API source tree and migration commands suitable for local development,
       CI, and Docker deployment.
-- [ ] Create a split Prisma schema covering shared timestamps/IDs and the
+- [x] Create a split Prisma schema covering shared timestamps/IDs and the
       domains listed below.
 - [ ] Add a Prisma module/service, transaction support, database-exception
       mapping, test-database configuration, and deterministic test cleanup.
