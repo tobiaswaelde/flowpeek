@@ -56,5 +56,22 @@
     "refresh": "Refresh",
     "title": "Provider accounts",
     "type": "Provider type"
+  },
+  "users": { "delete": "Delete", "description": "System user administration.", "title": "Users" },
+  "notifications": {
+    "channels": "Channels",
+    "description": "Repository notification channels, rules, and delivery history.",
+    "disabled": "Disabled",
+    "enabled": "Enabled",
+    "history": "Delivery history",
+    "title": "Notifications"
+  },
+  "repositories": {
+    "default": "default",
+    "description": "Tracked repository workflow settings.",
+    "disable": "Disable",
+    "enable": "Enable",
+    "retention": "Retention",
+    "title": "Repositories"
   }
 }

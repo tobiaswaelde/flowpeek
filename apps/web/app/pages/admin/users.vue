@@ -16,13 +16,13 @@ onMounted(load);
 <template>
   <section class="space-y-4">
     <div>
-      <h1 class="text-2xl font-semibold">Users</h1>
-      <p class="text-sm text-muted">System user administration.</p>
+      <h1 class="text-2xl font-semibold">{{ $t('users.title') }}</h1>
+      <p class="text-sm text-muted">{{ $t('users.description') }}</p>
     </div>
     <UCard v-for="user in users" :key="user.id"
       ><div class="flex justify-between">
         <span>{{ user.username }} · {{ user.role }}</span
-        ><UButton color="error" label="Delete" variant="ghost" @click="remove(user.id)" /></div
+        ><UButton color="error" :label="$t('users.delete')" variant="ghost" @click="remove(user.id)" /></div
     ></UCard>
   </section>
 </template>

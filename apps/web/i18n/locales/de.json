@@ -56,5 +56,22 @@
     "refresh": "Aktualisieren",
     "title": "Anbieter-Konten",
     "type": "Anbieter-Typ"
+  },
+  "users": { "delete": "Löschen", "description": "System-Benutzerverwaltung.", "title": "Benutzer" },
+  "notifications": {
+    "channels": "Kanäle",
+    "description": "Repository-Benachrichtigungskanäle, Regeln und Zustellverlauf.",
+    "disabled": "Deaktiviert",
+    "enabled": "Aktiviert",
+    "history": "Zustellverlauf",
+    "title": "Benachrichtigungen"
+  },
+  "repositories": {
+    "default": "Standard",
+    "description": "Workflow-Einstellungen getrackter Repositories.",
+    "disable": "Deaktivieren",
+    "enable": "Aktivieren",
+    "retention": "Aufbewahrung",
+    "title": "Repositories"
   }
 }

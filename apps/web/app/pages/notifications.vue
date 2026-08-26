@@ -18,13 +18,16 @@ onMounted(load);
 <template>
   <section class="space-y-6">
     <div>
-      <h1 class="text-2xl font-semibold">Notifications</h1>
-      <p class="text-sm text-muted">Repository notification channels, rules, and delivery history.</p>
+      <h1 class="text-2xl font-semibold">{{ $t('notifications.title') }}</h1>
+      <p class="text-sm text-muted">{{ $t('notifications.description') }}</p>
     </div>
     <UCard
-      ><template #header><h2 class="font-semibold">Channels</h2></template>
+      ><template #header
+        ><h2 class="font-semibold">{{ $t('notifications.channels') }}</h2></template
+      >
       <p v-for="channel in channels" :key="channel.id" class="border-b py-2 last:border-0">
-        {{ channel.name }} · {{ channel.type }} · {{ channel.enabled ? 'Enabled' : 'Disabled' }}
+        {{ channel.name }} · {{ channel.type }} ·
+        {{ channel.enabled ? $t('notifications.enabled') : $t('notifications.disabled') }}
       </p></UCard
     ><UCard
       ><template #header><h2 class="font-semibold">Rules</h2></template>
@@ -32,7 +35,9 @@ onMounted(load);
         {{ rule.workflowPattern }} · {{ rule.outcome }}
       </p></UCard
     ><UCard
-      ><template #header><h2 class="font-semibold">Delivery history</h2></template>
+      ><template #header
+        ><h2 class="font-semibold">{{ $t('notifications.history') }}</h2></template
+      >
       <p v-for="delivery in deliveries" :key="delivery.id" class="border-b py-2 last:border-0">
         {{ delivery.status }} · {{ delivery.attempts.length }} attempts
       </p></UCard

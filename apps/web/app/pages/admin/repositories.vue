@@ -19,16 +19,21 @@ onMounted(load);
 <template>
   <section class="space-y-4">
     <div>
-      <h1 class="text-2xl font-semibold">Repositories</h1>
-      <p class="text-sm text-muted">Tracked repository workflow settings.</p>
+      <h1 class="text-2xl font-semibold">{{ $t('repositories.title') }}</h1>
+      <p class="text-sm text-muted">{{ $t('repositories.description') }}</p>
     </div>
     <UCard v-for="repository in repositories" :key="repository.id"
       ><div class="flex justify-between">
         <div>
           <a class="font-medium" :href="repository.url" target="_blank">{{ repository.owner }}/{{ repository.name }}</a>
-          <p class="text-sm text-muted">Retention: {{ repository.workflowRunRetentionDays ?? 'default' }} days</p>
+          <p class="text-sm text-muted">
+            {{ $t('repositories.retention') }}: {{ repository.workflowRunRetentionDays ?? $t('repositories.default') }}
+          </p>
         </div>
-        <UButton :label="repository.enabled ? 'Disable' : 'Enable'" @click="toggle(repository)" /></div
+        <UButton
+          :label="repository.enabled ? $t('repositories.disable') : $t('repositories.enable')"
+          @click="toggle(repository)"
+        /></div
     ></UCard>
   </section>
 </template>
