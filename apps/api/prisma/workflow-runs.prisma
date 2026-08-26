@@ -1,1 +1,31 @@
-// Normalized workflow-run history and its provider-specific diagnostic data are defined here.
+enum WorkflowRunStatus {
+  QUEUED
+  RUNNING
+  SUCCESS
+  FAILED
+  CANCELLED
+  SKIPPED
+  UNKNOWN
+}
+
+model WorkflowRun {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  providerRunId     String            @db.VarChar(255)
+  workflowName      String            @db.VarChar(1024)
+  url               String            @db.VarChar(2048)
+  providerCreatedAt DateTime
+  startedAt         DateTime?
+  completedAt       DateTime?
+  durationMs        Int?
+  status            WorkflowRunStatus
+  rawStatus         String?           @db.VarChar(255)
+
+  repositoryId String     @db.Uuid
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@unique([repositoryId, providerRunId])
+  @@map("workflow_runs")
+}
