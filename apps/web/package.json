@@ -1,0 +1,13 @@
+{
+  "name": "@flowpeek/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "docker:build": "docker build -t flowpeek-web:local .",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "typecheck": "nuxt typecheck"
+  }
+}

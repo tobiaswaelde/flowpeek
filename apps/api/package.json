@@ -1,0 +1,14 @@
+{
+  "name": "@flowpeek/api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "nest build",
+    "db:generate": "prisma generate",
+    "dev": "nest start --watch",
+    "docker:build": "docker build -t flowpeek-api:local .",
+    "lint": "eslint .",
+    "test": "jest --runInBand",
+    "typecheck": "tsc --noEmit"
+  }
+}
