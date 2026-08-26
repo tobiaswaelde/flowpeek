@@ -13,6 +13,7 @@ import type { AuthenticatedUser } from '../auth/types.js';
 import { WorkflowFilterService } from '../repositories/workflow-filter.service.js';
 import type { CreateNotificationChannelDto, UpdateNotificationChannelDto } from './dto/notification-channel.dto.js';
 import type { CreateNotificationRuleDto, UpdateNotificationRuleDto } from './dto/notification-rule.dto.js';
+import { NotificationDeliveryService } from './notification-delivery.service.js';
 
 const notificationRuleInclude = {
   channelLinks: { select: { notificationChannelId: true } },
@@ -26,6 +27,7 @@ export class NotificationsService {
     private readonly abilityFactory: CaslAbilityFactory,
     private readonly credentials: CredentialEncryptionService,
     private readonly workflowFilters: WorkflowFilterService,
+    private readonly deliveryService: NotificationDeliveryService,
   ) {}
 
   /** Return channels that belong to repositories visible to the current user. */
@@ -170,10 +172,17 @@ export class NotificationsService {
       picomatch.isMatch(run.workflowName, rule.workflowPattern, { bash: true }),
     );
     if (matchingRules.length > 0) {
-      await this.prisma.notificationDelivery.createMany({
+      const created = await this.prisma.notificationDelivery.createMany({
         data: matchingRules.map((rule) => ({ notificationRuleId: rule.id, workflowRunId: run.id })),
         skipDuplicates: true,
       });
+      if (created.count > 0) {
+        const deliveries = await this.prisma.notificationDelivery.findMany({
+          select: { id: true },
+          where: { notificationRuleId: { in: matchingRules.map((rule) => rule.id) }, workflowRunId: run.id },
+        });
+        await this.deliveryService.deliverPending(deliveries.map((delivery) => delivery.id));
+      }
     }
     return matchingRules;
   }

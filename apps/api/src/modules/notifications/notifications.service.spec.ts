@@ -5,6 +5,7 @@ import { NotificationChannelType } from '../../generated/prisma/client.js';
 import type { PrismaService } from '../../prisma/prisma.service.js';
 import type { CredentialEncryptionService } from '../../security/credential-encryption.service.js';
 import { WorkflowFilterService } from '../repositories/workflow-filter.service.js';
+import type { NotificationDeliveryService } from './notification-delivery.service.js';
 import { NotificationsService } from './notifications.service.js';
 
 describe('NotificationsService', () => {
@@ -27,7 +28,7 @@ describe('NotificationsService', () => {
         update: jest.fn(),
       },
       notificationDelivery: {
-        createMany: jest.fn().mockResolvedValue({ count: 1 }),
+        createMany: jest.fn().mockResolvedValue({ count: 0 }),
       },
       repositoryMembership: {
         findMany: jest.fn().mockResolvedValue([{ repositoryId: 'repository-a', role: 'VIEWER' }]),
@@ -44,6 +45,7 @@ describe('NotificationsService', () => {
           encrypt: jest.fn((secret: string) => `encrypted:${secret}`),
         } as unknown as CredentialEncryptionService,
         new WorkflowFilterService(),
+        { deliverPending: jest.fn() } as unknown as NotificationDeliveryService,
       ),
     };
   }
