@@ -9,7 +9,26 @@
     "validationError": "Enter your username and password to continue."
   },
   "dashboard": {
-    "title": "Workflow dashboard"
+    "createdAt": "Created",
+    "description": "Review workflow status across the repositories you can access.",
+    "duration": "Duration",
+    "errors": "Errors",
+    "failingWorkflows": "Failing workflows",
+    "last30Days": "Last 30 days",
+    "last7Days": "Last 7 days",
+    "last90Days": "Last 90 days",
+    "latestRuns": "Latest runs",
+    "loadError": "Dashboard data could not be loaded. Try again shortly.",
+    "noFailures": "No workflows are currently failing.",
+    "noRuns": "No workflow runs are available yet.",
+    "noTrendData": "No completed runs are available for this period.",
+    "openProvider": "Open in provider",
+    "refresh": "Refresh",
+    "status": "Status",
+    "success": "Success",
+    "title": "Workflow dashboard",
+    "trend": "Success and errors",
+    "workflow": "Workflow"
   },
   "layout": {
     "dashboard": "Dashboard",
