@@ -177,7 +177,7 @@ in order unless a dependency is explicitly marked as parallelizable.
 
 ## 10. Add GitHub Actions and Changesets Releases
 
-- [ ] Add `lint.yml` for pull requests and `main` pushes with checkout,
+- [x] Add `lint.yml` for pull requests and `main` pushes with checkout,
       Node 24, Corepack, frozen install, API lint, web lint, API typecheck,
       and Nuxt typecheck.
 - [ ] Add `test.yml` for pull requests and `main` pushes with PostgreSQL,
