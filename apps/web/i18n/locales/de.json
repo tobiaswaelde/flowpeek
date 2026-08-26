@@ -9,7 +9,26 @@
     "validationError": "Gib Benutzername und Passwort ein, um fortzufahren."
   },
   "dashboard": {
-    "title": "Workflow-Dashboard"
+    "createdAt": "Erstellt",
+    "description": "Prüfe Workflow-Status für die Repositories, auf die du Zugriff hast.",
+    "duration": "Dauer",
+    "errors": "Fehler",
+    "failingWorkflows": "Fehlerhafte Workflows",
+    "last30Days": "Letzte 30 Tage",
+    "last7Days": "Letzte 7 Tage",
+    "last90Days": "Letzte 90 Tage",
+    "latestRuns": "Letzte Ausführungen",
+    "loadError": "Dashboard-Daten konnten nicht geladen werden. Versuche es gleich noch einmal.",
+    "noFailures": "Derzeit schlagen keine Workflows fehl.",
+    "noRuns": "Es sind noch keine Workflow-Ausführungen verfügbar.",
+    "noTrendData": "Für diesen Zeitraum sind keine abgeschlossenen Ausführungen verfügbar.",
+    "openProvider": "Beim Anbieter öffnen",
+    "refresh": "Aktualisieren",
+    "status": "Status",
+    "success": "Erfolg",
+    "title": "Workflow-Dashboard",
+    "trend": "Erfolge und Fehler",
+    "workflow": "Workflow"
   },
   "layout": {
     "dashboard": "Dashboard",
