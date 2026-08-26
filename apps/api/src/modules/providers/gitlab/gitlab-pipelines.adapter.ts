@@ -1,4 +1,4 @@
-import { timingSafeEqual } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 
 import { Injectable } from '@nestjs/common';
 
@@ -87,11 +87,40 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
   async verifyWebhook(request: ProviderWebhookRequest): Promise<VerifiedWebhook | null> {
     const token = request.headers['x-gitlab-token'];
     const event = request.headers['x-gitlab-event'];
-    if (typeof token !== 'string' || typeof event !== 'string' || token.length !== request.signingSecret.length)
-      return null;
-    if (!timingSafeEqual(Buffer.from(token), Buffer.from(request.signingSecret))) return null;
+    if (typeof event !== 'string') return null;
+    if (!this.hasValidWebhookSignature(request) && !this.hasValidLegacyToken(token, request.signingSecret)) return null;
     const payload = JSON.parse(Buffer.from(request.payload).toString('utf8')) as { project?: { id?: number } };
     return { event, providerRepositoryId: payload.project?.id ? String(payload.project.id) : null };
+  }
+
+  private hasValidLegacyToken(token: string | string[] | undefined, signingSecret: string): boolean {
+    return (
+      typeof token === 'string' &&
+      token.length === signingSecret.length &&
+      timingSafeEqual(Buffer.from(token), Buffer.from(signingSecret))
+    );
+  }
+  private hasValidWebhookSignature(request: ProviderWebhookRequest): boolean {
+    const signature = request.headers['webhook-signature'];
+    const id = request.headers['webhook-id'];
+    const timestamp = request.headers['webhook-timestamp'];
+    if (
+      typeof signature !== 'string' ||
+      typeof id !== 'string' ||
+      typeof timestamp !== 'string' ||
+      !request.signingSecret.startsWith('whsec_')
+    ) {
+      return false;
+    }
+
+    const key = Buffer.from(request.signingSecret.slice('whsec_'.length), 'base64');
+    const expected = `v1,${createHmac('sha256', key)
+      .update(`${id}.${timestamp}.${Buffer.from(request.payload).toString('utf8')}`)
+      .digest('base64')}`;
+    return signature.split(' ').some((candidate) => this.hasEqualValue(candidate, expected));
+  }
+  private hasEqualValue(value: string, expected: string): boolean {
+    return value.length === expected.length && timingSafeEqual(Buffer.from(value), Buffer.from(expected));
   }
 
   private async request<T>(context: ProviderAccountContext, path: string): Promise<T> {

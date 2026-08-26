@@ -86,13 +86,13 @@ export class WebhookService {
     providerType: ProviderType,
     headers: Record<string, string | string[] | undefined>,
   ): string | null {
-    const header =
+    const candidates =
       providerType === 'GITHUB'
-        ? headers['x-github-delivery']
+        ? [headers['x-github-delivery']]
         : providerType === 'GITLAB'
-          ? headers['x-gitlab-event-uuid']
-          : headers['x-gitea-delivery'];
-    return typeof header === 'string' && header.length > 0 ? header : null;
+          ? [headers['webhook-id'], headers['x-gitlab-event-uuid']]
+          : [headers['x-gitea-delivery']];
+    return candidates.find((header): header is string => typeof header === 'string' && header.length > 0) ?? null;
   }
 
   private isDuplicateDeliveryError(error: unknown): boolean {

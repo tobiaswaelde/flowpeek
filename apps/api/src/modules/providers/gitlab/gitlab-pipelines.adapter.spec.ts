@@ -1,3 +1,5 @@
+import { createHmac } from 'node:crypto';
+
 import { GitLabPipelinesAdapter } from './gitlab-pipelines.adapter.js';
 
 describe('GitLabPipelinesAdapter', () => {
@@ -49,5 +51,29 @@ describe('GitLabPipelinesAdapter', () => {
       adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'group', name: 'flowpeek' }),
     ).resolves.toMatchObject([{ providerRunId: '7', workflowName: 'main', status: 'SUCCESS', durationMs: 120_000 }]);
     expect(fetchFn).toHaveBeenCalledWith(expect.stringContaining('/api/v4/projects'), expect.anything());
+  });
+
+  it('verifies current GitLab HMAC signing tokens against the raw delivery body', async () => {
+    const adapter = new GitLabPipelinesAdapter();
+    const payload = Buffer.from('{"project":{"id":42}}');
+    const signingSecret = `whsec_${Buffer.from('signing-key').toString('base64')}`;
+    const id = 'delivery-id';
+    const timestamp = '1787745600';
+    const signature = `v1,${createHmac('sha256', 'signing-key')
+      .update(`${id}.${timestamp}.${payload.toString('utf8')}`)
+      .digest('base64')}`;
+
+    await expect(
+      adapter.verifyWebhook({
+        headers: {
+          'webhook-id': id,
+          'webhook-signature': signature,
+          'webhook-timestamp': timestamp,
+          'x-gitlab-event': 'Pipeline Hook',
+        },
+        payload,
+        signingSecret,
+      }),
+    ).resolves.toEqual({ event: 'Pipeline Hook', providerRepositoryId: '42' });
   });
 });
