@@ -7,6 +7,7 @@ import { JobsModule } from './jobs/jobs.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { InitModule } from './modules/init/init.module.js';
+import { RepositoriesModule } from './modules/repositories/repositories.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 
 @Module({
@@ -15,6 +16,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     PrismaModule,
     CaslModule,
     InitModule,
+    RepositoriesModule,
     JobsModule,
     AuthModule,
     HealthModule,
