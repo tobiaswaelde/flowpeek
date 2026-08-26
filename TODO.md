@@ -182,16 +182,16 @@ in order unless a dependency is explicitly marked as parallelizable.
       and Nuxt typecheck.
 - [x] Add `test.yml` for pull requests and `main` pushes with PostgreSQL,
       Prisma generation/migrations, API Jest tests, and web tests.
-- [ ] Add `deploy.yml` for `main` pushes and manual dispatch using
+- [x] Add `deploy.yml` for `main` pushes and manual dispatch using
       `changesets/action`.
-- [ ] Configure the deploy workflow to create or update a Changesets release
+- [x] Configure the deploy workflow to create or update a Changesets release
       pull request when unreleased Changesets exist.
-- [ ] Configure the deploy workflow to tag the single `flowpeek` application,
+- [x] Configure the deploy workflow to tag the single `flowpeek` application,
       create its GitHub release, and publish API and web images to GHCR only
       after the release pull request is merged.
-- [ ] Publish exact SemVer and `latest` tags to
+- [x] Publish exact SemVer and `latest` tags to
       `ghcr.io/<owner>/flowpeek-api` and `ghcr.io/<owner>/flowpeek-web`.
-- [ ] Grant deploy only `contents: write`, `pull-requests: write`, and
+- [x] Grant deploy only `contents: write`, `pull-requests: write`, and
       `packages: write`; keep lint and test workflows read-only.
 - [ ] Add a release smoke check that validates the produced Compose image tags
       and starts the stack far enough to pass API health checks.

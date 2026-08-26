@@ -19,6 +19,7 @@
     "format:check": "prettier --check .",
     "lint": "nx run-many -t lint --all --parallel=2",
     "nx": "nx",
+    "release": "changeset tag",
     "test": "nx run-many -t test --all --parallel=2",
     "typecheck": "nx run-many -t typecheck --all --parallel=2",
     "version-packages": "changeset version"

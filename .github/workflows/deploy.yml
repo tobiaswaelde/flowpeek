@@ -1,0 +1,121 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: deploy-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Create release
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      published: ${{ steps.changesets.outputs.published }}
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.15.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.18.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create or update release pull request
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: pnpm version-packages
+          publish: pnpm release
+          createGithubReleases: true
+          pushGitTags: true
+
+  publish-images:
+    name: Publish container images
+    needs: release
+    if: needs.release.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      images-ready: ${{ steps.image-inputs.outputs.ready }}
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Check image build inputs
+        id: image-inputs
+        run: |
+          if [[ -f apps/api/Dockerfile && -f apps/web/Dockerfile ]]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo 'Dockerfiles are not available yet; skipping image publication.'
+          fi
+
+      - name: Set up Docker Buildx
+        if: steps.image-inputs.outputs.ready == 'true'
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        if: steps.image-inputs.outputs.ready == 'true'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read release version
+        if: steps.image-inputs.outputs.ready == 'true'
+        id: version
+        run: |
+          version="$(node -p \"require('./package.json').version\")"
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push API image
+        if: steps.image-inputs.outputs.ready == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: apps/api
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/flowpeek-api:${{ steps.version.outputs.value }}
+            ghcr.io/${{ github.repository_owner }}/flowpeek-api:latest
+
+      - name: Build and push web image
+        if: steps.image-inputs.outputs.ready == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: apps/web
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/flowpeek-web:${{ steps.version.outputs.value }}
+            ghcr.io/${{ github.repository_owner }}/flowpeek-web:latest
