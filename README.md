@@ -29,6 +29,60 @@ pnpm nx show projects
 Copy `.env.example` to `.env` before using Docker Compose. Never commit `.env`
 or provider, database, encryption, JWT, SMTP, Gotify, or ntfy credentials.
 
+## Environment configuration
+
+The API loads the root `.env` file before startup and validates its runtime
+configuration with `envalid`. It refuses to start when a required value is
+missing or violates a listed constraint. For a local setup, begin with:
+
+```bash
+cp .env.example .env
+```
+
+Replace every example secret before sharing or deploying an environment. The
+API accepts the following variables:
+
+| Variable                          | Required | Default                 | Purpose and constraints                                                                     |
+| --------------------------------- | -------- | ----------------------- | ------------------------------------------------------------------------------------------- |
+| `NODE_ENV`                        | No       | `development`           | One of `development`, `production`, or `test`.                                              |
+| `PORT`                            | No       | `3001`                  | HTTP port as a number.                                                                      |
+| `DATABASE_URL`                    | Yes      | —                       | PostgreSQL connection URL used by the API.                                                  |
+| `SHADOW_DATABASE_URL`             | Yes      | —                       | PostgreSQL shadow database URL used for Prisma migrations.                                  |
+| `CORS_ORIGIN`                     | No       | `http://localhost:3000` | One origin, comma-separated origins, or `*`.                                                |
+| `PUBLIC_URL`                      | No       | `http://localhost:3000` | Public Flowpeek URL; must use HTTP or HTTPS.                                                |
+| `AUTH_JWT_ISSUER`                 | No       | `flowpeek`              | JWT issuer identifier.                                                                      |
+| `AUTH_JWT_SECRET`                 | Yes      | —                       | Long, unique secret used to sign JWTs.                                                      |
+| `AUTH_JWT_EXPIRATION`             | No       | `7d`                    | JWT lifetime accepted by the Nest JWT module.                                               |
+| `INITIAL_ADMIN_USERNAME`          | No       | `admin`                 | Username created on the initial empty database.                                             |
+| `INITIAL_ADMIN_PASSWORD`          | Yes      | —                       | Password for the initial administrator; use a strong unique value.                          |
+| `TOKEN_ENCRYPTION_KEY`            | Yes      | —                       | Canonical Base64 value decoding to exactly 32 bytes; encrypts provider and webhook secrets. |
+| `SCHEDULER_ENABLED`               | No       | `true`                  | Enables scheduled polling and retention jobs. Set `false` for one-off commands.             |
+| `SCHEDULER_SYNC_INTERVAL_SECONDS` | No       | `300`                   | Positive integer polling interval in seconds.                                               |
+| `SMTP_HOST`                       | No       | empty                   | SMTP hostname. When set, `SMTP_FROM` is required.                                           |
+| `SMTP_PORT`                       | No       | `587`                   | Positive integer SMTP port.                                                                 |
+| `SMTP_SECURE`                     | No       | `false`                 | Use SMTPS/TLS from connection start.                                                        |
+| `SMTP_USERNAME`                   | No       | empty                   | SMTP username; it must be set together with `SMTP_PASSWORD`.                                |
+| `SMTP_PASSWORD`                   | No       | empty                   | SMTP password; it must be set together with `SMTP_USERNAME`.                                |
+| `SMTP_FROM`                       | No       | empty                   | Sender address; required when `SMTP_HOST` is configured.                                    |
+
+`FLOWPEEK_ENV_FILE` is an optional local loader setting. When set, the API
+loads that file after the root `.env` file, allowing a local override without
+changing the shared template.
+
+The following variables are used by the Docker Compose deployment rather than
+by the Nest API's `envalid` configuration:
+
+| Variable            | Default    | Purpose                                               |
+| ------------------- | ---------- | ----------------------------------------------------- |
+| `POSTGRES_DB`       | `flowpeek` | PostgreSQL database name.                             |
+| `POSTGRES_USER`     | `flowpeek` | PostgreSQL user.                                      |
+| `POSTGRES_PASSWORD` | —          | PostgreSQL password; replace the example value.       |
+| `FLOWPEEK_VERSION`  | `latest`   | API and web image version selected by Docker Compose. |
+
+Provider access tokens, provider webhook secrets, and notification credentials
+are not environment variables. Flowpeek stores them encrypted in PostgreSQL
+through its application configuration.
+
 ## Commands
 
 ```bash
