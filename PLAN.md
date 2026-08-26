@@ -27,6 +27,7 @@ Do not copy Machine Admin domain models or endpoints.
 ## API Implementation
 
 - Use a versioned REST API under `/api/v1`, Swagger/Scalar documentation under `/docs`, and a health endpoint under `/api/health`.
+- Maintain an `apps/api/bruno` collection with documented environments and request examples for manual API verification. Keep credentials in Bruno secret variables, and update the collection as protected endpoints are added.
 - Structure every feature as a Nest module with module, service, controller, DTOs/types, and tests.
 - Split Prisma schemas by domain, following the Machine Admin API layout.
 - Use `@querry-kit/nest` for:

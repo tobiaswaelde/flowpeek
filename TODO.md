@@ -26,6 +26,9 @@ in order unless a dependency is explicitly marked as parallelizable.
 - [ ] Scaffold `apps/api` as a NestJS application with URI versioning,
       `/api/v1` as the default API prefix, `/docs` for Swagger/Scalar, and
       `/api/health` for health checks.
+- [ ] Create and maintain an `apps/api/bruno` collection with a documented
+      development environment, secret variables, and manual-test requests for
+      every API module as its endpoints are implemented.
 - [ ] Add validated environment configuration for database access, CORS,
       JWT, bootstrap-admin credentials, token-encryption key, scheduler
       settings, SMTP, and public Flowpeek URL.
