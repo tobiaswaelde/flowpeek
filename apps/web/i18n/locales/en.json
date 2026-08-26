@@ -31,9 +31,20 @@
     "workflow": "Workflow"
   },
   "layout": {
+    "administration": "Administration",
+    "copyright": "Copyright {year} Flowpeek",
     "dashboard": "Dashboard",
+    "language": "Language",
+    "notifications": "Notifications",
     "primaryNavigation": "Primary navigation",
-    "readOnlyStatus": "Read-only workflow status monitoring"
+    "providers": "Provider accounts",
+    "readOnlyStatus": "Read-only workflow status monitoring",
+    "repositories": "Repositories",
+    "theme": "Theme",
+    "themeDark": "Dark",
+    "themeLight": "Light",
+    "themeSystem": "System",
+    "users": "Users"
   },
   "roles": {
     "MANAGER": "Repository manager",

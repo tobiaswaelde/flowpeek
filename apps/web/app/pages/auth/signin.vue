@@ -36,13 +36,11 @@ async function signIn(): Promise<void> {
 </script>
 
 <template>
-  <UCard class="w-full max-w-md">
-    <template #header>
-      <div class="space-y-1">
-        <h1 class="text-xl font-semibold">{{ $t('auth.signIn') }}</h1>
-        <p class="text-sm text-muted">{{ $t('auth.signInDescription') }}</p>
-      </div>
-    </template>
+  <div class="space-y-6">
+    <div class="space-y-1">
+      <h1 class="text-xl font-semibold">{{ $t('auth.signIn') }}</h1>
+      <p class="text-sm text-muted">{{ $t('auth.signInDescription') }}</p>
+    </div>
 
     <form class="space-y-5" @submit.prevent="signIn">
       <UAlert v-if="errorMessage" color="error" :description="errorMessage" icon="i-lucide-circle-alert" />
@@ -63,5 +61,5 @@ async function signIn(): Promise<void> {
 
       <UButton block :label="$t('auth.signIn')" :loading="isSubmitting" type="submit" />
     </form>
-  </UCard>
+  </div>
 </template>

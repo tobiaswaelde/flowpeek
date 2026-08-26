@@ -1,17 +1,21 @@
 <template>
-  <div class="flex min-h-screen flex-col bg-default">
-    <main class="flex flex-1 items-center justify-center p-6">
-      <div class="w-full max-w-md">
-        <NuxtLink
-          class="mb-8 flex items-center justify-center gap-3 text-xl font-semibold tracking-tight"
-          to="/auth/signin"
-        >
-          <span class="flex size-9 items-center justify-center rounded-lg bg-primary font-bold text-inverted">F</span>
-          Flowpeek
-        </NuxtLink>
-        <slot />
-      </div>
-    </main>
-    <footer class="p-6 text-center text-sm text-muted">{{ $t('layout.readOnlyStatus') }}</footer>
+  <div class="flex min-h-screen flex-1 flex-col items-center justify-center gap-4 bg-default p-4">
+    <NuxtLink class="mt-auto flex items-center gap-3 text-xl font-semibold tracking-tight" to="/auth/signin">
+      <span class="flex size-9 items-center justify-center rounded-lg bg-primary font-bold text-inverted">F</span>
+      Flowpeek
+    </NuxtLink>
+
+    <UPageCard class="w-full max-w-md">
+      <slot />
+    </UPageCard>
+
+    <div class="mb-auto flex flex-col items-center gap-2 text-center text-sm text-muted">
+      <p>{{ $t('layout.readOnlyStatus') }}</p>
+      <p>{{ $t('layout.copyright', { year: currentYear }) }}</p>
+    </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const currentYear = new Date().getFullYear();
+</script>
