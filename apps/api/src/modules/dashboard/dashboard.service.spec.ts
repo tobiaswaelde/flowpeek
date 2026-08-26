@@ -1,3 +1,5 @@
+import { BadRequestException } from '@nestjs/common';
+
 import type { WorkflowRun } from '../../generated/prisma/client.js';
 import type { WorkflowRunsQueryService } from '../workflow-runs/workflow-runs-query.service.js';
 import { DashboardService } from './dashboard.service.js';
@@ -74,6 +76,63 @@ describe('DashboardService', () => {
       },
       ability,
     );
+  });
+
+  it('aggregates visible completed runs into continuous UTC trend buckets', async () => {
+    const ability = {};
+    const workflowRuns = {
+      findMany: jest.fn().mockResolvedValue([
+        run({
+          completedAt: '2026-08-25T23:30:00.000Z',
+          repositoryId: 'repository-a',
+          status: 'SUCCESS',
+          workflowName: 'Build',
+        }),
+        run({
+          completedAt: '2026-08-26T12:00:00.000Z',
+          repositoryId: 'repository-a',
+          status: 'FAILED',
+          workflowName: 'Test',
+        }),
+      ]),
+      getReadAbility: jest.fn().mockResolvedValue(ability),
+    } as unknown as WorkflowRunsQueryService;
+    const service = new DashboardService(workflowRuns);
+
+    await expect(
+      service.getTrend(
+        { id: 'viewer', role: 'VIEWER', username: 'viewer' },
+        { bucket: 'day', from: '2026-08-25T10:00:00.000Z', to: '2026-08-27T01:00:00.000Z' },
+      ),
+    ).resolves.toEqual([
+      { bucketStart: new Date('2026-08-25T00:00:00.000Z'), errorCount: 0, successCount: 1 },
+      { bucketStart: new Date('2026-08-26T00:00:00.000Z'), errorCount: 1, successCount: 0 },
+      { bucketStart: new Date('2026-08-27T00:00:00.000Z'), errorCount: 0, successCount: 0 },
+    ]);
+    expect(workflowRuns.findMany).toHaveBeenCalledWith(
+      {
+        where: {
+          completedAt: {
+            gte: new Date('2026-08-25T10:00:00.000Z'),
+            lte: new Date('2026-08-27T01:00:00.000Z'),
+          },
+          status: { in: ['SUCCESS', 'FAILED'] },
+        },
+      },
+      ability,
+    );
+  });
+
+  it('rejects an inverted trend time range before reading workflow runs', async () => {
+    const workflowRuns = { getReadAbility: jest.fn() } as unknown as WorkflowRunsQueryService;
+
+    await expect(
+      new DashboardService(workflowRuns).getTrend(
+        { id: 'viewer', role: 'VIEWER', username: 'viewer' },
+        { bucket: 'hour', from: '2026-08-27T00:00:00.000Z', to: '2026-08-26T00:00:00.000Z' },
+      ),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(workflowRuns.getReadAbility).not.toHaveBeenCalled();
   });
 });
 
