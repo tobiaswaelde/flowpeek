@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
+import { CaslModule } from '../../casl/casl.module.js';
 import { ENV } from '../../config/env.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
@@ -9,6 +10,7 @@ import { JwtStrategy } from './jwt.strategy.js';
 
 @Module({
   imports: [
+    CaslModule,
     PassportModule,
     JwtModule.register({
       secret: ENV.AUTH_JWT_SECRET,
