@@ -16,6 +16,7 @@ model ProviderAccount {
   enabled                Boolean  @default(true)
   lastSyncAt             DateTime?
   lastSyncError          String?  @db.Text
+  repositories           Repository[]
 
   @@unique([providerType, displayName])
   @@map("provider_accounts")
