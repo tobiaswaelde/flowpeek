@@ -6,11 +6,30 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "docker:build": "docker build -t flowpeek-web:local .",
-    "lint": "eslint .",
+    "lint": "eslint app nuxt.config.ts --max-warnings=0",
     "test": "vitest run",
     "typecheck": "nuxt typecheck"
   },
   "devDependencies": {
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.11",
+    "vue-tsc": "^3.3.11"
+  },
+  "dependencies": {
+    "@nuxt/ui": "^4.11.0",
+    "@nuxtjs/color-mode": "^4.0.1",
+    "@nuxtjs/i18n": "^10.6.0",
+    "@pinia/nuxt": "^1.0.2",
+    "@querry-kit/nuxt": "^0.2.3",
+    "@querry-kit/nuxt-ui": "^3.2.1",
+    "@tanstack/table-core": "^8.21.3",
+    "@vueuse/core": "^14.4.0",
+    "@vueuse/router": "^14.4.0",
+    "axios": "^1.19.0",
+    "nuxt": "^4.5.2",
+    "pinia": "^4.0.3",
+    "vue": "^3.5.41",
+    "vue-router": "^5.2.0",
+    "zod": "^4.4.3"
   }
 }
