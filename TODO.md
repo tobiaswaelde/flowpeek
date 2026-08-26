@@ -7,7 +7,7 @@ in order unless a dependency is explicitly marked as parallelizable.
 
 - [x] Rename the root package to `flowpeek`, set an initial `0.1.0` version,
       and configure it as the single private Changesets release package.
-- [ ] Create a pnpm workspace with `apps/api` and `apps/web`.
+- [x] Create a pnpm workspace with `apps/api` and `apps/web`.
 - [ ] Add Nx project definitions and root targets for linting, typechecking,
       testing, building, database generation, and Docker builds.
 - [ ] Pin `typescript` to exactly `7.0.2` in the workspace and ensure both
