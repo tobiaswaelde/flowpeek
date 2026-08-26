@@ -34,6 +34,17 @@ export interface UpdateProviderAccount {
   webhookSecret?: string;
 }
 
+/** Tracked repository and its retention settings. */
+export interface Repository {
+  enabled: boolean;
+  id: string;
+  name: string;
+  owner: string;
+  providerAccountId: string;
+  url: string;
+  workflowRunRetentionDays: number | null;
+}
+
 /** Normalized lifecycle status of a provider workflow run. */
 export type WorkflowRunStatus = 'QUEUED' | 'RUNNING' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'SKIPPED' | 'UNKNOWN';
 

@@ -11,6 +11,7 @@ import type {
   NotificationDelivery,
   NotificationRule,
   ProviderAccount,
+  Repository,
   UpdateNotificationChannel,
   UpdateNotificationRule,
   UpdateProviderAccount,
@@ -60,6 +61,13 @@ export function useFlowpeekApi() {
       list: (): Promise<AxiosResponse<ProviderAccount[]>> => api.get(apiEndpoints.providerAccounts),
       update: (id: string, input: UpdateProviderAccount): Promise<AxiosResponse<ProviderAccount>> =>
         api.patch(`${apiEndpoints.providerAccounts}/${id}`, input),
+    },
+    repositories: {
+      list: (): Promise<AxiosResponse<Repository[]>> => api.get(apiEndpoints.repositories),
+      update: (
+        id: string,
+        input: Pick<Repository, 'enabled' | 'workflowRunRetentionDays'>,
+      ): Promise<AxiosResponse<Repository>> => api.patch(`${apiEndpoints.repositories}/${id}`, input),
     },
   };
 }
