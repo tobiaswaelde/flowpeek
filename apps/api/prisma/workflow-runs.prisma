@@ -27,5 +27,8 @@ model WorkflowRun {
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
 
   @@unique([repositoryId, providerRunId])
+  @@index([repositoryId, providerCreatedAt])
+  @@index([repositoryId, status, completedAt])
+  @@index([completedAt])
   @@map("workflow_runs")
 }
