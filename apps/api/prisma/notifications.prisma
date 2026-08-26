@@ -85,6 +85,7 @@ model NotificationDelivery {
 
   status     NotificationDeliveryStatus @default(PENDING)
   finalError String?                    @db.Text
+  nextAttemptAt DateTime?
 
   notificationRuleId String           @db.Uuid
   notificationRule   NotificationRule @relation(fields: [notificationRuleId], references: [id], onDelete: Cascade)
