@@ -69,6 +69,17 @@ export class CreateNotificationChannelDto {
   @IsOptional()
   @IsBoolean()
   enabled?: boolean;
+
+  /**
+   * Write-only credential for Gotify or ntfy channels.
+   *
+   * The API encrypts the value before persistence and never includes it in a response.
+   */
+  @ApiPropertyOptional({ writeOnly: true, maxLength: 4096 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(4096)
+  secret?: string;
 }
 
 /** Input accepted when updating a notification channel. */
@@ -88,4 +99,17 @@ export class UpdateNotificationChannelDto {
   @IsOptional()
   @IsBoolean()
   enabled?: boolean;
+
+  /** Replace the write-only credential for a Gotify or ntfy channel. */
+  @ApiPropertyOptional({ writeOnly: true, maxLength: 4096 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(4096)
+  secret?: string;
+
+  /** Remove a previously configured Gotify or ntfy credential. */
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  clearSecret?: boolean;
 }
