@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { CaslModule } from './casl/casl.module.js';
 import { JobsModule } from './jobs/jobs.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { DashboardModule } from './modules/dashboard/dashboard.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { InitModule } from './modules/init/init.module.js';
 import { ProvidersModule } from './modules/providers/providers.module.js';
@@ -23,6 +24,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     ProvidersModule,
     JobsModule,
     AuthModule,
+    DashboardModule,
     HealthModule,
     WebhooksModule,
     WorkflowRunsModule,
