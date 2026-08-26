@@ -62,6 +62,10 @@ jobs:
           docker exec ${{ job.services.postgres.id }} psql -U flowpeek -d postgres
           -c 'CREATE DATABASE flowpeek_shadow;'
 
+      - name: Fetch Changesets base branch
+        if: github.event_name == 'pull_request'
+        run: git fetch origin refs/heads/main:refs/heads/main
+
       - name: Validate Changesets configuration
         run: pnpm changeset status
 
