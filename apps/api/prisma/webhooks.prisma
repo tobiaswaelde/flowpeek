@@ -1,1 +1,15 @@
-// Webhook configuration and idempotency records are defined here.
+model WebhookDelivery {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+
+  deliveryId           String  @db.VarChar(255)
+  event                String  @db.VarChar(255)
+  providerRepositoryId String? @db.VarChar(255)
+
+  providerAccountId String          @db.Uuid
+  providerAccount   ProviderAccount @relation(fields: [providerAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([providerAccountId, deliveryId])
+  @@index([providerAccountId, createdAt])
+  @@map("webhook_deliveries")
+}

@@ -48,6 +48,29 @@ export class ProviderSyncService {
     for (const repository of repositories) await this.syncRepository(repository);
   }
 
+  /**
+   * Synchronize one enabled repository after a verified provider webhook.
+   *
+   * @param providerAccountId - Configured account that received the webhook.
+   * @param providerRepositoryId - Provider-native repository identifier from the webhook.
+   * @returns Whether the webhook referenced a tracked enabled repository.
+   */
+  async syncRepositoryByProviderReference(providerAccountId: string, providerRepositoryId: string): Promise<boolean> {
+    const repository = await this.prisma.repository.findFirst({
+      where: {
+        enabled: true,
+        providerAccountId,
+        providerRepositoryId,
+        providerAccount: { enabled: true },
+      },
+      include: { providerAccount: true, workflowFilters: true },
+    });
+    if (!repository) return false;
+
+    await this.syncRepository(repository);
+    return true;
+  }
+
   private async syncRepository(
     repository: Awaited<ReturnType<PrismaService['repository']['findMany']>>[number] & {
       providerAccount: { id: string; providerType: ProviderType; baseUrl: string | null; encryptedAccessToken: string };

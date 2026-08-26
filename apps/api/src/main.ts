@@ -10,7 +10,7 @@ import { HttpExceptionFilter } from './filters/http-exception.filter.js';
 import { PrismaExceptionFilter } from './prisma/prisma-exception.filter.js';
 
 export async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { rawBody: true });
 
   app.enableVersioning({
     type: VersioningType.URI,
