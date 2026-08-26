@@ -12,6 +12,7 @@ model User {
   username     String   @unique @db.VarChar(255)
   passwordHash String   @db.VarChar(255)
   role         UserRole @default(VIEWER)
+  repositoryMemberships RepositoryMembership[]
 
   @@map("users")
 }
