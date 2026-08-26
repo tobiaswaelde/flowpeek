@@ -15,6 +15,13 @@ export interface ProviderRepository {
   url: string;
 }
 
+/** Repository identity retained by Flowpeek for provider run requests. */
+export interface ProviderRepositoryReference {
+  name: string;
+  owner: string;
+  providerRepositoryId: string;
+}
+
 /** Provider workflow run normalized before persistence in Flowpeek. */
 export interface ProviderWorkflowRun {
   completedAt: Date | null;
@@ -59,13 +66,13 @@ export interface ProviderAdapter {
 
   getWorkflowRun(
     context: ProviderAccountContext,
-    providerRepositoryId: string,
+    repository: ProviderRepositoryReference,
     providerRunId: string,
   ): Promise<ProviderWorkflowRun | null>;
   listRepositories(context: ProviderAccountContext): Promise<ProviderRepository[]>;
   listWorkflowRuns(
     context: ProviderAccountContext,
-    providerRepositoryId: string,
+    repository: ProviderRepositoryReference,
     updatedAfter?: Date,
   ): Promise<ProviderWorkflowRun[]>;
   validateAccount(context: ProviderAccountContext): Promise<ProviderAccountValidation>;
