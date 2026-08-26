@@ -16,7 +16,7 @@ in order unless a dependency is explicitly marked as parallelizable.
 - [x] Add shared Prettier and ESLint configuration matching the Machine Admin
       conventions: single quotes, semicolons, trailing commas, and a
       120-character print width.
-- [ ] Add `.editorconfig`, `.gitignore`, `.env.example`, Node 24 and pnpm
+- [x] Add `.editorconfig`, `.gitignore`, `.env.example`, Node 24 and pnpm
       version metadata, and a root README with local-development prerequisites.
 - [x] Configure Changesets for one versioned private package and document how
       feature changes receive a Changeset.

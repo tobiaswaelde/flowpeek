@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build and test output
+dist/
+coverage/
+.nx/
+.nuxt/
+.output/
+*.tsbuildinfo
+
+# Prisma generated client
+apps/api/src/generated/
+
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+
+# Logs and operating system files
+*.log
+.DS_Store
