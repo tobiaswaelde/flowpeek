@@ -16,7 +16,7 @@
 
 - Use American English in source code, tests, comments, documentation, and
   Changesets.
-- Use TypeScript `7.0.2` exactly. Do not widen, downgrade, or upgrade the
+- Use TypeScript `6.0.3` exactly. Do not widen, downgrade, or upgrade the
   TypeScript range without an explicit request and compatibility validation.
 - Use Node.js 24 and pnpm. Run package commands through Corepack when pnpm is
   not already the pinned workspace version.

@@ -10,9 +10,10 @@ in order unless a dependency is explicitly marked as parallelizable.
 - [x] Create a pnpm workspace with `apps/api` and `apps/web`.
 - [x] Add Nx project definitions and root targets for linting, typechecking,
       testing, building, database generation, and Docker builds.
-- [x] Pin `typescript` to exactly `7.0.2` in the workspace and ensure both
-      applications resolve that version.
-- [ ] Add shared Prettier and ESLint configuration matching the Machine Admin
+- [x] Pin `typescript` to exactly `6.0.3` in the workspace and ensure both
+      applications resolve that version. Revisit TypeScript 7 when the lint
+      and import-organization tooling supports its compiler API.
+- [x] Add shared Prettier and ESLint configuration matching the Machine Admin
       conventions: single quotes, semicolons, trailing commas, and a
       120-character print width.
 - [ ] Add `.editorconfig`, `.gitignore`, `.env.example`, Node 24 and pnpm

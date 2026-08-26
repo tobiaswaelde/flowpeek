@@ -18,8 +18,9 @@ Do not copy Machine Admin domain models or endpoints.
 
 ## Technical Baseline
 
-- Use Node.js 24, pnpm via Corepack, and TypeScript pinned exactly to `7.0.2`.
-- Configure TypeScript 7 at the workspace root and verify it in CI with API and web typechecks.
+- Use Node.js 24, pnpm via Corepack, and TypeScript pinned exactly to `6.0.3`.
+- Configure TypeScript 6 at the workspace root and verify it in CI with API and web typechecks. Re-evaluate
+  TypeScript 7 when the lint and import-organization toolchain supports its compiler API.
 - Use strict TypeScript settings unless a framework-generated configuration requires an explicit compatibility override.
 - Use Prettier, ESLint, JSDoc/TSDoc, and explicit types for exported APIs.
 

@@ -7,12 +7,7 @@
   "namedInputs": {
     "sharedGlobals": ["{workspaceRoot}/pnpm-lock.yaml"],
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "production": [
-      "default",
-      "!{projectRoot}/**/*.spec.ts",
-      "!{projectRoot}/**/*.test.ts",
-      "!{projectRoot}/test/**/*"
-    ]
+    "production": ["default", "!{projectRoot}/**/*.spec.ts", "!{projectRoot}/**/*.test.ts", "!{projectRoot}/test/**/*"]
   },
   "targetDefaults": {
     "build": {
