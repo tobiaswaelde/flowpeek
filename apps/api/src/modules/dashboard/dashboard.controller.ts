@@ -1,10 +1,11 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Query, Req } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { Authenticated } from '../auth/authenticated.decorator.js';
 import type { AuthenticatedUser } from '../auth/types.js';
 import { WorkflowRunDto } from '../repositories/dto/resource.dto.js';
 import { DashboardService } from './dashboard.service.js';
+import { WorkflowRunTrendBucketDto, WorkflowRunTrendQueryDto } from './dto/workflow-run-trend.dto.js';
 
 interface AuthenticatedRequest {
   user: AuthenticatedUser;
@@ -43,5 +44,22 @@ export class DashboardController {
   async getLatestRuns(@Req() request: AuthenticatedRequest): Promise<WorkflowRunDto[]> {
     const workflowRuns = await this.dashboard.getLatestRuns(request.user);
     return workflowRuns.map((workflowRun) => WorkflowRunDto.fromModel(workflowRun));
+  }
+
+  /**
+   * Aggregate visible completed runs into success and error buckets for a requested time range.
+   *
+   * @param request - Authenticated request user.
+   * @param query - Requested time range and UTC bucket size.
+   * @returns Continuous success and error trend buckets.
+   */
+  @Get('trend')
+  @ApiOperation({ summary: 'Get success and error workflow-run trend buckets' })
+  @ApiOkResponse({ description: 'Visible workflow-run trend buckets.', type: WorkflowRunTrendBucketDto, isArray: true })
+  async getTrend(
+    @Req() request: AuthenticatedRequest,
+    @Query() query: WorkflowRunTrendQueryDto,
+  ): Promise<WorkflowRunTrendBucketDto[]> {
+    return this.dashboard.getTrend(request.user, query);
   }
 }
