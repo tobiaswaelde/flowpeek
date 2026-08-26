@@ -39,5 +39,22 @@
     "MANAGER": "Repository manager",
     "SYSTEM_ADMIN": "System administrator",
     "VIEWER": "Viewer"
+  },
+  "providers": {
+    "accessToken": "Access token",
+    "add": "Add provider",
+    "defaultUrl": "Default provider URL",
+    "delete": "Delete",
+    "description": "Manage read-only workflow provider connections.",
+    "disable": "Disable",
+    "disabled": "Disabled",
+    "empty": "No provider accounts are configured.",
+    "enabled": "Enabled",
+    "enable": "Enable",
+    "loadError": "Provider accounts could not be loaded.",
+    "name": "Name",
+    "refresh": "Refresh",
+    "title": "Provider accounts",
+    "type": "Provider type"
   }
 }

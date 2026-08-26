@@ -4,13 +4,16 @@ import { apiEndpoints } from '~/types/api/endpoints';
 import type {
   CreateNotificationChannel,
   CreateNotificationRule,
+  CreateProviderAccount,
   DashboardWorkflowRun,
   HealthResponse,
   NotificationChannel,
   NotificationDelivery,
   NotificationRule,
+  ProviderAccount,
   UpdateNotificationChannel,
   UpdateNotificationRule,
+  UpdateProviderAccount,
   WorkflowRunTrendBucket,
   WorkflowRunTrendQuery,
 } from '~/types/api/resources';
@@ -49,6 +52,14 @@ export function useFlowpeekApi() {
         api.get(apiEndpoints.notificationRules, { params: { repositoryId } }),
       update: (id: string, input: UpdateNotificationRule): Promise<AxiosResponse<NotificationRule>> =>
         api.patch(`${apiEndpoints.notificationRules}/${id}`, input),
+    },
+    providerAccounts: {
+      create: (input: CreateProviderAccount): Promise<AxiosResponse<ProviderAccount>> =>
+        api.post(apiEndpoints.providerAccounts, input),
+      delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.providerAccounts}/${id}`),
+      list: (): Promise<AxiosResponse<ProviderAccount[]>> => api.get(apiEndpoints.providerAccounts),
+      update: (id: string, input: UpdateProviderAccount): Promise<AxiosResponse<ProviderAccount>> =>
+        api.patch(`${apiEndpoints.providerAccounts}/${id}`, input),
     },
   };
 }
