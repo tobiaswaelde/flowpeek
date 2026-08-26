@@ -10,6 +10,7 @@ import { InitModule } from './modules/init/init.module.js';
 import { ProvidersModule } from './modules/providers/providers.module.js';
 import { RepositoriesModule } from './modules/repositories/repositories.module.js';
 import { WebhooksModule } from './modules/webhooks/webhooks.module.js';
+import { WorkflowRunsModule } from './modules/workflow-runs/workflow-runs.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 
 @Module({
@@ -24,6 +25,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     AuthModule,
     HealthModule,
     WebhooksModule,
+    WorkflowRunsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
