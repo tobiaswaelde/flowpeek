@@ -19,9 +19,23 @@ export interface NotificationChannelAbilitySubject extends ForcedSubject<CaslSub
   repositoryId: string;
 }
 
+/** Repository-scoped notification rule properties used by CASL conditions. */
+export interface NotificationRuleAbilitySubject extends ForcedSubject<CaslSubject.NotificationRule> {
+  repositoryId: string;
+}
+
 /** The CASL ability used by Flowpeek API policies and query restrictions. */
 export type AppAbility = Ability<
-  [CaslAction, CaslSubject | RepositoryAbilitySubject | WorkflowRunAbilitySubject | NotificationChannelAbilitySubject],
+  [
+    CaslAction,
+    (
+      | CaslSubject
+      | RepositoryAbilitySubject
+      | WorkflowRunAbilitySubject
+      | NotificationChannelAbilitySubject
+      | NotificationRuleAbilitySubject
+    ),
+  ],
   FlowpeekPrismaQuery
 >;
 

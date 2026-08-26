@@ -9,7 +9,13 @@ import type { Prisma } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import type { AuthenticatedUser } from '../auth/types.js';
 import { ProviderCredentialService } from '../providers/provider-credential.service.js';
+import { WorkflowFilterService } from '../repositories/workflow-filter.service.js';
 import type { CreateNotificationChannelDto, UpdateNotificationChannelDto } from './dto/notification-channel.dto.js';
+import type { CreateNotificationRuleDto, UpdateNotificationRuleDto } from './dto/notification-rule.dto.js';
+
+const notificationRuleInclude = {
+  channelLinks: { select: { notificationChannelId: true } },
+} satisfies Prisma.NotificationRuleInclude;
 
 /** Manages repository-scoped notification channel records without exposing secrets. */
 @Injectable()
@@ -18,6 +24,7 @@ export class NotificationsService {
     private readonly prisma: PrismaService,
     private readonly abilityFactory: CaslAbilityFactory,
     private readonly credentials: ProviderCredentialService,
+    private readonly workflowFilters: WorkflowFilterService,
   ) {}
 
   /** Return channels that belong to repositories visible to the current user. */
@@ -76,6 +83,71 @@ export class NotificationsService {
     await this.prisma.notificationChannel.delete({ where: { id } });
   }
 
+  /** Return rules that belong to repositories visible to the current user. */
+  async listRules(user: AuthenticatedUser, repositoryId?: string) {
+    const ability = await this.getAbility(user);
+    const accessibleWhere = accessibleBy(ability, CaslAction.Read).ofType(
+      CaslSubject.NotificationRule as never,
+    ) as Prisma.NotificationRuleWhereInput;
+    return this.prisma.notificationRule.findMany({
+      include: notificationRuleInclude,
+      orderBy: [{ workflowPattern: 'asc' }, { id: 'asc' }],
+      where: { AND: [accessibleWhere, ...(repositoryId ? [{ repositoryId }] : [])] },
+    });
+  }
+
+  /** Create a repository rule with one or more channels from the same repository. */
+  async createRule(user: AuthenticatedUser, input: CreateNotificationRuleDto) {
+    await this.assertCanManageRepository(user, input.repositoryId);
+    this.workflowFilters.validatePattern(input.workflowPattern);
+    const channelIds = await this.assertChannelsBelongToRepository(input.channelIds, input.repositoryId);
+    return this.prisma.notificationRule.create({
+      data: {
+        repositoryId: input.repositoryId,
+        workflowPattern: input.workflowPattern.trim(),
+        outcome: input.outcome,
+        enabled: input.enabled ?? true,
+        channelLinks: { createMany: { data: channelIds.map((notificationChannelId) => ({ notificationChannelId })) } },
+      },
+      include: notificationRuleInclude,
+    });
+  }
+
+  /** Update a repository rule and, when supplied, atomically replace its channels. */
+  async updateRule(user: AuthenticatedUser, id: string, input: UpdateNotificationRuleDto) {
+    const rule = await this.findRule(id);
+    await this.assertCanManageRepository(user, rule.repositoryId);
+    if (input.workflowPattern !== undefined) this.workflowFilters.validatePattern(input.workflowPattern);
+    const channelIds =
+      input.channelIds === undefined
+        ? undefined
+        : await this.assertChannelsBelongToRepository(input.channelIds, rule.repositoryId);
+    return this.prisma.notificationRule.update({
+      where: { id },
+      data: {
+        ...(input.workflowPattern === undefined ? {} : { workflowPattern: input.workflowPattern.trim() }),
+        ...(input.outcome === undefined ? {} : { outcome: input.outcome }),
+        ...(input.enabled === undefined ? {} : { enabled: input.enabled }),
+        ...(channelIds === undefined
+          ? {}
+          : {
+              channelLinks: {
+                createMany: { data: channelIds.map((notificationChannelId) => ({ notificationChannelId })) },
+                deleteMany: {},
+              },
+            }),
+      },
+      include: notificationRuleInclude,
+    });
+  }
+
+  /** Delete a rule after resolving its repository-scoped management access. */
+  async deleteRule(user: AuthenticatedUser, id: string): Promise<void> {
+    const rule = await this.findRule(id);
+    await this.assertCanManageRepository(user, rule.repositoryId);
+    await this.prisma.notificationRule.delete({ where: { id } });
+  }
+
   private async getAbility(user: AuthenticatedUser) {
     const memberships = await this.prisma.repositoryMembership.findMany({
       where: { userId: user.id },
@@ -99,6 +171,27 @@ export class NotificationsService {
     const channel = await this.prisma.notificationChannel.findUnique({ where: { id } });
     if (!channel) throw new NotFoundException('Notification channel not found.');
     return channel;
+  }
+
+  private async findRule(id: string) {
+    const rule = await this.prisma.notificationRule.findUnique({ where: { id }, include: notificationRuleInclude });
+    if (!rule) throw new NotFoundException('Notification rule not found.');
+    return rule;
+  }
+
+  private async assertChannelsBelongToRepository(channelIds: string[], repositoryId: string): Promise<string[]> {
+    const uniqueChannelIds = [...new Set(channelIds)];
+    if (uniqueChannelIds.length !== channelIds.length) {
+      throw new ForbiddenException('Notification channels must not be repeated in a rule.');
+    }
+    const channels = await this.prisma.notificationChannel.findMany({
+      select: { id: true },
+      where: { id: { in: uniqueChannelIds }, repositoryId },
+    });
+    if (channels.length !== uniqueChannelIds.length) {
+      throw new ForbiddenException('Notification rules can only use channels from the same repository.');
+    }
+    return uniqueChannelIds;
   }
 
   private encryptSecret(type: 'EMAIL' | 'GOTIFY' | 'NTFY', secret: string | undefined): string | undefined {

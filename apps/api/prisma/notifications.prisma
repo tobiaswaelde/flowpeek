@@ -24,8 +24,46 @@ model NotificationChannel {
 
   repositoryId String     @db.Uuid
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  ruleLinks    NotificationRuleChannel[]
 
   @@unique([repositoryId, name])
   @@index([repositoryId, enabled])
   @@map("notification_channels")
+}
+
+/** Terminal workflow outcomes that can trigger notification rules. */
+enum NotificationRuleOutcome {
+  SUCCESS
+  FAILED
+}
+
+/** A repository workflow glob matched against one terminal run outcome. */
+model NotificationRule {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workflowPattern String                  @db.VarChar(1024)
+  outcome         NotificationRuleOutcome
+  enabled         Boolean                 @default(true)
+
+  repositoryId String     @db.Uuid
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  channelLinks NotificationRuleChannel[]
+
+  @@index([repositoryId, enabled, outcome])
+  @@map("notification_rules")
+}
+
+/** Joins a notification rule to each selected repository channel. */
+model NotificationRuleChannel {
+  notificationRuleId String           @db.Uuid
+  notificationRule   NotificationRule @relation(fields: [notificationRuleId], references: [id], onDelete: Cascade)
+
+  notificationChannelId String              @db.Uuid
+  notificationChannel   NotificationChannel @relation(fields: [notificationChannelId], references: [id], onDelete: Cascade)
+
+  @@id([notificationRuleId, notificationChannelId])
+  @@index([notificationChannelId])
+  @@map("notification_rule_channels")
 }
