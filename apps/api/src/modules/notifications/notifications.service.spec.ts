@@ -29,6 +29,7 @@ describe('NotificationsService', () => {
       },
       notificationDelivery: {
         createMany: jest.fn().mockResolvedValue({ count: 0 }),
+        findMany: jest.fn().mockResolvedValue([]),
       },
       repositoryMembership: {
         findMany: jest.fn().mockResolvedValue([{ repositoryId: 'repository-a', role: 'VIEWER' }]),
@@ -156,5 +157,18 @@ describe('NotificationsService', () => {
       data: [{ notificationRuleId: 'rule-a', workflowRunId: 'run-a' }],
       skipDuplicates: true,
     });
+  });
+
+  it('limits delivery history to repository-manager memberships', async () => {
+    const { prisma, service } = createService();
+    prisma.repositoryMembership.findMany.mockResolvedValue([{ repositoryId: 'repository-managed', role: 'MANAGER' }]);
+
+    await service.listDeliveryHistory({ ...user, role: 'MANAGER' });
+
+    expect(prisma.notificationDelivery.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { notificationRule: { repositoryId: { in: ['repository-managed'] } } },
+      }),
+    );
   });
 });
