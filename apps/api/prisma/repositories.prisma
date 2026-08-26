@@ -15,7 +15,8 @@ model Repository {
   providerAccount   ProviderAccount @relation(fields: [providerAccountId], references: [id], onDelete: Cascade)
   memberships       RepositoryMembership[]
   notificationChannels NotificationChannel[]
-  workflowFilters   WorkflowFilter[]
+  notificationRules    NotificationRule[]
+  workflowFilters      WorkflowFilter[]
   workflowRuns      WorkflowRun[]
 
   @@unique([providerAccountId, providerRepositoryId])

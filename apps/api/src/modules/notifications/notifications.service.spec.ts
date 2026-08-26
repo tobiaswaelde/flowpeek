@@ -4,6 +4,7 @@ import { CaslAbilityFactory } from '../../casl/casl-ability.factory.js';
 import { NotificationChannelType } from '../../generated/prisma/client.js';
 import type { PrismaService } from '../../prisma/prisma.service.js';
 import type { ProviderCredentialService } from '../providers/provider-credential.service.js';
+import { WorkflowFilterService } from '../repositories/workflow-filter.service.js';
 import { NotificationsService } from './notifications.service.js';
 
 describe('NotificationsService', () => {
@@ -18,6 +19,13 @@ describe('NotificationsService', () => {
         findUnique: jest.fn(),
         update: jest.fn(),
       },
+      notificationRule: {
+        create: jest.fn(),
+        delete: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        update: jest.fn(),
+      },
       repositoryMembership: {
         findMany: jest.fn().mockResolvedValue([{ repositoryId: 'repository-a', role: 'VIEWER' }]),
         findUnique: jest.fn(),
@@ -25,10 +33,15 @@ describe('NotificationsService', () => {
     };
     return {
       prisma,
-      service: new NotificationsService(prisma as unknown as PrismaService, new CaslAbilityFactory(), {
-        decrypt: jest.fn(),
-        encrypt: jest.fn((secret: string) => `encrypted:${secret}`),
-      } as unknown as ProviderCredentialService),
+      service: new NotificationsService(
+        prisma as unknown as PrismaService,
+        new CaslAbilityFactory(),
+        {
+          decrypt: jest.fn(),
+          encrypt: jest.fn((secret: string) => `encrypted:${secret}`),
+        } as unknown as ProviderCredentialService,
+        new WorkflowFilterService(),
+      ),
     };
   }
 
@@ -84,5 +97,34 @@ describe('NotificationsService', () => {
         encryptedSecret: 'encrypted:gotify-token',
       }),
     });
+  });
+
+  it('creates a workflow glob rule linked only to channels from its repository', async () => {
+    const { prisma, service } = createService();
+    prisma.repositoryMembership.findUnique.mockResolvedValue({ role: 'MANAGER' });
+    prisma.notificationChannel.findMany.mockResolvedValue([{ id: '11111111-1111-4111-8111-111111111111' }]);
+    prisma.notificationRule.create.mockResolvedValue({});
+
+    await service.createRule(
+      { ...user, role: 'MANAGER' },
+      {
+        repositoryId: 'repository-a',
+        workflowPattern: 'Deploy*',
+        outcome: 'FAILED',
+        channelIds: ['11111111-1111-4111-8111-111111111111'],
+      },
+    );
+
+    expect(prisma.notificationRule.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          channelLinks: {
+            createMany: { data: [{ notificationChannelId: '11111111-1111-4111-8111-111111111111' }] },
+          },
+          outcome: 'FAILED',
+          workflowPattern: 'Deploy*',
+        }),
+      }),
+    );
   });
 });
