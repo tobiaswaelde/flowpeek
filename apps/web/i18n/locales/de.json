@@ -1,9 +1,24 @@
 {
   "auth": {
+    "invalidCredentials": "Benutzername oder Passwort sind nicht korrekt.",
+    "password": "Passwort",
     "signIn": "Anmelden",
-    "signInPlaceholder": "Die Anmeldung wird hier verfügbar sein."
+    "signInDescription": "Melde dich mit deinen Flowpeek-Zugangsdaten an.",
+    "signOut": "Abmelden",
+    "username": "Benutzername",
+    "validationError": "Gib Benutzername und Passwort ein, um fortzufahren."
   },
   "dashboard": {
     "title": "Workflow-Dashboard"
+  },
+  "layout": {
+    "dashboard": "Dashboard",
+    "primaryNavigation": "Hauptnavigation",
+    "readOnlyStatus": "Schreibgeschützte Überwachung von Workflow-Status"
+  },
+  "roles": {
+    "MANAGER": "Repository-Verwaltung",
+    "SYSTEM_ADMIN": "Systemadministration",
+    "VIEWER": "Leseberechtigung"
   }
 }
