@@ -193,7 +193,7 @@ in order unless a dependency is explicitly marked as parallelizable.
       `ghcr.io/<owner>/flowpeek-api` and `ghcr.io/<owner>/flowpeek-web`.
 - [x] Grant deploy only `contents: write`, `pull-requests: write`, and
       `packages: write`; keep lint and test workflows read-only.
-- [ ] Add a release smoke check that validates the produced Compose image tags
+- [x] Add a release smoke check that validates the produced Compose image tags
       and starts the stack far enough to pass API health checks.
 
 ## 11. Validate the Complete System
