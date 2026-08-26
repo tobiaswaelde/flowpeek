@@ -19,6 +19,7 @@ Do not copy Machine Admin domain models or endpoints.
 ## Technical Baseline
 
 - Use Node.js 24, pnpm via Corepack, and TypeScript pinned exactly to `6.0.3`.
+- Load and validate API environment variables with `envalid`; use `dotenv` only to load local environment files before validation.
 - Configure TypeScript 6 at the workspace root and verify it in CI with API and web typechecks. Re-evaluate
   TypeScript 7 when the lint and import-organization toolchain supports its compiler API.
 - Use strict TypeScript settings unless a framework-generated configuration requires an explicit compatibility override.
@@ -26,7 +27,7 @@ Do not copy Machine Admin domain models or endpoints.
 
 ## API Implementation
 
-- Use a versioned REST API under `/api/v1`, Swagger/Scalar documentation under `/docs`, and a health endpoint under `/api/health`.
+- Use a versioned REST API under `/api/v1`, Swagger/Scalar documentation under `/docs`, and a health endpoint under `/api/health`. The health response must later report the API/database state and the last known connection or sync status for configured GitHub, GitLab, and Forgejo accounts, without exposing credentials or triggering provider requests.
 - Maintain an `apps/api/bruno` collection with documented environments and request examples for manual API verification. Keep credentials in Bruno secret variables, and update the collection as protected endpoints are added.
 - Structure every feature as a Nest module with module, service, controller, DTOs/types, and tests.
 - Split Prisma schemas by domain, following the Machine Admin API layout.

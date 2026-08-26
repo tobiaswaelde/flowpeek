@@ -2,10 +2,10 @@
 
 ## Scope and priorities
 
-- Treat `PLAN.md` as the approved product architecture and `TODO.md` as the
-  implementation order.
-- Complete only the active TODO item and its direct dependencies. Do not start
-  later items opportunistically.
+- Treat `PLAN.md` as the approved product architecture and the GitHub Issues
+  and sub-issues as the implementation order.
+- Complete only the active GitHub Issue and its direct dependencies. Do not
+  start later work opportunistically.
 - Preserve unrelated work. Inspect `git status` and the relevant diff before
   every edit, test, and commit.
 - Flowpeek is read-only with respect to GitHub, GitLab, and Forgejo. Never add

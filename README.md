@@ -7,7 +7,7 @@ and sends notifications without modifying provider resources.
 ## Status
 
 The repository currently contains the monorepo bootstrap. API and web
-implementation are tracked in [`TODO.md`](TODO.md).
+implementation are tracked in [GitHub Issues](https://github.com/tobiaswaelde/flowpeek/issues).
 
 ## Prerequisites
 
@@ -60,5 +60,6 @@ matching API and web Docker images to GitHub Container Registry.
 - `apps/api`: NestJS, Prisma, PostgreSQL, CASL, and `@querry-kit/nest`.
 - `apps/web`: Nuxt 4 SPA, Pinia, Nuxt UI, and `@querry-kit/nuxt`.
 - `PLAN.md`: approved architecture and release design.
-- `TODO.md`: ordered implementation checklist.
+- [GitHub Issues](https://github.com/tobiaswaelde/flowpeek/issues): ordered
+  implementation epics and tasks.
 - `AGENTS.md`: repository-specific instructions for coding agents.
