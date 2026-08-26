@@ -41,7 +41,7 @@ in order unless a dependency is explicitly marked as parallelizable.
       mapping, test-database configuration, and deterministic test cleanup.
 - [x] Add global validation, serialization, error-response, CORS, rate-limit,
       and API-documentation configuration.
-- [ ] Add Nest Scheduler and an application-level job abstraction that can be
+- [x] Add Nest Scheduler and an application-level job abstraction that can be
       disabled for tests and controlled through environment configuration.
 
 ## 3. Implement Authentication and Authorization
