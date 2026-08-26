@@ -19,6 +19,11 @@ const notificationRuleInclude = {
   channelLinks: { select: { notificationChannelId: true } },
 } satisfies Prisma.NotificationRuleInclude;
 
+const notificationDeliveryHistoryInclude = {
+  attempts: { orderBy: { createdAt: 'desc' } },
+  notificationRule: { select: { repositoryId: true } },
+} satisfies Prisma.NotificationDeliveryInclude;
+
 /** Manages repository-scoped notification channel records without exposing secrets. */
 @Injectable()
 export class NotificationsService {
@@ -151,6 +156,25 @@ export class NotificationsService {
     await this.prisma.notificationRule.delete({ where: { id } });
   }
 
+  /** List delivery history limited to system administrators and repository managers. */
+  async listDeliveryHistory(user: AuthenticatedUser, repositoryId?: string) {
+    const managedRepositoryIds = await this.getManagedRepositoryIds(user);
+    return this.prisma.notificationDelivery.findMany({
+      include: notificationDeliveryHistoryInclude,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      where: {
+        notificationRule: {
+          repositoryId:
+            user.role === 'SYSTEM_ADMIN'
+              ? repositoryId
+                ? { equals: repositoryId }
+                : undefined
+              : { in: repositoryId ? managedRepositoryIds.filter((id) => id === repositoryId) : managedRepositoryIds },
+        },
+      },
+    });
+  }
+
   /**
    * Resolve enabled rules that match one persisted terminal run.
    *
@@ -204,6 +228,16 @@ export class NotificationsService {
       select: { role: true },
     });
     if (membership?.role !== 'MANAGER') throw new ForbiddenException('Repository manager access is required.');
+  }
+
+  private async getManagedRepositoryIds(user: AuthenticatedUser): Promise<string[]> {
+    if (user.role === 'SYSTEM_ADMIN') return [];
+    if (user.role !== 'MANAGER') return [];
+    const memberships = await this.prisma.repositoryMembership.findMany({
+      where: { role: 'MANAGER', userId: user.id },
+      select: { repositoryId: true },
+    });
+    return memberships.map((membership) => membership.repositoryId);
   }
 
   private async findChannel(id: string) {
