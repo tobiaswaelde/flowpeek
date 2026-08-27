@@ -54,7 +54,7 @@
           >
             <UIcon name="i-tabler-activity" class="size-4 shrink-0 text-muted" />
             <span class="min-w-0 flex-1 truncate font-medium">{{ workflowRun.workflowName }}</span>
-            <UBadge size="xs" variant="subtle">{{ workflowRun.status }}</UBadge>
+            <UBadge size="xs" variant="subtle">{{ t(`workflowStatus.${workflowRun.status}`) }}</UBadge>
           </a>
         </template>
       </div>

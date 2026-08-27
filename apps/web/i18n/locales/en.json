@@ -17,6 +17,9 @@
     "createdAt": "Created",
     "description": "Review workflow status across the repositories you can access.",
     "duration": "Duration",
+    "durationMinutesSeconds": "{minutes}m {seconds}s",
+    "durationSeconds": "{seconds}s",
+    "durationUnknown": "Unknown",
     "errors": "Errors",
     "failingWorkflows": "Failing workflows",
     "last30Days": "Last 30 days",
@@ -93,13 +96,29 @@
     "typePlaceholder": "Select a provider"
   },
   "users": { "delete": "Delete", "description": "System user administration.", "title": "Users" },
+  "workflowStatus": {
+    "CANCELLED": "Cancelled",
+    "FAILED": "Failed",
+    "QUEUED": "Queued",
+    "RUNNING": "Running",
+    "SKIPPED": "Skipped",
+    "SUCCESS": "Success",
+    "UNKNOWN": "Unknown"
+  },
   "notifications": {
+    "attempts": "{count} attempts",
     "channels": "Channels",
     "description": "Repository notification channels, rules, and delivery history.",
     "disabled": "Disabled",
     "enabled": "Enabled",
     "history": "Delivery history",
+    "rules": "Rules",
     "title": "Notifications"
+  },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Delivered",
+    "FAILED": "Failed",
+    "PENDING": "Pending"
   },
   "repositories": {
     "default": "default",

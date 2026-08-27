@@ -5,9 +5,7 @@ import TrendChart from '~/components/modules/dashboard/trend-chart.vue';
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
 import type { DashboardWorkflowRun, WorkflowRunTrendBucket } from '~/types/api/resources';
 
-definePageMeta({ title: 'Dashboard' });
-
-const { t } = useI18n();
+const { locale, t } = useI18n();
 const api = useFlowpeekApi();
 const failures = ref<DashboardWorkflowRun[]>([]);
 const latestRuns = ref<DashboardWorkflowRun[]>([]);
@@ -15,6 +13,8 @@ const trend = ref<WorkflowRunTrendBucket[]>([]);
 const isLoading = ref(true);
 const error = ref(false);
 const range = ref<'7d' | '30d' | '90d'>('30d');
+
+useHead({ title: computed(() => t('dashboard.title')) });
 
 const rangeOptions = computed(() => [
   { label: t('dashboard.last7Days'), value: '7d' },
@@ -24,14 +24,25 @@ const rangeOptions = computed(() => [
 
 /** Format an optional workflow duration for compact table display. */
 function formatDuration(durationMs: number | null): string {
-  if (durationMs === null) return '—';
+  if (durationMs === null) return t('dashboard.durationUnknown');
   const seconds = Math.round(durationMs / 1000);
-  return seconds >= 60 ? `${Math.floor(seconds / 60)}m ${seconds % 60}s` : `${seconds}s`;
+  const formatter = new Intl.NumberFormat(locale.value);
+  return seconds >= 60
+    ? t('dashboard.durationMinutesSeconds', {
+        minutes: formatter.format(Math.floor(seconds / 60)),
+        seconds: formatter.format(seconds % 60),
+      })
+    : t('dashboard.durationSeconds', { seconds: formatter.format(seconds) });
 }
 
 /** Format an API timestamp in the user's browser locale. */
 function formatTimestamp(timestamp: string): string {
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(timestamp));
+  return new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(timestamp));
+}
+
+/** Translate a persisted normalized workflow status for display. */
+function formatStatus(status: DashboardWorkflowRun['status']): string {
+  return t(`workflowStatus.${status}`);
 }
 
 /** Map normalized workflow states to Nuxt UI badge colors. */
@@ -96,7 +107,7 @@ onMounted(loadDashboard);
               <p class="font-medium">{{ run.workflowName }}</p>
               <p class="text-sm text-muted">{{ run.repository.owner }}/{{ run.repository.name }}</p>
             </div>
-            <UBadge :color="statusColor(run.status)">{{ run.status }}</UBadge>
+            <UBadge :color="statusColor(run.status)">{{ formatStatus(run.status) }}</UBadge>
           </div>
           <UButton class="mt-4" :label="$t('dashboard.openProvider')" :to="run.url" target="_blank" variant="link" />
         </UCard>
@@ -128,7 +139,7 @@ onMounted(loadDashboard);
                   <p class="text-xs text-muted">{{ run.repository.owner }}/{{ run.repository.name }}</p>
                 </td>
                 <td class="py-3">
-                  <UBadge :color="statusColor(run.status)">{{ run.status }}</UBadge>
+                  <UBadge :color="statusColor(run.status)">{{ formatStatus(run.status) }}</UBadge>
                 </td>
                 <td class="py-3">{{ formatDuration(run.durationMs) }}</td>
                 <td class="py-3 whitespace-nowrap">{{ formatTimestamp(run.providerCreatedAt) }}</td>
