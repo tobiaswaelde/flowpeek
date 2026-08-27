@@ -67,6 +67,7 @@ jobs:
         run: git fetch origin refs/heads/main:refs/heads/main
 
       - name: Validate Changesets configuration
+        if: github.event_name != 'pull_request' || github.head_ref != 'changeset-release/main'
         run: pnpm changeset status
 
       - name: Generate Prisma client
