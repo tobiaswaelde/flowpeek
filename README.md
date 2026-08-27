@@ -123,6 +123,10 @@ dependency or build tooling changes. Add exactly one focused Changeset when a
 dependency update changes released runtime behavior. Lockfile-only, tooling,
 and GitHub Actions updates do not need a Changeset.
 
+`changesets/action` stays on v1 while the workspace uses Changesets CLI v2. A
+future action-v2 upgrade must include the matching CLI-v3 migration and a
+successful deployment workflow run.
+
 ## Security scanning
 
 CodeQL analyzes JavaScript/TypeScript and GitHub Actions workflow files for pull
