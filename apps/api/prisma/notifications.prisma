@@ -1,26 +1,19 @@
-/** Notification transports supported by repository-scoped channels. */
-enum NotificationChannelType {
-  EMAIL
-  GOTIFY
-  NTFY
-}
-
 /**
  * A destination configured for one tracked repository.
  *
- * `configuration` contains non-secret transport settings. Credentials are
- * stored separately in `encryptedSecret` and are never returned by the API.
+ * The complete Apprise URL is encrypted because it can contain credentials.
+ * Only its scheme is retained as safe display metadata.
  */
 model NotificationChannel {
   id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name            String                  @db.VarChar(255)
-  type            NotificationChannelType
-  enabled         Boolean                 @default(true)
-  configuration   Json                    @default("{}")
-  encryptedSecret String?                 @db.Text
+  name                    String  @db.VarChar(255)
+  enabled                 Boolean @default(true)
+  encryptedUrl            String? @db.Text
+  urlScheme               String? @db.VarChar(64)
+  requiresReconfiguration Boolean @default(false)
 
   repositoryId String     @db.Uuid
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)

@@ -1,10 +1,8 @@
 import { NotificationDeliveryStatus } from '../../generated/prisma/client.js';
 import type { JobRunnerService } from '../../jobs/job-runner.service.js';
 import type { PrismaService } from '../../prisma/prisma.service.js';
-import type { EmailNotificationAdapter } from './email-notification.adapter.js';
-import type { GotifyNotificationAdapter } from './gotify-notification.adapter.js';
+import type { AppriseNotificationAdapter } from './apprise-notification.adapter.js';
 import { NotificationDeliveryService, notificationRetryDelayMs } from './notification-delivery.service.js';
-import type { NtfyNotificationAdapter } from './ntfy-notification.adapter.js';
 
 describe('NotificationDeliveryService', () => {
   it('uses bounded exponential retry delays', () => {
@@ -24,10 +22,9 @@ describe('NotificationDeliveryService', () => {
               channelLinks: [
                 {
                   notificationChannel: {
-                    configuration: { serverUrl: 'https://gotify.example.test' },
+                    encryptedUrl: 'encrypted-url',
                     enabled: true,
                     id: 'channel-a',
-                    type: 'GOTIFY',
                   },
                 },
               ],
@@ -50,13 +47,11 @@ describe('NotificationDeliveryService', () => {
       },
       notificationDeliveryAttempt: { create: jest.fn().mockResolvedValue(undefined) },
     };
-    const gotify = { send: jest.fn().mockRejectedValue(new Error('Gotify returned HTTP 503.')), type: 'GOTIFY' };
+    const apprise = { send: jest.fn().mockRejectedValue(new Error('Apprise notification delivery failed.')) };
     const service = new NotificationDeliveryService(
       prisma as unknown as PrismaService,
       {} as JobRunnerService,
-      { type: 'EMAIL' } as EmailNotificationAdapter,
-      gotify as unknown as GotifyNotificationAdapter,
-      { type: 'NTFY' } as NtfyNotificationAdapter,
+      apprise as unknown as AppriseNotificationAdapter,
     );
 
     await service.deliverPending(['delivery-a']);
@@ -64,7 +59,7 @@ describe('NotificationDeliveryService', () => {
     expect(prisma.notificationDeliveryAttempt.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         attempt: 1,
-        error: 'Gotify returned HTTP 503.',
+        error: 'Apprise notification delivery failed.',
         notificationChannelId: 'channel-a',
         notificationDeliveryId: 'delivery-a',
       }),

@@ -1,13 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 
-import { NotificationChannelType, NotificationDeliveryStatus, type Prisma } from '../../generated/prisma/client.js';
+import { NotificationDeliveryStatus, type Prisma } from '../../generated/prisma/client.js';
 import { JobRunnerService } from '../../jobs/job-runner.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
-import { EmailNotificationAdapter } from './email-notification.adapter.js';
-import { GotifyNotificationAdapter } from './gotify-notification.adapter.js';
-import type { NotificationChannelAdapter, NotificationPayload } from './notification-channel-adapter.js';
-import { NtfyNotificationAdapter } from './ntfy-notification.adapter.js';
+import { AppriseNotificationAdapter } from './apprise-notification.adapter.js';
+import type { NotificationPayload } from './notification-channel-adapter.js';
 
 const deliveryInclude = {
   notificationRule: {
@@ -35,22 +33,13 @@ export function notificationRetryDelayMs(attempt: number): number {
 /** Sends pending notification deliveries through their configured channel adapters. */
 @Injectable()
 export class NotificationDeliveryService {
-  private readonly adapters: Map<NotificationChannelType, NotificationChannelAdapter>;
   private readonly logger = new Logger(NotificationDeliveryService.name);
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly jobs: JobRunnerService,
-    email: EmailNotificationAdapter,
-    gotify: GotifyNotificationAdapter,
-    ntfy: NtfyNotificationAdapter,
-  ) {
-    this.adapters = new Map<NotificationChannelType, NotificationChannelAdapter>([
-      [email.type, email],
-      [gotify.type, gotify],
-      [ntfy.type, ntfy],
-    ]);
-  }
+    private readonly apprise: AppriseNotificationAdapter,
+  ) {}
 
   /** Retry delivery records whose bounded exponential delay has elapsed. */
   @Interval(60_000)
@@ -112,9 +101,7 @@ export class NotificationDeliveryService {
     const attemptNumber = Math.max(0, ...delivery.attempts.map((attempt) => attempt.attempt)) + 1;
     for (const channel of channels) {
       try {
-        const adapter = this.adapters.get(channel.type);
-        if (!adapter) throw new Error('Notification channel type is not supported.');
-        await adapter.send(channel, payload);
+        await this.apprise.send(channel, payload);
         failedChannelIds.delete(channel.id);
         await this.prisma.notificationDeliveryAttempt.create({
           data: {
@@ -172,10 +159,7 @@ export class NotificationDeliveryService {
   }
 
   private errorMessage(error: unknown): string {
-    if (
-      error instanceof Error &&
-      /^Gotify returned HTTP \d+\.$|^ntfy returned HTTP \d+\.$|^SMTP transport is not configured\.$/.test(error.message)
-    ) {
+    if (error instanceof Error && error.message === 'Apprise notification delivery failed.') {
       return error.message;
     }
     return 'Notification delivery failed.';

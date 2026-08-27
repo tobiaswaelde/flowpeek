@@ -157,41 +157,31 @@ export interface WorkflowRun {
   workflowName: string;
 }
 
-/** Supported notification transport type. */
-export type NotificationChannelType = 'EMAIL' | 'GOTIFY' | 'NTFY';
-
-/** Non-secret configuration for one repository notification channel. */
-export type NotificationChannelConfiguration = Record<string, unknown>;
-
 /** Safe repository-scoped notification channel. Secrets are never returned by the API. */
 export interface NotificationChannel {
-  configuration: NotificationChannelConfiguration;
   createdAt: ApiTimestamp;
   enabled: boolean;
   id: string;
   name: string;
   repositoryId: string;
-  type: NotificationChannelType;
+  requiresReconfiguration: boolean;
   updatedAt: ApiTimestamp;
+  urlScheme: string | null;
 }
 
 /** Input for creating a repository notification channel. */
 export interface CreateNotificationChannel {
-  configuration?: NotificationChannelConfiguration;
   enabled?: boolean;
   name: string;
   repositoryId: string;
-  secret?: string;
-  type: NotificationChannelType;
+  url: string;
 }
 
 /** Input for updating a repository notification channel. */
 export interface UpdateNotificationChannel {
-  clearSecret?: boolean;
-  configuration?: NotificationChannelConfiguration;
   enabled?: boolean;
   name?: string;
-  secret?: string;
+  url?: string;
 }
 
 /** Terminal workflow outcome that can match a notification rule. */

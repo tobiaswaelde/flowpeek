@@ -106,6 +106,7 @@
     "disabled": "Uitgeschakeld",
     "enabled": "Ingeschakeld",
     "history": "Bezorggeschiedenis",
+    "requiresReconfiguration": "Vereist herconfiguratie",
     "rules": "Regels",
     "title": "Meldingen"
   },

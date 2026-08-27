@@ -58,12 +58,6 @@ const validators = {
   FORGEJO_OAUTH_CLIENT_SECRET: str({ default: '' }),
   SCHEDULER_ENABLED: bool({ default: true }),
   SCHEDULER_SYNC_INTERVAL_SECONDS: positiveInteger({ default: 300 }),
-  SMTP_HOST: str({ default: '' }),
-  SMTP_PORT: positiveInteger({ default: 587 }),
-  SMTP_SECURE: bool({ default: false }),
-  SMTP_USERNAME: str({ default: '' }),
-  SMTP_PASSWORD: str({ default: '' }),
-  SMTP_FROM: str({ default: '' }),
 };
 
 /** The validated API runtime configuration. */
@@ -88,18 +82,6 @@ function throwOnInvalidEnvironment<T>({ errors }: ReporterOptions<T>): void {
  */
 export function loadEnvironment(environment: NodeJS.ProcessEnv): FlowpeekEnvironment {
   const config = cleanEnv(environment, validators, { reporter: throwOnInvalidEnvironment });
-
-  if (config.SMTP_HOST && !config.SMTP_FROM) {
-    throw new Error('SMTP_FROM is required when SMTP_HOST is configured');
-  }
-
-  if (Boolean(config.SMTP_USERNAME) !== Boolean(config.SMTP_PASSWORD)) {
-    throw new Error('SMTP_USERNAME and SMTP_PASSWORD must be configured together');
-  }
-
-  if (!config.SMTP_HOST && (config.SMTP_FROM || config.SMTP_USERNAME || config.SMTP_PASSWORD)) {
-    throw new Error('SMTP_HOST is required when SMTP sender or credentials are configured');
-  }
 
   const oauthClients = [
     [

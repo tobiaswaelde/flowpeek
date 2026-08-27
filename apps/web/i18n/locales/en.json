@@ -112,6 +112,7 @@
     "disabled": "Disabled",
     "enabled": "Enabled",
     "history": "Delivery history",
+    "requiresReconfiguration": "Requires reconfiguration",
     "rules": "Rules",
     "title": "Notifications"
   },

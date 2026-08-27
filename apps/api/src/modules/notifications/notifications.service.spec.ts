@@ -1,7 +1,6 @@
 import { ForbiddenException } from '@nestjs/common';
 
 import { CaslAbilityFactory } from '../../casl/casl-ability.factory.js';
-import { NotificationChannelType } from '../../generated/prisma/client.js';
 import type { PrismaService } from '../../prisma/prisma.service.js';
 import type { CredentialEncryptionService } from '../../security/credential-encryption.service.js';
 import { WorkflowFilterService } from '../repositories/workflow-filter.service.js';
@@ -75,13 +74,13 @@ describe('NotificationsService', () => {
         {
           repositoryId: 'repository-a',
           name: 'On-call',
-          type: NotificationChannelType.GOTIFY,
+          url: 'discord://webhook-id/webhook-token',
         },
       ),
     ).rejects.toBeInstanceOf(ForbiddenException);
   });
 
-  it('encrypts Gotify credentials while preserving only non-secret channel configuration', async () => {
+  it('encrypts an Apprise URL and retains only its safe scheme metadata', async () => {
     const { prisma, service } = createService();
     prisma.repositoryMembership.findUnique.mockResolvedValue({ role: 'MANAGER' });
     prisma.notificationChannel.create.mockResolvedValue({});
@@ -91,18 +90,38 @@ describe('NotificationsService', () => {
       {
         repositoryId: 'repository-a',
         name: 'On-call',
-        type: NotificationChannelType.GOTIFY,
-        configuration: { serverUrl: 'https://gotify.example.test' },
-        secret: 'gotify-token',
+        url: 'discord://webhook-id/webhook-token',
       },
     );
 
     expect(prisma.notificationChannel.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
-        configuration: { serverUrl: 'https://gotify.example.test' },
-        encryptedSecret: 'encrypted:gotify-token',
+        encryptedUrl: 'encrypted:discord://webhook-id/webhook-token',
+        requiresReconfiguration: false,
+        urlScheme: 'discord',
       }),
     });
+  });
+
+  it('rejects unsafe local-file URLs and legacy channels re-enabled without replacement URLs', async () => {
+    const { prisma, service } = createService();
+    prisma.repositoryMembership.findUnique.mockResolvedValue({ role: 'MANAGER' });
+
+    await expect(
+      service.createChannel(
+        { ...user, role: 'MANAGER' },
+        { name: 'Unsafe', repositoryId: 'repository-a', url: 'file:///tmp/x' },
+      ),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+
+    prisma.notificationChannel.findUnique.mockResolvedValue({
+      id: 'channel-a',
+      repositoryId: 'repository-a',
+      requiresReconfiguration: true,
+    });
+    await expect(
+      service.updateChannel({ ...user, role: 'MANAGER' }, 'channel-a', { enabled: true }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
   });
 
   it('creates a workflow glob rule linked only to channels from its repository', async () => {

@@ -33,7 +33,7 @@ function formatDeliveryStatus(status: NotificationDelivery['status']): string {
         ><h2 class="font-semibold">{{ $t('notifications.channels') }}</h2></template
       >
       <p v-for="channel in channels" :key="channel.id" class="border-b py-2 last:border-0">
-        {{ channel.name }} · {{ channel.type }} ·
+        {{ channel.name }} · {{ channel.urlScheme ?? $t('notifications.requiresReconfiguration') }} ·
         {{ channel.enabled ? $t('notifications.enabled') : $t('notifications.disabled') }}
       </p></UCard
     ><UCard

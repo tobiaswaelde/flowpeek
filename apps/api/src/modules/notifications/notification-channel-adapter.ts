@@ -1,9 +1,4 @@
-import type {
-  NotificationChannel,
-  NotificationChannelType,
-  ProviderType,
-  WorkflowRunStatus,
-} from '../../generated/prisma/client.js';
+import type { NotificationChannel, ProviderType, WorkflowRunStatus } from '../../generated/prisma/client.js';
 
 /** Provider and workflow context included in every outbound notification. */
 export interface NotificationPayload {
@@ -16,10 +11,8 @@ export interface NotificationPayload {
   workflowName: string;
 }
 
-/** A read-only configured notification transport. */
+/** A read-only configured Apprise notification destination. */
 export interface NotificationChannelAdapter {
-  readonly type: NotificationChannelType;
-
   /** Send one structured workflow notification through its configured channel. */
   send(channel: NotificationChannel, payload: NotificationPayload): Promise<void>;
 }

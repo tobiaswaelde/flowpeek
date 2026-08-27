@@ -112,6 +112,7 @@
     "disabled": "Deaktiviert",
     "enabled": "Aktiviert",
     "history": "Zustellverlauf",
+    "requiresReconfiguration": "Erfordert eine Neukonfiguration",
     "rules": "Regeln",
     "title": "Benachrichtigungen"
   },

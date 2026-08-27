@@ -110,6 +110,7 @@
     "disabled": "Desactivado",
     "enabled": "Activado",
     "history": "Historial de entregas",
+    "requiresReconfiguration": "Requiere reconfiguración",
     "rules": "Reglas",
     "title": "Notificaciones"
   },
