@@ -1,5 +1,17 @@
 # Flowpeek Agent Guidelines
 
+## Working Style
+
+- Work autonomously until the requested task is fully completed.
+- Do not stop after implementing only part of the task.
+- Continue through implementation, debugging, testing, and verification.
+- If tests, linting, type checking, or builds fail, investigate and fix the issues.
+- After each significant change, reassess the original task and continue if anything remains.
+- Do not ask for confirmation for routine implementation decisions.
+- Only ask the user when genuinely blocked by missing information that cannot be determined from the repository.
+- Do not report completion until the implementation has been verified.
+- For complex tasks, maintain an internal checklist of all required work. Continue working through the checklist until every item is completed and verified. Do not return control to the user merely to provide a progress update.
+
 ## Scope and priorities
 
 - Treat `PLAN.md` as the approved product architecture and the GitHub Issues
