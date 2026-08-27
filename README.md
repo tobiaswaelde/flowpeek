@@ -120,6 +120,19 @@ dependency or build tooling changes. Add exactly one focused Changeset when a
 dependency update changes released runtime behavior. Lockfile-only, tooling,
 and GitHub Actions updates do not need a Changeset.
 
+## Security scanning
+
+CodeQL analyzes JavaScript/TypeScript and GitHub Actions workflow files for pull
+requests targeting `main`, pushes to `main`, and every Monday. Those languages
+are analyzed directly from source, so no Node, pnpm, or application build is
+needed in the CodeQL workflow. The workflow uses `pull_request`, never
+`pull_request_target`; GitHub therefore downgrades the token for fork pull
+requests and does not expose repository secrets.
+
+Review CodeQL results in the repository Security view. Fix verified findings
+promptly; dismiss a false positive or accepted risk only with a concise,
+auditable justification in GitHub.
+
 ## Architecture
 
 - `apps/api`: NestJS, Prisma, PostgreSQL, CASL, and `@querry-kit/nest`.
