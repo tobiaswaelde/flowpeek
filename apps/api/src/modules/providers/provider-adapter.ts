@@ -1,5 +1,8 @@
 import type { ProviderType, WorkflowRunStatus } from '../../generated/prisma/client.js';
 
+/** Injection token for the read-only HTTP client used by provider adapters. */
+export const PROVIDER_FETCH = Symbol('PROVIDER_FETCH');
+
 /** Credentials used only for read-only requests to a configured provider account. */
 export interface ProviderAccountContext {
   accessToken: string;

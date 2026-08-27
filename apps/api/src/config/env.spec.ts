@@ -41,4 +41,10 @@ describe('environment configuration', () => {
 
     expect(() => loadEnvironment(process.env)).toThrow('SMTP_FROM');
   });
+
+  it('requires an OAuth client secret when an OAuth client ID is configured', () => {
+    process.env.GITHUB_OAUTH_CLIENT_ID = 'github-client';
+
+    expect(() => loadEnvironment(process.env)).toThrow('GITHUB_OAUTH_CLIENT_SECRET');
+  });
 });

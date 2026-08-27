@@ -4,5 +4,6 @@ node_modules
 apps/*/.nuxt
 apps/*/.output
 apps/*/dist
+**/*.tsbuildinfo
 .env
 *.log

@@ -11,7 +11,10 @@ import type {
   NotificationDelivery,
   NotificationRule,
   ProviderAccount,
+  ProviderAuthenticationOptions,
+  ProviderOAuthAuthorization,
   Repository,
+  StartProviderOAuth,
   UpdateNotificationChannel,
   UpdateNotificationRule,
   UpdateProviderAccount,
@@ -56,12 +59,16 @@ export function useFlowpeekApi() {
         api.patch(`${apiEndpoints.notificationRules}/${id}`, input),
     },
     providerAccounts: {
+      authorize: (input: StartProviderOAuth): Promise<AxiosResponse<ProviderOAuthAuthorization>> =>
+        api.post(apiEndpoints.providerAccounts.authorize, input),
+      authenticationOptions: (): Promise<AxiosResponse<ProviderAuthenticationOptions>> =>
+        api.get(apiEndpoints.providerAccounts.authenticationOptions),
       create: (input: CreateProviderAccount): Promise<AxiosResponse<ProviderAccount>> =>
-        api.post(apiEndpoints.providerAccounts, input),
-      delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.providerAccounts}/${id}`),
-      list: (): Promise<AxiosResponse<ProviderAccount[]>> => api.get(apiEndpoints.providerAccounts),
+        api.post(apiEndpoints.providerAccounts.base, input),
+      delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.providerAccounts.base}/${id}`),
+      list: (): Promise<AxiosResponse<ProviderAccount[]>> => api.get(apiEndpoints.providerAccounts.base),
       update: (id: string, input: UpdateProviderAccount): Promise<AxiosResponse<ProviderAccount>> =>
-        api.patch(`${apiEndpoints.providerAccounts}/${id}`, input),
+        api.patch(`${apiEndpoints.providerAccounts.base}/${id}`, input),
     },
     repositories: {
       list: (): Promise<AxiosResponse<Repository[]>> => api.get(apiEndpoints.repositories),

@@ -1,8 +1,24 @@
+import { z } from 'zod';
+
 /** ISO-8601 timestamp returned by the Flowpeek HTTP API. */
 export type ApiTimestamp = string;
 
 /** Source forge type for a configured provider account. */
-export type ProviderType = 'GITHUB' | 'GITLAB' | 'FORGEJO';
+export const providerTypes = ['GITHUB', 'GITLAB', 'FORGEJO'] as const;
+
+/** Source forge type for a configured provider account. */
+export type ProviderType = (typeof providerTypes)[number];
+
+/** Validate the fields required for an OAuth provider authorization. */
+export const providerOAuthFormSchema = z.object({
+  displayName: z.string().trim().min(1).max(255),
+  providerType: z.enum(providerTypes),
+});
+
+/** Validate the fields required for a personal-access-token provider account. */
+export const providerPatFormSchema = providerOAuthFormSchema.extend({
+  accessToken: z.string().min(1).max(4096),
+});
 
 /** Safe configured provider account. Credentials are never returned by the API. */
 export interface ProviderAccount {
@@ -14,7 +30,13 @@ export interface ProviderAccount {
   providerType: ProviderType;
 }
 
-/** Write-only input for a new provider account. */
+/** Input used to start a provider OAuth authorization. */
+export interface StartProviderOAuth {
+  displayName: string;
+  providerType: ProviderType;
+}
+
+/** Write-only input for a provider account that uses a personal access token. */
 export interface CreateProviderAccount {
   accessToken: string;
   baseUrl?: string;
@@ -22,6 +44,16 @@ export interface CreateProviderAccount {
   enabled?: boolean;
   providerType: ProviderType;
   webhookSecret?: string;
+}
+
+/** Browser destination returned when an OAuth authorization is started. */
+export interface ProviderOAuthAuthorization {
+  authorizationUrl: string;
+}
+
+/** Safe provider authentication capabilities for the current Flowpeek installation. */
+export interface ProviderAuthenticationOptions {
+  oauthProviderTypes: ProviderType[];
 }
 
 /** Write-only changes for an existing provider account. */

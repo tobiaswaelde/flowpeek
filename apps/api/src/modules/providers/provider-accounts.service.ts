@@ -16,6 +16,32 @@ export class ProviderAccountsService {
     this.assertAdmin(user);
     return this.prisma.providerAccount.findMany({ orderBy: { displayName: 'asc' } });
   }
+  /**
+   * Persists a provider token received from a completed OAuth authorization.
+   *
+   * @param user The administrator that authorized the account.
+   * @param input Provider account metadata and the returned OAuth token.
+   * @returns The encrypted provider account record.
+   */
+  async createFromOAuth(
+    user: AuthenticatedUser,
+    input: {
+      providerType: 'GITHUB' | 'GITLAB' | 'FORGEJO';
+      displayName: string;
+      baseUrl?: string;
+      accessToken: string;
+    },
+  ) {
+    return this.create(user, { ...input, enabled: true });
+  }
+
+  /**
+   * Persists a provider account that uses a manually supplied personal access token.
+   *
+   * @param user The administrator adding the provider account.
+   * @param input Provider account metadata and its write-only token.
+   * @returns The encrypted provider account record.
+   */
   async create(
     user: AuthenticatedUser,
     input: {
@@ -73,7 +99,8 @@ export class ProviderAccountsService {
     await this.require(id);
     await this.prisma.providerAccount.delete({ where: { id } });
   }
-  private assertAdmin(user: AuthenticatedUser): void {
+  /** Ensures that a request belongs to a system administrator. */
+  assertAdmin(user: AuthenticatedUser): void {
     if (user.role !== 'SYSTEM_ADMIN') throw new ForbiddenException('System administrator access is required.');
   }
   private async require(id: string) {
