@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { loadEnvironment } from './environment.js';
 
 const originalEnv = process.env;
@@ -46,5 +49,14 @@ describe('environment configuration', () => {
     process.env.GITHUB_OAUTH_CLIENT_ID = 'github-client';
 
     expect(() => loadEnvironment(process.env)).toThrow('GITHUB_OAUTH_CLIENT_SECRET');
+  });
+
+  it('uses deliberately unusable secret placeholders in the environment template', () => {
+    const template = readFileSync(resolve(__dirname, '../../../../.env.example'), 'utf8');
+
+    expect(template).toContain('POSTGRES_PASSWORD=replace-with-a-unique-postgresql-password');
+    expect(template).toContain('INITIAL_ADMIN_PASSWORD=replace-with-a-strong-initial-admin-password');
+    expect(template).toContain('TOKEN_ENCRYPTION_KEY=replace-with-a-base64-encoded-32-byte-key');
+    expect(template).not.toContain('MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=');
   });
 });

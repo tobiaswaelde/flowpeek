@@ -39,7 +39,9 @@ missing or violates a listed constraint. For a local setup, begin with:
 cp .env.example .env
 ```
 
-Replace every example secret before sharing or deploying an environment. The
+Replace every placeholder before sharing or deploying an environment. The
+template deliberately contains no usable passwords, tokens, or encryption
+keys, so the API will reject it until you provide real deployment values. The
 API accepts the following variables:
 
 | Variable                          | Required | Default                 | Purpose and constraints                                                                     |
