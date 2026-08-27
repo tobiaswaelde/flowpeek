@@ -25,7 +25,7 @@
     "@pinia/nuxt": "^1.0.2",
     "@querry-kit/nuxt": "^0.2.3",
     "@querry-kit/nuxt-ui": "^3.2.1",
-    "@tanstack/table-core": "^8.21.3",
+    "@tanstack/table-core": "^9.1.2",
     "@vueuse/core": "^14.4.0",
     "@vueuse/router": "^14.4.0",
     "axios": "1.18.1",
