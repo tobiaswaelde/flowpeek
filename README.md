@@ -1,7 +1,7 @@
 # Flowpeek
 
-Flowpeek is a read-only dashboard for GitHub Actions, GitLab pipelines, and
-Forgejo Actions. It tracks selected workflow runs, shows failures and trends,
+Flowpeek is a read-only dashboard for GitHub Actions, GitLab pipelines, Forgejo
+Actions, and Gitea Actions. It tracks selected workflow runs, shows failures and trends,
 and sends notifications without modifying provider resources.
 
 ## Status

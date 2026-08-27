@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service.js';
 import type { AuthenticatedUser } from '../auth/types.js';
@@ -45,7 +45,7 @@ export class ProviderAccountsService {
   async create(
     user: AuthenticatedUser,
     input: {
-      providerType: 'GITHUB' | 'GITLAB' | 'FORGEJO';
+      providerType: 'GITHUB' | 'GITLAB' | 'FORGEJO' | 'GITEA';
       displayName: string;
       baseUrl?: string;
       enabled?: boolean;
@@ -54,6 +54,9 @@ export class ProviderAccountsService {
     },
   ) {
     this.assertAdmin(user);
+    if (input.providerType === 'GITEA' && !input.baseUrl) {
+      throw new BadRequestException('A Gitea base URL is required.');
+    }
     return this.prisma.providerAccount.create({
       data: {
         providerType: input.providerType,
@@ -78,7 +81,10 @@ export class ProviderAccountsService {
     },
   ) {
     this.assertAdmin(user);
-    await this.require(id);
+    const account = await this.require(id);
+    if (account.providerType === 'GITEA' && input.baseUrl === null) {
+      throw new BadRequestException('A Gitea base URL is required.');
+    }
     return this.prisma.providerAccount.update({
       where: { id },
       data: {

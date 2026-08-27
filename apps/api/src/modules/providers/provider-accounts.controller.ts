@@ -9,7 +9,7 @@ import { ProviderAccountsService } from './provider-accounts.service.js';
 import { ProviderOAuthService } from './provider-oauth.service.js';
 
 class CreateProviderAccountDto {
-  @IsEnum(['GITHUB', 'GITLAB', 'FORGEJO']) providerType!: 'GITHUB' | 'GITLAB' | 'FORGEJO';
+  @IsEnum(['GITHUB', 'GITLAB', 'FORGEJO', 'GITEA']) providerType!: 'GITHUB' | 'GITLAB' | 'FORGEJO' | 'GITEA';
   @IsString() @MaxLength(255) displayName!: string;
   @IsString() @MinLength(1) @MaxLength(4096) accessToken!: string;
   @IsOptional() @IsUrl() baseUrl?: string;

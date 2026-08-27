@@ -2,7 +2,7 @@
   "name": "flowpeek",
   "version": "0.1.1",
   "private": true,
-  "description": "Read-only workflow status dashboard for GitHub, GitLab, and Forgejo.",
+  "description": "Read-only workflow status dashboard for GitHub, GitLab, Forgejo, and Gitea.",
   "license": "MIT",
   "packageManager": "pnpm@11.15.1",
   "engines": {

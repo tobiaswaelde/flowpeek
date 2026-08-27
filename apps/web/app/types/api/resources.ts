@@ -4,7 +4,7 @@ import { z } from 'zod';
 export type ApiTimestamp = string;
 
 /** Source forge type for a configured provider account. */
-export const providerTypes = ['GITHUB', 'GITLAB', 'FORGEJO'] as const;
+export const providerTypes = ['GITHUB', 'GITLAB', 'FORGEJO', 'GITEA'] as const;
 
 /** Source forge type for a configured provider account. */
 export type ProviderType = (typeof providerTypes)[number];
@@ -16,9 +16,16 @@ export const providerOAuthFormSchema = z.object({
 });
 
 /** Validate the fields required for a personal-access-token provider account. */
-export const providerPatFormSchema = providerOAuthFormSchema.extend({
-  accessToken: z.string().min(1).max(4096),
-});
+export const providerPatFormSchema = providerOAuthFormSchema
+  .extend({
+    accessToken: z.string().min(1).max(4096),
+    baseUrl: z.string().url().optional().or(z.literal('')),
+  })
+  .superRefine((provider, context) => {
+    if (provider.providerType === 'GITEA' && !provider.baseUrl) {
+      context.addIssue({ code: 'custom', message: 'A Gitea base URL is required.', path: ['baseUrl'] });
+    }
+  });
 
 /** Safe configured provider account. Credentials are never returned by the API. */
 export interface ProviderAccount {

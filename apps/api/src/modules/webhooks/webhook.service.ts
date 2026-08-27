@@ -91,7 +91,9 @@ export class WebhookService {
         ? [headers['x-github-delivery']]
         : providerType === 'GITLAB'
           ? [headers['webhook-id'], headers['x-gitlab-event-uuid']]
-          : [headers['x-forgejo-delivery'], headers['x-gitea-delivery']];
+          : providerType === 'FORGEJO'
+            ? [headers['x-forgejo-delivery'], headers['x-gitea-delivery']]
+            : [headers['x-gitea-delivery']];
     return candidates.find((header): header is string => typeof header === 'string' && header.length > 0) ?? null;
   }
 

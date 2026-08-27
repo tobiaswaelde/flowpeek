@@ -1,0 +1,10 @@
+[
+  {
+    "id": 42,
+    "name": "flowpeek",
+    "html_url": "https://gitea.example.test/flowpeek/flowpeek",
+    "owner": {
+      "login": "flowpeek"
+    }
+  }
+]

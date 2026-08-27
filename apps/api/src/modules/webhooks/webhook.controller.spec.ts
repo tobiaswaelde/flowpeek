@@ -29,4 +29,22 @@ describe('WebhookController', () => {
 
     expect(() => controller.gitlab('account-id', { headers: {} } as never)).toThrow(BadRequestException);
   });
+
+  it('passes a Gitea delivery to the dedicated provider endpoint', async () => {
+    const service = {
+      receive: jest.fn().mockResolvedValue({ accepted: true, duplicate: false }),
+    } as unknown as WebhookService;
+    const controller = new WebhookController(service);
+    const request = {
+      headers: { 'x-gitea-delivery': 'delivery-id' },
+      rawBody: Buffer.from('{"repository":{"id":42}}'),
+    };
+
+    await controller.gitea('account-id', request as never);
+
+    expect(service.receive).toHaveBeenCalledWith('GITEA', 'account-id', {
+      headers: request.headers,
+      payload: request.rawBody,
+    });
+  });
 });

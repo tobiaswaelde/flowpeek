@@ -70,6 +70,8 @@
     "authentication": "Authentifizierung",
     "authenticationOAuth": "OAuth-Anmeldung",
     "authenticationPat": "Persönlicher Zugriffstoken",
+    "baseUrl": "Gitea-Basis-URL",
+    "baseUrlPlaceholder": "https://gitea.example.com",
     "connect": "Anbieter verbinden",
     "connectDescription": "Nutze eine OAuth-Anmeldung oder einen persönlichen Zugriffstoken, um Flowpeek schreibgeschützten Zugriff zu geben.",
     "defaultUrl": "Standard-URL des Anbieters",

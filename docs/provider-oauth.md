@@ -36,6 +36,9 @@ Use these scopes when registering the application:
 - GitHub: `repo`. GitHub's OAuth application scope covers repository access, including private repositories.
 - GitLab: `read_api read_user`.
 - Forgejo: `read:repository`.
+- Gitea: configure a personal access token with read access in the Gitea provider-account form, including the
+  instance base URL. Flowpeek does not currently offer a shared Gitea OAuth client because every self-hosted
+  instance needs its own application registration.
 
 Flowpeek's adapters expose only validation, discovery, workflow synchronization, and webhook verification. They do
 not create, update, dispatch, rerun, cancel, or delete provider resources. OAuth client secrets stay in the API
