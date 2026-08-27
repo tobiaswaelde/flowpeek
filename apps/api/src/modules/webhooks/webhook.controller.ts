@@ -7,7 +7,7 @@ import { WebhookService, type WebhookAcceptance } from './webhook.service.js';
 
 type RawBodyRequest = Request & { rawBody?: Buffer };
 
-/** Accepts signed GitHub, GitLab, and Forgejo webhook deliveries. */
+/** Accepts signed GitHub, GitLab, Forgejo, and Gitea webhook deliveries. */
 @ApiTags('webhooks')
 @Controller('webhooks')
 export class WebhookController {
@@ -50,6 +50,19 @@ export class WebhookController {
     @Req() request: RawBodyRequest,
   ): Promise<WebhookAcceptance> {
     return this.receive('FORGEJO', providerAccountId, request);
+  }
+
+  /** Accept a signed Gitea webhook delivery. */
+  @Post('gitea/:providerAccountId')
+  @HttpCode(202)
+  @ApiOperation({ summary: 'Accept a signed Gitea webhook delivery' })
+  @ApiParam({ name: 'providerAccountId', format: 'uuid' })
+  @ApiAcceptedResponse({ description: 'The delivery was accepted for asynchronous synchronization.' })
+  gitea(
+    @Param('providerAccountId') providerAccountId: string,
+    @Req() request: RawBodyRequest,
+  ): Promise<WebhookAcceptance> {
+    return this.receive('GITEA', providerAccountId, request);
   }
 
   private receive(

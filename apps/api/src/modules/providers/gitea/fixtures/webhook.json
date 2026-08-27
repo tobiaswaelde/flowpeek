@@ -1,0 +1,10 @@
+{
+  "repository": {
+    "id": 42
+  },
+  "workflow_run": {
+    "id": 7,
+    "status": "completed",
+    "conclusion": "success"
+  }
+}

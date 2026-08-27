@@ -1,4 +1,4 @@
-import { ForbiddenException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 
 import { ProviderAccountsService } from './provider-accounts.service.js';
 
@@ -42,6 +42,29 @@ describe('ProviderAccountsService', () => {
     expect(prisma.providerAccount.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ encryptedAccessToken: 'encrypted:personal-access-token' }),
+      }),
+    );
+  });
+
+  it('requires and encrypts the Gitea base URL and personal access token', async () => {
+    await expect(
+      service.create(admin, { accessToken: 'token', displayName: 'Gitea', providerType: 'GITEA' }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    await service.create(admin, {
+      accessToken: 'token',
+      baseUrl: 'https://gitea.example.test',
+      displayName: 'Gitea',
+      providerType: 'GITEA',
+    });
+
+    expect(prisma.providerAccount.create).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          baseUrl: 'https://gitea.example.test',
+          encryptedAccessToken: 'encrypted:token',
+          providerType: 'GITEA',
+        }),
       }),
     );
   });

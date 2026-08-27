@@ -57,6 +57,26 @@ describe('WebhookService', () => {
     expect(mocks.sync.syncRepositoryByProviderReference).not.toHaveBeenCalled();
   });
 
+  it('uses the native Gitea delivery ID for idempotent synchronization', async () => {
+    const mocks = createMocks();
+    mocks.prisma.providerAccount.findUnique.mockResolvedValue({
+      enabled: true,
+      encryptedWebhookSecret: 'encrypted-secret',
+      providerType: 'GITEA',
+    });
+    mocks.adapter.verifyWebhook.mockResolvedValue({ event: 'workflow_run', providerRepositoryId: '42' });
+
+    await expect(
+      createService(mocks).receive('GITEA', 'account-id', {
+        headers: { 'x-gitea-delivery': 'delivery-id' },
+        payload,
+      }),
+    ).resolves.toEqual({ accepted: true, duplicate: false });
+    expect(mocks.prisma.webhookDelivery.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ deliveryId: 'delivery-id' }) }),
+    );
+  });
+
   it('rejects a request without a configured account secret', async () => {
     const mocks = createMocks();
     mocks.prisma.providerAccount.findUnique.mockResolvedValue({

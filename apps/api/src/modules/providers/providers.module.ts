@@ -6,6 +6,7 @@ import { SecurityModule } from '../../security/security.module.js';
 import { NotificationsModule } from '../notifications/notifications.module.js';
 import { RepositoriesModule } from '../repositories/repositories.module.js';
 import { ForgejoActionsAdapter } from './forgejo/forgejo-actions.adapter.js';
+import { GiteaActionsAdapter } from './gitea/gitea-actions.adapter.js';
 import { GitHubActionsAdapter } from './github/github-actions.adapter.js';
 import { GitLabPipelinesAdapter } from './gitlab/gitlab-pipelines.adapter.js';
 import { ProviderAccountsController } from './provider-accounts.controller.js';
@@ -33,11 +34,16 @@ import { ProviderSyncService } from './sync.service.js';
     GitHubActionsAdapter,
     GitLabPipelinesAdapter,
     ForgejoActionsAdapter,
+    GiteaActionsAdapter,
     {
       provide: ProviderAdapterRegistry,
-      useFactory: (github: GitHubActionsAdapter, gitlab: GitLabPipelinesAdapter, forgejo: ForgejoActionsAdapter) =>
-        new ProviderAdapterRegistry([github, gitlab, forgejo]),
-      inject: [GitHubActionsAdapter, GitLabPipelinesAdapter, ForgejoActionsAdapter],
+      useFactory: (
+        github: GitHubActionsAdapter,
+        gitlab: GitLabPipelinesAdapter,
+        forgejo: ForgejoActionsAdapter,
+        gitea: GiteaActionsAdapter,
+      ) => new ProviderAdapterRegistry([github, gitlab, forgejo, gitea]),
+      inject: [GitHubActionsAdapter, GitLabPipelinesAdapter, ForgejoActionsAdapter, GiteaActionsAdapter],
     },
     ProviderSyncService,
   ],

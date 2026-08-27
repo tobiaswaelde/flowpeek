@@ -7,7 +7,7 @@ export class DashboardProviderDto {
   @ApiProperty()
   id!: string;
 
-  @ApiProperty({ enum: ['GITHUB', 'GITLAB', 'FORGEJO'] })
+  @ApiProperty({ enum: ['GITHUB', 'GITLAB', 'FORGEJO', 'GITEA'] })
   providerType!: ProviderAccount['providerType'];
 
   @ApiProperty()

@@ -2,7 +2,7 @@
 
 Flowpeek can receive signed webhooks to synchronize a tracked repository sooner
 than its normal polling interval. It never creates, updates, deletes, or tests
-webhooks through GitHub, GitLab, or Forgejo APIs. An administrator configures
+webhooks through GitHub, GitLab, Forgejo, or Gitea APIs. An administrator configures
 each provider webhook manually in the provider UI.
 
 Webhooks are an optimization, not the source of truth. Flowpeek uses the
@@ -22,10 +22,8 @@ through the configured read-only provider adapter.
 4. Expose Flowpeek through a public HTTPS URL. The URL must reach the API,
    including its `/api` prefix, without a proxy rewriting the request body.
 
-The provider-account management UI and API will perform server-side secret
-encryption when they are introduced. Until then, deployment provisioning must
-set the encrypted account field on the server. Do not use direct SQL with a
-plaintext secret.
+The provider-account management UI and API encrypt webhook secrets on the
+Flowpeek server. Do not use direct SQL with a plaintext secret.
 
 Each accepted delivery returns HTTP `202` with `{ "accepted": true }`.
 Repeated provider delivery IDs return `{ "accepted": true, "duplicate": true }`
@@ -101,6 +99,28 @@ monitored instance must expose the read-only Actions run API; otherwise
 Flowpeek reports the adapter limitation during synchronization. See the Forgejo
 [webhook documentation](https://forgejo.org/docs/latest/user/repository/webhooks/)
 and [Actions guide](https://forgejo.org/docs/latest/user/actions/overview/).
+
+## Gitea Actions
+
+1. Add a Gitea provider account using a personal access token with read access and the exact instance base URL,
+   such as `https://gitea.example.com`. Flowpeek appends `/api/v1` itself; do not include it twice.
+2. In the Gitea repository or organization, open **Settings → Webhooks** and add a native **Gitea** webhook with
+   JSON POST payloads.
+3. Set the target URL to:
+
+   ```text
+   https://flowpeek.example.com/api/webhooks/gitea/<provider-account-id>
+   ```
+
+4. Set the webhook secret to the unique Flowpeek secret stored with this provider account.
+5. Subscribe to **Push events** and any available workflow events. Polling remains the source of truth for the
+   final Actions run status.
+6. Keep TLS verification enabled and save the webhook.
+
+Flowpeek verifies Gitea's raw request body with the `X-Gitea-Signature` HMAC-SHA256 header and records
+`X-Gitea-Delivery` for idempotency. It only calls Gitea's read-only repository and Actions run endpoints after a
+verified delivery. See the [Gitea webhook documentation](https://docs.gitea.com/usage/repository/webhooks/) and
+[Actions API](https://docs.gitea.com/api/next/operations/get-workflow-runs/).
 
 ## Troubleshooting
 

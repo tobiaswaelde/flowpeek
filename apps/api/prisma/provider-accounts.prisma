@@ -2,6 +2,7 @@ enum ProviderType {
   GITHUB
   GITLAB
   FORGEJO
+  GITEA
 }
 
 model ProviderAccount {

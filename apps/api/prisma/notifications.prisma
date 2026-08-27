@@ -97,6 +97,7 @@ model NotificationDelivery {
 
   @@unique([notificationRuleId, workflowRunId])
   @@index([status, createdAt])
+  @@index([status, nextAttemptAt])
   @@map("notification_deliveries")
 }
 
@@ -115,7 +116,7 @@ model NotificationDeliveryAttempt {
   notificationChannelId String              @db.Uuid
   notificationChannel   NotificationChannel @relation(fields: [notificationChannelId], references: [id], onDelete: Cascade)
 
-  @@unique([notificationDeliveryId, notificationChannelId, attempt])
-  @@index([notificationChannelId, createdAt])
+  @@unique([notificationDeliveryId, notificationChannelId, attempt], map: "notification_delivery_attempts_notificationDeliveryId_notificat")
+  @@index([notificationChannelId, createdAt], map: "notification_delivery_attempts_notificationChannelId_createdAt_")
   @@map("notification_delivery_attempts")
 }

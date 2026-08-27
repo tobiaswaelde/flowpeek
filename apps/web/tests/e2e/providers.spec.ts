@@ -23,5 +23,11 @@ test('provider account form renders as a structured native UI form', async ({ pa
   await expect(page.getByRole('combobox').first()).toBeVisible();
   await expect(page.getByPlaceholder(/read-only token|schreibgeschützten token/i)).toBeVisible();
 
+  await page.getByRole('combobox').first().click();
+  await page.getByRole('option', { name: 'Gitea' }).click();
+
+  await expect(page.getByRole('option', { name: 'Gitea' })).not.toBeVisible();
+  await expect(page.getByPlaceholder('https://gitea.example.com')).toBeVisible();
+
   await page.screenshot({ path: testInfo.outputPath('provider-account-form.png'), fullPage: true });
 });

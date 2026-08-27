@@ -20,16 +20,18 @@ const submitting = ref(false);
 const connectionError = ref(false);
 const oauthProviderTypes = ref<ProviderType[]>([]);
 const authenticationMethod = ref<AuthenticationMethod>('PAT');
-const form = reactive({ accessToken: '', displayName: '', providerType: 'GITHUB' as ProviderType });
+const form = reactive({ accessToken: '', baseUrl: '', displayName: '', providerType: 'GITHUB' as ProviderType });
 const { reset: resetDirtyState } = useUnsavedChangesGuard(form);
 const oauthStatus = computed(() => route.query.oauth);
 const oauthAvailable = computed(() => oauthProviderTypes.value.includes(form.providerType));
 const usePat = computed(() => !oauthAvailable.value || authenticationMethod.value === 'PAT');
+const requiresBaseUrl = computed(() => form.providerType === 'GITEA');
 const providerFormSchema = computed(() => (usePat.value ? providerPatFormSchema : providerOAuthFormSchema));
 const providerTypeOptions: Array<{ icon: string; label: string; value: ProviderType }> = [
   { icon: 'i-tabler-brand-github', label: 'GitHub', value: 'GITHUB' },
   { icon: 'i-tabler-brand-gitlab', label: 'GitLab', value: 'GITLAB' },
   { icon: 'i-tabler-brand-gnu', label: 'Forgejo', value: 'FORGEJO' },
+  { icon: 'i-tabler-brand-gitea', label: 'Gitea', value: 'GITEA' },
 ];
 const authenticationOptions = computed(() => [
   { icon: 'i-tabler-key', label: $t('providers.authenticationOAuth'), value: 'OAUTH' },
@@ -56,7 +58,7 @@ async function addProvider(): Promise<void> {
   try {
     if (usePat.value) {
       await api.providerAccounts.create(form);
-      Object.assign(form, { accessToken: '', displayName: '', providerType: 'GITHUB' });
+      Object.assign(form, { accessToken: '', baseUrl: '', displayName: '', providerType: 'GITHUB' });
       resetDirtyState();
       await load();
       return;
@@ -125,6 +127,16 @@ onMounted(load);
               autocomplete="off"
               class="w-full"
               type="password"
+            />
+          </UFormField>
+          <UFormField v-if="requiresBaseUrl" :label="$t('providers.baseUrl')" name="baseUrl" required>
+            <UInput
+              v-model="form.baseUrl"
+              :placeholder="$t('providers.baseUrlPlaceholder')"
+              autocomplete="url"
+              class="w-full"
+              inputmode="url"
+              type="url"
             />
           </UFormField>
         </div>

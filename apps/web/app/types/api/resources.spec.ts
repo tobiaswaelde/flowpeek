@@ -20,4 +20,18 @@ describe('web API contracts', () => {
     expect(providerOAuthFormSchema.safeParse({ displayName: 'GitHub', providerType: 'GITHUB' }).success).toBe(true);
     expect(providerPatFormSchema.safeParse({ displayName: 'GitHub', providerType: 'GITHUB' }).success).toBe(false);
   });
+
+  it('requires a base URL when a Gitea personal access token is configured', () => {
+    expect(
+      providerPatFormSchema.safeParse({ accessToken: 'token', displayName: 'Gitea', providerType: 'GITEA' }).success,
+    ).toBe(false);
+    expect(
+      providerPatFormSchema.safeParse({
+        accessToken: 'token',
+        baseUrl: 'https://gitea.example.test',
+        displayName: 'Gitea',
+        providerType: 'GITEA',
+      }).success,
+    ).toBe(true);
+  });
 });
