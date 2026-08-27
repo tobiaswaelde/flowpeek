@@ -27,7 +27,7 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/pg": "^8.23.1",
-    "@types/picomatch": "^3.0.2",
+    "@types/picomatch": "^4.0.3",
     "jest": "^30.4.2",
     "ts-jest": "^29.4.12",
     "ts-node": "^10.9.2",
