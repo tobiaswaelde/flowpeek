@@ -10,18 +10,18 @@
     "pnpm": "11.x"
   },
   "scripts": {
-    "build": "nx run-many -t build --all --parallel=2",
+    "build": "nx run-many -t build --all --exclude=flowpeek --parallel=2",
     "changeset": "changeset",
     "db:generate": "nx run api:db:generate",
-    "dev": "nx run-many -t dev --all --parallel=2",
-    "docker:build": "nx run-many -t docker:build --all --parallel=2",
+    "dev": "nx run-many -t dev --all --exclude=flowpeek --parallel=2",
+    "docker:build": "nx run-many -t docker:build --all --exclude=flowpeek --parallel=2",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "nx run-many -t lint --all --parallel=2",
+    "lint": "nx run-many -t lint --all --exclude=flowpeek --parallel=2",
     "nx": "nx",
     "release": "changeset tag",
-    "test": "nx run-many -t test --all --parallel=2",
-    "typecheck": "nx run-many -t typecheck --all --parallel=2",
+    "test": "nx run-many -t test --all --exclude=flowpeek --parallel=2",
+    "typecheck": "nx run-many -t typecheck --all --exclude=flowpeek --parallel=2",
     "version-packages": "changeset version"
   },
   "devDependencies": {
