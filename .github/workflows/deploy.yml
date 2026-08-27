@@ -46,12 +46,12 @@ jobs:
 
       - name: Create or update release pull request
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          version: pnpm version-packages
-          publish: pnpm release
-          createGithubReleases: true
+          version-script: pnpm version-packages
+          publish-script: pnpm release
+          create-github-releases: true
 
   publish-images:
     name: Publish container images
