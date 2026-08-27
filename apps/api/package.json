@@ -9,11 +9,11 @@
     "db:migrate:dev": "prisma migrate dev --config prisma.config.ts",
     "db:validate": "prisma validate --config prisma.config.ts",
     "dev": "nest start --watch",
-    "docker:build": "docker build -f apps/api/Dockerfile -t flowpeek-api:local .",
+    "docker:build": "docker build -f Dockerfile -t flowpeek-api:local ../..",
     "lint": "eslint .",
     "start": "nest start",
     "start:prod": "node dist/main.js",
-    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.ts --runInBand",
+    "test": "NODE_ENV=test node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.ts --runInBand",
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "devDependencies": {
