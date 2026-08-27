@@ -3,7 +3,10 @@
     id="flowpeek"
     collapsible
     resizable
+    :default-size="16"
+    :aria-label="t('layout.sidebarNavigation')"
     class="bg-elevated/25"
+    role="complementary"
     :ui="{ footer: 'flex-col items-stretch' }"
   >
     <template #header="{ collapsed }">
@@ -35,7 +38,10 @@
     </template>
 
     <template #footer="{ collapsed }">
-      <div v-if="!collapsed" class="px-2 py-1 text-xs text-muted">{{ t('layout.readOnlyStatus') }}</div>
+      <div class="flex items-center gap-2 px-2 py-1">
+        <p v-if="!collapsed" class="min-w-0 flex-1 text-xs text-muted">{{ t('layout.readOnlyStatus') }}</p>
+        <UDashboardSidebarCollapse class="ml-auto" />
+      </div>
     </template>
   </UDashboardSidebar>
 </template>

@@ -2,11 +2,16 @@
   "auth": {
     "invalidCredentials": "Benutzername oder Passwort sind nicht korrekt.",
     "password": "Passwort",
+    "passwordPlaceholder": "Passwort eingeben",
     "signIn": "Anmelden",
     "signInDescription": "Melde dich mit deinen Flowpeek-Zugangsdaten an.",
     "signOut": "Abmelden",
     "username": "Benutzername",
+    "usernamePlaceholder": "Benutzernamen eingeben",
     "validationError": "Gib Benutzername und Passwort ein, um fortzufahren."
+  },
+  "forms": {
+    "unsavedChanges": "Es gibt ungespeicherte Änderungen. Seite trotzdem verlassen?"
   },
   "dashboard": {
     "createdAt": "Erstellt",
@@ -40,6 +45,13 @@
     "providers": "Anbieter-Konten",
     "readOnlyStatus": "Schreibgeschützte Überwachung von Workflow-Status",
     "repositories": "Repositories",
+    "search": "Suche",
+    "searchNavigation": "Navigation",
+    "searchNoResults": "Keine passenden Seiten oder Workflow-Ausführungen gefunden.",
+    "searchPlaceholder": "Flowpeek durchsuchen",
+    "searchWorkflowRuns": "Workflow-Ausführungen",
+    "sidebarNavigation": "Seitennavigation",
+    "skipToContent": "Zum Hauptinhalt springen",
     "theme": "Darstellung",
     "themeDark": "Dunkel",
     "themeLight": "Hell",
@@ -52,8 +64,14 @@
     "VIEWER": "Leseberechtigung"
   },
   "providers": {
-    "accessToken": "Zugriffstoken",
+    "accessToken": "Persönlicher Zugriffstoken",
+    "accessTokenPlaceholder": "Schreibgeschützten Token einfügen",
     "add": "Anbieter hinzufügen",
+    "authentication": "Authentifizierung",
+    "authenticationOAuth": "OAuth-Anmeldung",
+    "authenticationPat": "Persönlicher Zugriffstoken",
+    "connect": "Anbieter verbinden",
+    "connectDescription": "Nutze eine OAuth-Anmeldung oder einen persönlichen Zugriffstoken, um Flowpeek schreibgeschützten Zugriff zu geben.",
     "defaultUrl": "Standard-URL des Anbieters",
     "delete": "Löschen",
     "description": "Verwalte schreibgeschützte Workflow-Anbieter-Verbindungen.",
@@ -64,9 +82,13 @@
     "enable": "Aktivieren",
     "loadError": "Anbieter-Konten konnten nicht geladen werden.",
     "name": "Name",
+    "namePlaceholder": "z. B. Produktion GitHub",
+    "oauthConnected": "Anbieter-Konto verbunden.",
+    "oauthError": "Das Anbieter-Konto konnte nicht verbunden werden.",
     "refresh": "Aktualisieren",
     "title": "Anbieter-Konten",
-    "type": "Anbieter-Typ"
+    "type": "Anbieter-Typ",
+    "typePlaceholder": "Anbieter auswählen"
   },
   "users": { "delete": "Löschen", "description": "System-Benutzerverwaltung.", "title": "Benutzer" },
   "notifications": {

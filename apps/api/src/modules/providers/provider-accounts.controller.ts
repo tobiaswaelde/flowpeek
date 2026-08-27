@@ -4,7 +4,9 @@ import { IsBoolean, IsEnum, IsOptional, IsString, IsUrl, MaxLength, MinLength } 
 import { Authenticated } from '../auth/authenticated.decorator.js';
 import type { AuthenticatedUser } from '../auth/types.js';
 import { ProviderAccountDto } from '../repositories/dto/resource.dto.js';
+import { StartProviderOAuthDto, type ProviderOAuthAuthorizationDto } from './dto/provider-oauth.dto.js';
 import { ProviderAccountsService } from './provider-accounts.service.js';
+import { ProviderOAuthService } from './provider-oauth.service.js';
 
 class CreateProviderAccountDto {
   @IsEnum(['GITHUB', 'GITLAB', 'FORGEJO']) providerType!: 'GITHUB' | 'GITLAB' | 'FORGEJO';
@@ -14,6 +16,7 @@ class CreateProviderAccountDto {
   @IsOptional() @IsBoolean() enabled?: boolean;
   @IsOptional() @IsString() @MaxLength(4096) webhookSecret?: string;
 }
+
 class UpdateProviderAccountDto {
   @IsOptional() @IsString() @MaxLength(255) displayName?: string;
   @IsOptional() @IsUrl() baseUrl?: string | null;
@@ -25,15 +28,33 @@ class UpdateProviderAccountDto {
 @Authenticated()
 @Controller('provider-accounts')
 export class ProviderAccountsController {
-  constructor(private readonly accounts: ProviderAccountsService) {}
+  constructor(
+    private readonly accounts: ProviderAccountsService,
+    private readonly oauth: ProviderOAuthService,
+  ) {}
   @Get() async list(@Req() req: { user: AuthenticatedUser }): Promise<ProviderAccountDto[]> {
     return (await this.accounts.list(req.user)).map((account) => ProviderAccountDto.fromModel(account));
   }
+  /** Returns providers for which this installation has a configured OAuth client. */
+  @Get('authentication-options') authenticationOptions(@Req() req: { user: AuthenticatedUser }): {
+    oauthProviderTypes: Array<'GITHUB' | 'GITLAB' | 'FORGEJO'>;
+  } {
+    this.accounts.assertAdmin(req.user);
+    return { oauthProviderTypes: this.oauth.availableProviderTypes() };
+  }
+  /** Adds a provider account with a manually supplied personal access token. */
   @Post() async create(
     @Req() req: { user: AuthenticatedUser },
     @Body() body: CreateProviderAccountDto,
   ): Promise<ProviderAccountDto> {
     return ProviderAccountDto.fromModel(await this.accounts.create(req.user, body));
+  }
+  /** Starts an OAuth authorization for a new provider account. */
+  @Post('oauth/authorize') async authorize(
+    @Req() req: { user: AuthenticatedUser },
+    @Body() body: StartProviderOAuthDto,
+  ): Promise<ProviderOAuthAuthorizationDto> {
+    return this.oauth.start(req.user, body);
   }
   @Patch(':id') async update(
     @Req() req: { user: AuthenticatedUser },

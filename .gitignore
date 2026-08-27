@@ -7,6 +7,9 @@ coverage/
 .nx/
 .nuxt/
 .output/
+playwright-report/
+test-results/
+apps/web/tests/e2e/.auth/
 *.tsbuildinfo
 
 # Prisma generated client

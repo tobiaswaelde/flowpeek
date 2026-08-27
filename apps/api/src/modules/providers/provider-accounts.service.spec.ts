@@ -18,18 +18,31 @@ describe('ProviderAccountsService', () => {
 
   beforeEach(() => jest.clearAllMocks());
 
-  it('encrypts write-only provider credentials before persistence', async () => {
-    await service.create(admin, {
+  it('encrypts OAuth provider credentials before persistence', async () => {
+    await service.createFromOAuth(admin, {
       accessToken: 'access-token',
       displayName: 'GitHub',
       providerType: 'GITHUB',
-      webhookSecret: 'webhook-secret',
     });
 
     expect(credentials.encrypt).toHaveBeenCalledWith('access-token');
-    expect(credentials.encrypt).toHaveBeenCalledWith('webhook-secret');
     expect(prisma.providerAccount.create).toHaveBeenCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ encryptedAccessToken: 'encrypted:access-token' }) }),
+    );
+  });
+
+  it('encrypts manually supplied provider tokens before persistence', async () => {
+    await service.create(admin, {
+      accessToken: 'personal-access-token',
+      displayName: 'GitLab',
+      providerType: 'GITLAB',
+    });
+
+    expect(credentials.encrypt).toHaveBeenCalledWith('personal-access-token');
+    expect(prisma.providerAccount.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ encryptedAccessToken: 'encrypted:personal-access-token' }),
+      }),
     );
   });
 

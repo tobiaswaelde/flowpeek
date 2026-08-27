@@ -1,13 +1,11 @@
 <template>
-  <UDashboardNavbar :title="title">
+  <UDashboardNavbar :ui="{ left: 'flex-1 min-w-0', right: 'gap-2' }">
+    <template #left>
+      <LayoutGlobalSearch />
+    </template>
+
     <template #right>
-      <LayoutUserMenu />
+      <LayoutNavbarControls />
     </template>
   </UDashboardNavbar>
 </template>
-
-<script setup lang="ts">
-defineProps<{
-  title: string;
-}>();
-</script>

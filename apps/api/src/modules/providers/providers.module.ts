@@ -13,11 +13,14 @@ import { ProviderAccountsService } from './provider-accounts.service.js';
 import { PROVIDER_FETCH } from './provider-adapter.js';
 import { ProviderAdapterRegistry } from './provider-adapter.registry.js';
 import { ProviderCredentialService } from './provider-credential.service.js';
+import { ProviderOAuthStateService } from './provider-oauth-state.service.js';
+import { ProviderOAuthController } from './provider-oauth.controller.js';
+import { ProviderOAuthService } from './provider-oauth.service.js';
 import { ProviderSyncService } from './sync.service.js';
 
 @Module({
   imports: [CaslModule, JobsModule, NotificationsModule, RepositoriesModule, SecurityModule],
-  controllers: [ProviderAccountsController],
+  controllers: [ProviderAccountsController, ProviderOAuthController],
   providers: [
     {
       provide: PROVIDER_FETCH,
@@ -25,6 +28,8 @@ import { ProviderSyncService } from './sync.service.js';
     },
     ProviderAccountsService,
     ProviderCredentialService,
+    ProviderOAuthService,
+    ProviderOAuthStateService,
     GitHubActionsAdapter,
     GitLabPipelinesAdapter,
     ForgejoActionsAdapter,

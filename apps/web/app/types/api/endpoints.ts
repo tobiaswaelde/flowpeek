@@ -27,7 +27,11 @@ export const apiEndpoints = {
   notificationChannels: '/notification-channels',
   notificationDeliveries: '/notification-deliveries',
   notificationRules: '/notification-rules',
-  providerAccounts: '/provider-accounts',
+  providerAccounts: {
+    authenticationOptions: '/provider-accounts/authentication-options',
+    authorize: '/provider-accounts/oauth/authorize',
+    base: '/provider-accounts',
+  },
   repositories: '/repositories',
   users: '/users',
   workflowRuns: 'workflow-runs',

@@ -44,6 +44,18 @@ const validators = {
   INITIAL_ADMIN_USERNAME: str({ default: 'admin' }),
   INITIAL_ADMIN_PASSWORD: str({ desc: 'Initial administrator password' }),
   TOKEN_ENCRYPTION_KEY: base64Key({ desc: 'Base64-encoded 32-byte encryption key' }),
+  OAUTH_CALLBACK_URL: httpUrl({
+    default: 'http://localhost:3001/api/v1/provider-accounts/oauth/callback',
+    desc: 'Public API callback URL registered with OAuth providers',
+  }),
+  GITHUB_OAUTH_CLIENT_ID: str({ default: '' }),
+  GITHUB_OAUTH_CLIENT_SECRET: str({ default: '' }),
+  GITLAB_OAUTH_BASE_URL: httpUrl({ default: 'https://gitlab.com' }),
+  GITLAB_OAUTH_CLIENT_ID: str({ default: '' }),
+  GITLAB_OAUTH_CLIENT_SECRET: str({ default: '' }),
+  FORGEJO_OAUTH_BASE_URL: str({ default: '' }),
+  FORGEJO_OAUTH_CLIENT_ID: str({ default: '' }),
+  FORGEJO_OAUTH_CLIENT_SECRET: str({ default: '' }),
   SCHEDULER_ENABLED: bool({ default: true }),
   SCHEDULER_SYNC_INTERVAL_SECONDS: positiveInteger({ default: 300 }),
   SMTP_HOST: str({ default: '' }),
@@ -87,6 +99,37 @@ export function loadEnvironment(environment: NodeJS.ProcessEnv): FlowpeekEnviron
 
   if (!config.SMTP_HOST && (config.SMTP_FROM || config.SMTP_USERNAME || config.SMTP_PASSWORD)) {
     throw new Error('SMTP_HOST is required when SMTP sender or credentials are configured');
+  }
+
+  const oauthClients = [
+    [
+      'GITHUB_OAUTH_CLIENT_ID',
+      config.GITHUB_OAUTH_CLIENT_ID,
+      'GITHUB_OAUTH_CLIENT_SECRET',
+      config.GITHUB_OAUTH_CLIENT_SECRET,
+    ],
+    [
+      'GITLAB_OAUTH_CLIENT_ID',
+      config.GITLAB_OAUTH_CLIENT_ID,
+      'GITLAB_OAUTH_CLIENT_SECRET',
+      config.GITLAB_OAUTH_CLIENT_SECRET,
+    ],
+    [
+      'FORGEJO_OAUTH_CLIENT_ID',
+      config.FORGEJO_OAUTH_CLIENT_ID,
+      'FORGEJO_OAUTH_CLIENT_SECRET',
+      config.FORGEJO_OAUTH_CLIENT_SECRET,
+    ],
+  ] as const;
+
+  for (const [idName, clientId, secretName, clientSecret] of oauthClients) {
+    if (Boolean(clientId) !== Boolean(clientSecret)) {
+      throw new Error(`${idName} and ${secretName} must be configured together`);
+    }
+  }
+
+  if (config.FORGEJO_OAUTH_CLIENT_ID && !config.FORGEJO_OAUTH_BASE_URL) {
+    throw new Error('FORGEJO_OAUTH_BASE_URL is required when Forgejo OAuth is configured');
   }
 
   return config;

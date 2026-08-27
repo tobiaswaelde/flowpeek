@@ -142,16 +142,12 @@ onMounted(loadDashboard);
         ><template #header
           ><div class="flex items-center justify-between gap-3">
             <h2 class="font-semibold">{{ $t('dashboard.trend') }}</h2>
-            <select
+            <USelect
               v-model="range"
-              class="rounded-md border border-default bg-default px-2 py-1 text-sm"
-              @change="loadDashboard"
-            >
-              <option v-for="option in rangeOptions" :key="option.value" :value="option.value">
-                {{ option.label }}
-              </option>
-            </select>
-          </div></template
+              :items="rangeOptions"
+              class="w-36"
+              @update:model-value="loadDashboard"
+            /></div></template
         ><TrendChart :buckets="trend"
       /></UCard>
     </div>

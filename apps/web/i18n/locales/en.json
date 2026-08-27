@@ -2,11 +2,16 @@
   "auth": {
     "invalidCredentials": "Your username or password is incorrect.",
     "password": "Password",
+    "passwordPlaceholder": "Enter your password",
     "signIn": "Sign in",
     "signInDescription": "Use your Flowpeek credentials to continue.",
     "signOut": "Sign out",
     "username": "Username",
+    "usernamePlaceholder": "Enter your username",
     "validationError": "Enter your username and password to continue."
+  },
+  "forms": {
+    "unsavedChanges": "You have unsaved changes. Leave this page anyway?"
   },
   "dashboard": {
     "createdAt": "Created",
@@ -40,6 +45,13 @@
     "providers": "Provider accounts",
     "readOnlyStatus": "Read-only workflow status monitoring",
     "repositories": "Repositories",
+    "search": "Search",
+    "searchNavigation": "Navigation",
+    "searchNoResults": "No matching pages or workflow runs found.",
+    "searchPlaceholder": "Search Flowpeek",
+    "searchWorkflowRuns": "Workflow runs",
+    "sidebarNavigation": "Sidebar navigation",
+    "skipToContent": "Skip to main content",
     "theme": "Theme",
     "themeDark": "Dark",
     "themeLight": "Light",
@@ -52,8 +64,14 @@
     "VIEWER": "Viewer"
   },
   "providers": {
-    "accessToken": "Access token",
+    "accessToken": "Personal access token",
+    "accessTokenPlaceholder": "Paste a read-only token",
     "add": "Add provider",
+    "authentication": "Authentication",
+    "authenticationOAuth": "OAuth sign-in",
+    "authenticationPat": "Personal access token",
+    "connect": "Connect provider",
+    "connectDescription": "Use OAuth sign-in or a personal access token to grant Flowpeek read-only access.",
     "defaultUrl": "Default provider URL",
     "delete": "Delete",
     "description": "Manage read-only workflow provider connections.",
@@ -64,9 +82,13 @@
     "enable": "Enable",
     "loadError": "Provider accounts could not be loaded.",
     "name": "Name",
+    "namePlaceholder": "e.g. Production GitHub",
+    "oauthConnected": "Provider account connected.",
+    "oauthError": "The provider account could not be connected.",
     "refresh": "Refresh",
     "title": "Provider accounts",
-    "type": "Provider type"
+    "type": "Provider type",
+    "typePlaceholder": "Select a provider"
   },
   "users": { "delete": "Delete", "description": "System user administration.", "title": "Users" },
   "notifications": {
