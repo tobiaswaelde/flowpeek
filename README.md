@@ -105,6 +105,21 @@ The GitHub deployment workflow will create or update a release pull request.
 After that pull request is merged, it creates the release tag and publishes
 matching API and web Docker images to GitHub Container Registry.
 
+## Dependency updates
+
+Dependabot checks the root pnpm workspace, both application manifests, and the
+GitHub Actions workflows every Monday. Routine version updates are grouped by
+production or development scope; security updates remain separate for focused
+review. TypeScript is intentionally excluded because every workspace manifest
+pins the validated compiler version `6.0.3` exactly.
+
+Review each update against its lockfile changes and run the affected checks. At
+minimum, run `pnpm install --frozen-lockfile`, `pnpm lint`, `pnpm typecheck`,
+and `pnpm test`; run application-specific build or Docker checks when a runtime
+dependency or build tooling changes. Add exactly one focused Changeset when a
+dependency update changes released runtime behavior. Lockfile-only, tooling,
+and GitHub Actions updates do not need a Changeset.
+
 ## Architecture
 
 - `apps/api`: NestJS, Prisma, PostgreSQL, CASL, and `@querry-kit/nest`.
