@@ -26,7 +26,13 @@ export class CaslAbilityFactory {
     }
 
     const repositoryIds = memberships.map(({ repositoryId }) => repositoryId);
-    if (repositoryIds.length === 0) return build();
+    if (repositoryIds.length === 0) {
+      can(CaslAction.Read, CaslSubject.Repository, { id: { in: [] } });
+      can(CaslAction.Read, CaslSubject.WorkflowRun, { repositoryId: { in: [] } });
+      can(CaslAction.Read, CaslSubject.NotificationChannel, { repositoryId: { in: [] } });
+      can(CaslAction.Read, CaslSubject.NotificationRule, { repositoryId: { in: [] } });
+      return build();
+    }
 
     can(CaslAction.Read, CaslSubject.Repository, { id: { in: repositoryIds } });
     can(CaslAction.Read, CaslSubject.WorkflowRun, { repositoryId: { in: repositoryIds } });
