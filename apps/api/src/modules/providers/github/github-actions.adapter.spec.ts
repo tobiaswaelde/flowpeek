@@ -1,6 +1,11 @@
 import { createHmac } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 import { GitHubActionsAdapter } from './github-actions.adapter.js';
+
+const fixtureDirectory = resolve(__dirname, 'fixtures');
+const readFixture = (name: string): unknown => JSON.parse(readFileSync(resolve(fixtureDirectory, name), 'utf8'));
 
 describe('GitHubActionsAdapter', () => {
   const context = { accessToken: 'token', baseUrl: null, providerAccountId: 'account' };
@@ -8,37 +13,8 @@ describe('GitHubActionsAdapter', () => {
   it('maps repositories and normalizes workflow runs through read-only requests', async () => {
     const fetchFn = jest
       .fn()
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify([
-            {
-              id: 1,
-              name: 'flowpeek',
-              full_name: 'octo/flowpeek',
-              html_url: 'https://github.com/octo/flowpeek',
-              owner: { login: 'octo' },
-            },
-          ]),
-        ),
-      )
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
-            workflow_runs: [
-              {
-                id: 7,
-                name: 'CI',
-                html_url: 'https://github.com/octo/flowpeek/actions/runs/7',
-                created_at: '2026-08-01T10:00:00Z',
-                run_started_at: '2026-08-01T10:01:00Z',
-                updated_at: '2026-08-01T10:03:00Z',
-                status: 'completed',
-                conclusion: 'success',
-              },
-            ],
-          }),
-        ),
-      );
+      .mockResolvedValueOnce(new Response(JSON.stringify(readFixture('repositories.json'))))
+      .mockResolvedValueOnce(new Response(JSON.stringify(readFixture('workflow-runs.json'))));
     const adapter = new GitHubActionsAdapter(fetchFn);
 
     await expect(adapter.listRepositories(context)).resolves.toEqual([
@@ -55,7 +31,7 @@ describe('GitHubActionsAdapter', () => {
 
   it('accepts only correctly signed GitHub webhooks', async () => {
     const adapter = new GitHubActionsAdapter();
-    const payload = new TextEncoder().encode(JSON.stringify({ repository: { id: 1 } }));
+    const payload = Buffer.from(JSON.stringify(readFixture('webhook.json')));
     const signature = `sha256=${createHmac('sha256', 'secret').update(payload).digest('hex')}`;
 
     await expect(

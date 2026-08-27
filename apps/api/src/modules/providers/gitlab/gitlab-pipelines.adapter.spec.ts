@@ -1,6 +1,11 @@
 import { createHmac } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 import { GitLabPipelinesAdapter } from './gitlab-pipelines.adapter.js';
+
+const fixtureDirectory = resolve(__dirname, 'fixtures');
+const readFixture = (name: string): unknown => JSON.parse(readFileSync(resolve(fixtureDirectory, name), 'utf8'));
 
 describe('GitLabPipelinesAdapter', () => {
   const context = { accessToken: 'token', baseUrl: 'https://gitlab.example.test', providerAccountId: 'account' };
@@ -8,35 +13,8 @@ describe('GitLabPipelinesAdapter', () => {
   it('maps projects and pipelines using only GitLab read endpoints', async () => {
     const fetchFn = jest
       .fn()
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify([
-            {
-              id: 1,
-              name: 'flowpeek',
-              web_url: 'https://gitlab.example.test/group/flowpeek',
-              namespace: { full_path: 'group' },
-            },
-          ]),
-        ),
-      )
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify([
-            {
-              id: 7,
-              status: 'success',
-              web_url: 'https://gitlab.example.test/group/flowpeek/-/pipelines/7',
-              created_at: '2026-08-01T10:00:00Z',
-              updated_at: '2026-08-01T10:03:00Z',
-              started_at: '2026-08-01T10:01:00Z',
-              finished_at: '2026-08-01T10:03:00Z',
-              duration: 120,
-              ref: 'main',
-            },
-          ]),
-        ),
-      );
+      .mockResolvedValueOnce(new Response(JSON.stringify(readFixture('projects.json'))))
+      .mockResolvedValueOnce(new Response(JSON.stringify(readFixture('pipelines.json'))));
     const adapter = new GitLabPipelinesAdapter(fetchFn);
 
     await expect(adapter.listRepositories(context)).resolves.toEqual([
@@ -55,7 +33,7 @@ describe('GitLabPipelinesAdapter', () => {
 
   it('verifies current GitLab HMAC signing tokens against the raw delivery body', async () => {
     const adapter = new GitLabPipelinesAdapter();
-    const payload = Buffer.from('{"project":{"id":42}}');
+    const payload = Buffer.from(JSON.stringify(readFixture('webhook.json')));
     const signingSecret = `whsec_${Buffer.from('signing-key').toString('base64')}`;
     const id = 'delivery-id';
     const timestamp = '1787745600';
