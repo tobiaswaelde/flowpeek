@@ -13,7 +13,9 @@ RUN pnpm --filter @flowpeek/api deploy --legacy --prod /production
 
 FROM node:24-bookworm-slim AS runtime
 WORKDIR /app
-RUN apt-get update && apt-get install --yes --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install --yes --no-install-recommends openssl python3 python3-pip \
+  && python3 -m pip install --break-system-packages --no-cache-dir apprise==1.9.9 \
+  && rm -rf /var/lib/apt/lists/*
 ENV NODE_ENV=production
 COPY --from=build /workspace/apps/api/dist ./dist
 COPY --from=build /workspace/apps/api/prisma ./prisma

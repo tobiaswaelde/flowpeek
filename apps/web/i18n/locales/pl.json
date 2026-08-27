@@ -106,6 +106,7 @@
     "disabled": "Wyłączone",
     "enabled": "Włączone",
     "history": "Historia dostarczania",
+    "requiresReconfiguration": "Wymaga ponownej konfiguracji",
     "rules": "Reguły",
     "title": "Powiadomienia"
   },

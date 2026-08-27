@@ -106,6 +106,7 @@
     "disabled": "Disabilitato",
     "enabled": "Abilitato",
     "history": "Cronologia delle consegne",
+    "requiresReconfiguration": "Richiede una riconfigurazione",
     "rules": "Regole",
     "title": "Notifiche"
   },

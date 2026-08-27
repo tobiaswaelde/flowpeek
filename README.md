@@ -27,7 +27,7 @@ pnpm nx show projects
 ```
 
 Copy `.env.example` to `.env` before using Docker Compose. Never commit `.env`
-or provider, database, encryption, JWT, SMTP, Gotify, or ntfy credentials.
+or provider, database, encryption, JWT, or notification URL credentials.
 
 ## Environment configuration
 
@@ -60,12 +60,6 @@ API accepts the following variables:
 | `TOKEN_ENCRYPTION_KEY`            | Yes      | —                       | Canonical Base64 value decoding to exactly 32 bytes; encrypts provider and webhook secrets. |
 | `SCHEDULER_ENABLED`               | No       | `true`                  | Enables scheduled polling and retention jobs. Set `false` for one-off commands.             |
 | `SCHEDULER_SYNC_INTERVAL_SECONDS` | No       | `300`                   | Positive integer polling interval in seconds.                                               |
-| `SMTP_HOST`                       | No       | empty                   | SMTP hostname. When set, `SMTP_FROM` is required.                                           |
-| `SMTP_PORT`                       | No       | `587`                   | Positive integer SMTP port.                                                                 |
-| `SMTP_SECURE`                     | No       | `false`                 | Use SMTPS/TLS from connection start.                                                        |
-| `SMTP_USERNAME`                   | No       | empty                   | SMTP username; it must be set together with `SMTP_PASSWORD`.                                |
-| `SMTP_PASSWORD`                   | No       | empty                   | SMTP password; it must be set together with `SMTP_USERNAME`.                                |
-| `SMTP_FROM`                       | No       | empty                   | Sender address; required when `SMTP_HOST` is configured.                                    |
 
 `FLOWPEEK_ENV_FILE` is an optional local loader setting. When set, the API
 loads that file after the root `.env` file, allowing a local override without
@@ -83,7 +77,7 @@ by the Nest API's `envalid` configuration:
 
 Provider access tokens, provider webhook secrets, and notification credentials
 are not environment variables. Flowpeek stores them encrypted in PostgreSQL
-through its application configuration.
+through its application configuration. See [notification configuration](docs/notifications.md) for Apprise URL handling and migration guidance.
 
 ## Commands
 
