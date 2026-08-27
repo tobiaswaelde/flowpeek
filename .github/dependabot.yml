@@ -50,7 +50,3 @@ updates:
         update-types:
           - minor
           - patch
-    ignore:
-      - dependency-name: changesets/action
-        update-types:
-          - version-update:semver-major
