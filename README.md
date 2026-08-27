@@ -118,6 +118,7 @@ matching API and web Docker images to GitHub Container Registry.
 - `docs/deployment.md`: production deployment, TLS proxy, backup, restore, and rollback procedures.
 - `PLAN.md`: approved architecture and release design.
 - `docs/provider-webhooks.md`: manual read-only webhook setup for each provider.
+- `docs/localization.md`: supported interface locales, fallback behavior, and translation process.
 - [GitHub Issues](https://github.com/tobiaswaelde/flowpeek/issues): ordered
   implementation epics and tasks.
 - `AGENTS.md`: repository-specific instructions for coding agents.

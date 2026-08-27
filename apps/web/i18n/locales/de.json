@@ -17,6 +17,9 @@
     "createdAt": "Erstellt",
     "description": "Prüfe Workflow-Status für die Repositories, auf die du Zugriff hast.",
     "duration": "Dauer",
+    "durationMinutesSeconds": "{minutes} Min. {seconds} Sek.",
+    "durationSeconds": "{seconds} Sek.",
+    "durationUnknown": "Unbekannt",
     "errors": "Fehler",
     "failingWorkflows": "Fehlerhafte Workflows",
     "last30Days": "Letzte 30 Tage",
@@ -93,13 +96,29 @@
     "typePlaceholder": "Anbieter auswählen"
   },
   "users": { "delete": "Löschen", "description": "System-Benutzerverwaltung.", "title": "Benutzer" },
+  "workflowStatus": {
+    "CANCELLED": "Abgebrochen",
+    "FAILED": "Fehlgeschlagen",
+    "QUEUED": "Warteschlange",
+    "RUNNING": "Läuft",
+    "SKIPPED": "Übersprungen",
+    "SUCCESS": "Erfolgreich",
+    "UNKNOWN": "Unbekannt"
+  },
   "notifications": {
+    "attempts": "{count} Versuche",
     "channels": "Kanäle",
     "description": "Repository-Benachrichtigungskanäle, Regeln und Zustellverlauf.",
     "disabled": "Deaktiviert",
     "enabled": "Aktiviert",
     "history": "Zustellverlauf",
+    "rules": "Regeln",
     "title": "Benachrichtigungen"
+  },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Zugestellt",
+    "FAILED": "Fehlgeschlagen",
+    "PENDING": "Ausstehend"
   },
   "repositories": {
     "default": "Standard",

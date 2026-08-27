@@ -24,12 +24,25 @@ export default defineNuxtConfig({
     preference: 'dark',
   },
   i18n: {
+    detectBrowserLanguage: {
+      cookieKey: 'flowpeek-locale',
+      fallbackLocale: 'en',
+      redirectOn: 'root',
+      useCookie: true,
+    },
     defaultLocale: 'en',
     locales: [
       { code: 'en', file: 'en.json', name: 'English' },
       { code: 'de', file: 'de.json', name: 'Deutsch' },
+      { code: 'es', file: 'es.json', name: 'Español' },
+      { code: 'fr', file: 'fr.json', name: 'Français' },
+      { code: 'it', file: 'it.json', name: 'Italiano' },
+      { code: 'nl', file: 'nl.json', name: 'Nederlands' },
+      { code: 'pl', file: 'pl.json', name: 'Polski' },
+      { code: 'pt', file: 'pt.json', name: 'Português' },
     ],
     strategy: 'no_prefix',
+    vueI18n: './i18n.config.ts',
   },
   ui: {
     colorMode: true,
