@@ -17,10 +17,16 @@ updates:
         dependency-type: production
         applies-to: version-updates
         group-by: dependency-name
+        update-types:
+          - minor
+          - patch
       development-dependencies:
         dependency-type: development
         applies-to: version-updates
         group-by: dependency-name
+        update-types:
+          - minor
+          - patch
     ignore:
       - dependency-name: typescript
         update-types:
