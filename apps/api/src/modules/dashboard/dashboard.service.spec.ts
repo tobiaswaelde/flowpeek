@@ -115,8 +115,8 @@ describe('DashboardService', () => {
       expect.objectContaining({
         where: {
           completedAt: {
-            gte: new Date('2026-08-25T10:00:00.000Z'),
-            lte: new Date('2026-08-27T01:00:00.000Z'),
+            gte: '2026-08-25T10:00:00.000Z',
+            lte: '2026-08-27T01:00:00.000Z',
           },
           status: { in: ['SUCCESS', 'FAILED'] },
         },

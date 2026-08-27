@@ -85,7 +85,7 @@ export class DashboardService {
 
     const runs = await this.findVisibleRuns(user, {
       where: {
-        completedAt: { gte: from, lte: to },
+        completedAt: { gte: from.toISOString(), lte: to.toISOString() },
         status: { in: ['SUCCESS', 'FAILED'] },
       },
     });
