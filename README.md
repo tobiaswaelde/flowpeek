@@ -108,10 +108,12 @@ matching API and web Docker images to GitHub Container Registry.
 ## Dependency updates
 
 Dependabot checks the root pnpm workspace, both application manifests, and the
-GitHub Actions workflows every Monday. Routine version updates are grouped by
-production or development scope; security updates remain separate for focused
-review. TypeScript is intentionally excluded because every workspace manifest
-pins the validated compiler version `6.0.3` exactly.
+GitHub Actions workflows every Monday. A single npm configuration covers all
+three workspace directories and groups matching dependencies by name, so each
+update retains a consistent root lockfile. Routine version updates are grouped
+by production or development scope; security updates remain separate for
+focused review. TypeScript is intentionally excluded because every workspace
+manifest pins the validated compiler version `6.0.3` exactly.
 
 Review each update against its lockfile changes and run the affected checks. At
 minimum, run `pnpm install --frozen-lockfile`, `pnpm lint`, `pnpm typecheck`,
