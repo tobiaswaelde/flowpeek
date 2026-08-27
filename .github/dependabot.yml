@@ -2,7 +2,10 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: /
+    directories:
+      - /
+      - /apps/api
+      - /apps/web
     schedule:
       interval: weekly
       day: monday
@@ -13,53 +16,11 @@ updates:
       production-dependencies:
         dependency-type: production
         applies-to: version-updates
+        group-by: dependency-name
       development-dependencies:
         dependency-type: development
         applies-to: version-updates
-    ignore:
-      - dependency-name: typescript
-        update-types:
-          - version-update:semver-major
-          - version-update:semver-minor
-          - version-update:semver-patch
-
-  - package-ecosystem: npm
-    directory: /apps/api
-    schedule:
-      interval: weekly
-      day: monday
-      time: '06:00'
-      timezone: Europe/Berlin
-    open-pull-requests-limit: 5
-    groups:
-      production-dependencies:
-        dependency-type: production
-        applies-to: version-updates
-      development-dependencies:
-        dependency-type: development
-        applies-to: version-updates
-    ignore:
-      - dependency-name: typescript
-        update-types:
-          - version-update:semver-major
-          - version-update:semver-minor
-          - version-update:semver-patch
-
-  - package-ecosystem: npm
-    directory: /apps/web
-    schedule:
-      interval: weekly
-      day: monday
-      time: '06:00'
-      timezone: Europe/Berlin
-    open-pull-requests-limit: 5
-    groups:
-      production-dependencies:
-        dependency-type: production
-        applies-to: version-updates
-      development-dependencies:
-        dependency-type: development
-        applies-to: version-updates
+        group-by: dependency-name
     ignore:
       - dependency-name: typescript
         update-types:
@@ -68,7 +29,7 @@ updates:
           - version-update:semver-patch
 
   - package-ecosystem: github-actions
-    directory: /.github/workflows
+    directory: /
     schedule:
       interval: weekly
       day: monday
