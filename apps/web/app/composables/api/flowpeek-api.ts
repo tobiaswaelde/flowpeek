@@ -10,9 +10,12 @@ import type {
   NotificationChannel,
   NotificationDelivery,
   NotificationRule,
+  PaginatedResource,
   ProviderAccount,
   ProviderAuthenticationOptions,
   ProviderOAuthAuthorization,
+  ProviderRepository,
+  Repository,
   StartProviderOAuth,
   UpdateNotificationChannel,
   UpdateNotificationRule,
@@ -64,6 +67,14 @@ export function useFlowpeekApi() {
       create: (input: CreateProviderAccount): Promise<AxiosResponse<ProviderAccount>> =>
         api.post(apiEndpoints.providerAccounts.base, input),
       delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.providerAccounts.base}/${id}`),
+      list: (): Promise<AxiosResponse<PaginatedResource<ProviderAccount>>> =>
+        api.get(apiEndpoints.providerAccounts.base, {
+          params: { fields: 'id,displayName,providerType,enabled', page: 1, perPage: 100 },
+        }),
+      listRepositories: (id: string): Promise<AxiosResponse<ProviderRepository[]>> =>
+        api.get(`${apiEndpoints.providerAccounts.base}/${id}/repositories`),
+      addRepository: (id: string, providerRepositoryId: string): Promise<AxiosResponse<Repository>> =>
+        api.post(`${apiEndpoints.providerAccounts.base}/${id}/repositories`, { providerRepositoryId }),
       update: (id: string, input: UpdateProviderAccount): Promise<AxiosResponse<ProviderAccount>> =>
         api.patch(`${apiEndpoints.providerAccounts.base}/${id}`, input),
     },

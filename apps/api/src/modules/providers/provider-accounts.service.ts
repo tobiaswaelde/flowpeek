@@ -1,8 +1,10 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 
+import type { ProviderAccount, Repository } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import type { AuthenticatedUser } from '../auth/types.js';
 import { ProviderAdapterRegistry } from './provider-adapter.registry.js';
+import type { ProviderRepository } from './provider-adapter.js';
 import { ProviderCredentialService } from './provider-credential.service.js';
 
 /** Admin-only persistence service for Flowpeek provider accounts. */
@@ -108,6 +110,64 @@ export class ProviderAccountsService {
     await this.require(id);
     await this.prisma.providerAccount.delete({ where: { id } });
   }
+
+  /**
+   * Discover the repositories accessible through one enabled provider account.
+   *
+   * @param user System administrator requesting the provider's read-only repository list.
+   * @param providerAccountId Configured provider account to inspect.
+   * @returns Provider repositories and whether each is already tracked by Flowpeek.
+   */
+  async listAvailableRepositories(
+    user: AuthenticatedUser,
+    providerAccountId: string,
+  ): Promise<Array<ProviderRepository & { tracked: boolean }>> {
+    this.assertAdmin(user);
+    const account = await this.requireEnabled(providerAccountId);
+    const [repositories, trackedRepositories] = await Promise.all([
+      this.discoverRepositories(account),
+      this.prisma.repository.findMany({
+        where: { providerAccountId },
+        select: { providerRepositoryId: true },
+      }),
+    ]);
+    const trackedIds = new Set(trackedRepositories.map(({ providerRepositoryId }) => providerRepositoryId));
+
+    return repositories.map((repository) => ({ ...repository, tracked: trackedIds.has(repository.providerRepositoryId) }));
+  }
+
+  /**
+   * Add a repository selected from the provider's current read-only discovery result.
+   *
+   * @param user System administrator adding the tracked repository.
+   * @param providerAccountId Configured provider account that owns the repository.
+   * @param providerRepositoryId Provider-native repository identifier selected by the administrator.
+   * @returns The persisted tracked repository.
+   * @throws {NotFoundException} When the selected repository is not accessible through the provider account.
+   */
+  async addRepository(
+    user: AuthenticatedUser,
+    providerAccountId: string,
+    providerRepositoryId: string,
+  ): Promise<Repository> {
+    this.assertAdmin(user);
+    const account = await this.requireEnabled(providerAccountId);
+    const repository = (await this.discoverRepositories(account)).find(
+      (candidate) => candidate.providerRepositoryId === providerRepositoryId,
+    );
+    if (!repository) throw new NotFoundException('Provider repository not found.');
+
+    return this.prisma.repository.create({
+      data: {
+        name: repository.name,
+        owner: repository.owner,
+        providerAccountId,
+        providerRepositoryId: repository.providerRepositoryId,
+        url: repository.url,
+      },
+    });
+  }
+
   /** Ensures that a request belongs to a system administrator. */
   assertAdmin(user: AuthenticatedUser): void {
     if (user.role !== 'SYSTEM_ADMIN') throw new ForbiddenException('System administrator access is required.');
@@ -116,6 +176,26 @@ export class ProviderAccountsService {
     const account = await this.prisma.providerAccount.findUnique({ where: { id } });
     if (!account) throw new NotFoundException('Provider account not found.');
     return account;
+  }
+
+  /** Load a provider account that may safely be used for outbound read-only requests. */
+  private async requireEnabled(id: string): Promise<ProviderAccount> {
+    const account = await this.require(id);
+    if (!account.enabled) throw new BadRequestException('Provider account is disabled.');
+    return account;
+  }
+
+  /** Discover repositories without exposing the provider credential outside this service. */
+  private async discoverRepositories(account: ProviderAccount): Promise<ProviderRepository[]> {
+    try {
+      return await this.adapters.get(account.providerType).listRepositories({
+        accessToken: this.credentials.decrypt(account.encryptedAccessToken),
+        baseUrl: account.baseUrl,
+        providerAccountId: account.id,
+      });
+    } catch {
+      throw new BadRequestException('Provider repositories could not be loaded.');
+    }
   }
 
   /** Verify a candidate's credentials through the provider's read-only account endpoint. */

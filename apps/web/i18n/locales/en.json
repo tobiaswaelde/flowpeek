@@ -180,6 +180,13 @@
     "PENDING": "Pending"
   },
   "repositories": {
+    "add": "Add repository",
+    "addDescription": "Choose an enabled provider account and one repository to track.",
+    "addDialogTitle": "Add repository",
+    "addError": "The repository could not be added. Refresh the provider list and try again.",
+    "addSteps": { "provider": "Provider", "repository": "Repository" },
+    "alreadyTracked": "Already tracked",
+    "back": "Back",
     "default": "default",
     "description": "Tracked repository workflow settings.",
     "disable": "Disable",
@@ -197,6 +204,17 @@
     "enable": "Enable",
     "loadError": "Repositories could not be loaded.",
     "neverSynced": "Never",
+    "next": "Next",
+    "noAvailableRepositories": "Every repository from this provider is already tracked.",
+    "noEnabledProviders": "Add and enable a provider account before adding a repository.",
+    "provider": "Provider account",
+    "providerDescription": "Select the provider account whose repositories you want to track.",
+    "providerLoadError": "Provider accounts could not be loaded.",
+    "providerPlaceholder": "Select a provider account",
+    "repository": "Repository",
+    "repositoryDescription": "Choose a repository from the provider's current read-only repository list.",
+    "repositoryLoadError": "Repositories from this provider could not be loaded.",
+    "repositoryPlaceholder": "Select a repository",
     "retention": "Retention",
     "title": "Repositories"
   }

@@ -180,6 +180,13 @@
     "PENDING": "Ausstehend"
   },
   "repositories": {
+    "add": "Repository hinzufügen",
+    "addDescription": "Wähle ein aktiviertes Anbieter-Konto und ein zu überwachendes Repository aus.",
+    "addDialogTitle": "Repository hinzufügen",
+    "addError": "Das Repository konnte nicht hinzugefügt werden. Aktualisiere die Anbieter-Liste und versuche es erneut.",
+    "addSteps": { "provider": "Anbieter", "repository": "Repository" },
+    "alreadyTracked": "Bereits getrackt",
+    "back": "Zurück",
     "default": "Standard",
     "description": "Workflow-Einstellungen getrackter Repositories.",
     "disable": "Deaktivieren",
@@ -197,6 +204,17 @@
     "enable": "Aktivieren",
     "loadError": "Repositories konnten nicht geladen werden.",
     "neverSynced": "Nie",
+    "next": "Weiter",
+    "noAvailableRepositories": "Alle Repositories dieses Anbieters werden bereits getrackt.",
+    "noEnabledProviders": "Füge ein Anbieter-Konto hinzu und aktiviere es, bevor du ein Repository hinzufügst.",
+    "provider": "Anbieter-Konto",
+    "providerDescription": "Wähle das Anbieter-Konto aus, dessen Repositories du überwachen möchtest.",
+    "providerLoadError": "Anbieter-Konten konnten nicht geladen werden.",
+    "providerPlaceholder": "Anbieter-Konto auswählen",
+    "repository": "Repository",
+    "repositoryDescription": "Wähle ein Repository aus der aktuellen schreibgeschützten Anbieter-Liste aus.",
+    "repositoryLoadError": "Die Repositories dieses Anbieters konnten nicht geladen werden.",
+    "repositoryPlaceholder": "Repository auswählen",
     "retention": "Aufbewahrung",
     "title": "Repositories"
   }

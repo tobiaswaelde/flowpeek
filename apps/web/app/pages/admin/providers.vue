@@ -159,8 +159,8 @@ async function remove(id: string): Promise<void> {
 
 /** Enable or disable a provider account without changing its stored credentials. */
 async function toggle(provider: ProviderAccount): Promise<void> {
-  const { data } = await api.providerAccounts.update(provider.id, { enabled: !provider.enabled });
-  providerTable.updateRow(data as ProviderAccountRow);
+  await api.providerAccounts.update(provider.id, { enabled: !provider.enabled });
+  await providerTable.refresh();
 }
 
 onMounted(() => void Promise.all([providerTable.initialize(), loadAuthenticationOptions()]));

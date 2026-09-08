@@ -11,9 +11,21 @@ describe('ProviderAccountsService', () => {
       findUnique: jest.fn(),
       update: jest.fn(),
     },
+    repository: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+    },
   };
-  const credentials = { encrypt: jest.fn((value: string) => `encrypted:${value}`) };
-  const adapters = { get: jest.fn(() => ({ validateAccount: jest.fn().mockResolvedValue({ valid: true }) })) };
+  const credentials = {
+    decrypt: jest.fn((value: string) => `decrypted:${value}`),
+    encrypt: jest.fn((value: string) => `encrypted:${value}`),
+  };
+  const adapters = {
+    get: jest.fn(() => ({
+      listRepositories: jest.fn().mockResolvedValue([]),
+      validateAccount: jest.fn().mockResolvedValue({ valid: true }),
+    })),
+  };
   const service = new ProviderAccountsService(prisma as never, credentials as never, adapters as never);
   const admin = { id: 'admin', role: 'SYSTEM_ADMIN' as const, username: 'admin' };
 
@@ -79,7 +91,7 @@ describe('ProviderAccountsService', () => {
   });
 
   it('does not persist a provider account when its credentials cannot be validated', async () => {
-    adapters.get.mockReturnValueOnce({ validateAccount: jest.fn().mockRejectedValue(new Error('Unauthorized')) });
+    adapters.get.mockReturnValueOnce({ validateAccount: jest.fn().mockRejectedValue(new Error('Unauthorized')) } as never);
 
     await expect(
       service.create(admin, {
@@ -91,5 +103,59 @@ describe('ProviderAccountsService', () => {
 
     expect(prisma.providerAccount.create).not.toHaveBeenCalled();
     expect(credentials.encrypt).not.toHaveBeenCalled();
+  });
+
+  it('marks repositories that are already tracked for the selected provider account', async () => {
+    prisma.providerAccount.findUnique.mockResolvedValue({
+      baseUrl: null,
+      enabled: true,
+      encryptedAccessToken: 'encrypted-token',
+      id: 'provider-id',
+      providerType: 'GITHUB',
+    });
+    prisma.repository.findMany.mockResolvedValue([{ providerRepositoryId: 'already-tracked' }]);
+    const listRepositories = jest.fn().mockResolvedValue([
+      { name: 'Existing', owner: 'flowpeek', providerRepositoryId: 'already-tracked', url: 'https://example.test/existing' },
+      { name: 'New', owner: 'flowpeek', providerRepositoryId: 'new', url: 'https://example.test/new' },
+    ]);
+    adapters.get.mockReturnValue({ listRepositories } as never);
+
+    await expect(service.listAvailableRepositories(admin, 'provider-id')).resolves.toEqual([
+      expect.objectContaining({ providerRepositoryId: 'already-tracked', tracked: true }),
+      expect.objectContaining({ providerRepositoryId: 'new', tracked: false }),
+    ]);
+    expect(listRepositories).toHaveBeenCalledWith({
+      accessToken: 'decrypted:encrypted-token',
+      baseUrl: null,
+      providerAccountId: 'provider-id',
+    });
+  });
+
+  it('re-validates the selected repository with the provider before creating it', async () => {
+    prisma.providerAccount.findUnique.mockResolvedValue({
+      baseUrl: null,
+      enabled: true,
+      encryptedAccessToken: 'encrypted-token',
+      id: 'provider-id',
+      providerType: 'GITHUB',
+    });
+    prisma.repository.create.mockResolvedValue({ id: 'repository-id' });
+    adapters.get.mockReturnValue({
+      listRepositories: jest.fn().mockResolvedValue([
+        { name: 'Flowpeek', owner: 'flowpeek', providerRepositoryId: 'repository-id', url: 'https://example.test/flowpeek' },
+      ]),
+    } as never);
+
+    await service.addRepository(admin, 'provider-id', 'repository-id');
+
+    expect(prisma.repository.create).toHaveBeenCalledWith({
+      data: {
+        name: 'Flowpeek',
+        owner: 'flowpeek',
+        providerAccountId: 'provider-id',
+        providerRepositoryId: 'repository-id',
+        url: 'https://example.test/flowpeek',
+      },
+    });
   });
 });

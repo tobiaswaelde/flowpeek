@@ -38,6 +38,28 @@ export interface ProviderAccount {
   providerType: ProviderType;
 }
 
+/** Repository discovered through a configured provider account. */
+export interface ProviderRepository {
+  name: string;
+  owner: string;
+  providerRepositoryId: string;
+  tracked: boolean;
+  url: string;
+}
+
+/** Page metadata returned by Query Kit resource endpoints. */
+export interface PaginatedResource<T> {
+  items: T[];
+  meta: {
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+    itemCount: number;
+    page: number;
+    pageCount: number;
+    perPage: number;
+  };
+}
+
 /** Input used to start a provider OAuth authorization. */
 export interface StartProviderOAuth {
   baseUrl?: string;

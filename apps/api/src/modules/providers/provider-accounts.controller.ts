@@ -12,9 +12,10 @@ import type { ProviderAccount } from '../../generated/prisma/client.js';
 
 import { Authenticated } from '../auth/authenticated.decorator.js';
 import type { AuthenticatedUser } from '../auth/types.js';
-import { ProviderAccountDto } from '../repositories/dto/resource.dto.js';
+import { ProviderAccountDto, RepositoryDto } from '../repositories/dto/resource.dto.js';
 import { ProviderAccountQueryDto } from './dto/provider-account-query.dto.js';
 import { StartProviderOAuthDto, type ProviderOAuthAuthorizationDto } from './dto/provider-oauth.dto.js';
+import { ProviderRepositoryDto } from './dto/provider-repository.dto.js';
 import { ProviderAccountsQueryService } from './provider-accounts-query.service.js';
 import { ProviderAccountsService } from './provider-accounts.service.js';
 import { ProviderOAuthService } from './provider-oauth.service.js';
@@ -35,6 +36,10 @@ class UpdateProviderAccountDto {
   @IsOptional() @IsString() @MinLength(1) @MaxLength(4096) accessToken?: string;
   @IsOptional() @IsString() @MaxLength(4096) webhookSecret?: string;
   @IsOptional() @IsBoolean() clearWebhookSecret?: boolean;
+}
+
+class CreateTrackedRepositoryDto {
+  @IsString() @MinLength(1) @MaxLength(255) providerRepositoryId!: string;
 }
 @Authenticated()
 @Controller('provider-accounts')
@@ -70,12 +75,33 @@ export class ProviderAccountsController {
     this.accounts.assertAdmin(req.user);
     return { oauthProviderTypes: this.oauth.availableProviderTypes() };
   }
+  /** Discover repositories accessible through an enabled provider account. */
+  @Get(':id/repositories')
+  async listRepositories(
+    @Req() req: { user: AuthenticatedUser },
+    @Param('id') providerAccountId: string,
+  ): Promise<ProviderRepositoryDto[]> {
+    return (await this.accounts.listAvailableRepositories(req.user, providerAccountId)).map((repository) =>
+      ProviderRepositoryDto.fromProvider(repository, repository.tracked),
+    );
+  }
   /** Adds a provider account with a manually supplied personal access token. */
   @Post() async create(
     @Req() req: { user: AuthenticatedUser },
     @Body() body: CreateProviderAccountDto,
   ): Promise<ProviderAccountDto> {
     return ProviderAccountDto.fromModel(await this.accounts.create(req.user, body));
+  }
+  /** Add one repository selected from the provider's live repository list. */
+  @Post(':id/repositories')
+  async addRepository(
+    @Req() req: { user: AuthenticatedUser },
+    @Param('id') providerAccountId: string,
+    @Body() body: CreateTrackedRepositoryDto,
+  ): Promise<RepositoryDto> {
+    return RepositoryDto.fromModel(
+      await this.accounts.addRepository(req.user, providerAccountId, body.providerRepositoryId),
+    );
   }
   /** Starts an OAuth authorization for a new provider account. */
   @Post('oauth/authorize') async authorize(
