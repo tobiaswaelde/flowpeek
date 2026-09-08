@@ -3,8 +3,8 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import type { ProviderAccount, Repository } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import type { AuthenticatedUser } from '../auth/types.js';
-import { ProviderAdapterRegistry } from './provider-adapter.registry.js';
 import type { ProviderRepository } from './provider-adapter.js';
+import { ProviderAdapterRegistry } from './provider-adapter.registry.js';
 import { ProviderCredentialService } from './provider-credential.service.js';
 
 /** Admin-only persistence service for Flowpeek provider accounts. */
@@ -133,7 +133,10 @@ export class ProviderAccountsService {
     ]);
     const trackedIds = new Set(trackedRepositories.map(({ providerRepositoryId }) => providerRepositoryId));
 
-    return repositories.map((repository) => ({ ...repository, tracked: trackedIds.has(repository.providerRepositoryId) }));
+    return repositories.map((repository) => ({
+      ...repository,
+      tracked: trackedIds.has(repository.providerRepositoryId),
+    }));
   }
 
   /**

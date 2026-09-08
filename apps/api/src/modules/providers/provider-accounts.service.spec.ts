@@ -91,7 +91,9 @@ describe('ProviderAccountsService', () => {
   });
 
   it('does not persist a provider account when its credentials cannot be validated', async () => {
-    adapters.get.mockReturnValueOnce({ validateAccount: jest.fn().mockRejectedValue(new Error('Unauthorized')) } as never);
+    adapters.get.mockReturnValueOnce({
+      validateAccount: jest.fn().mockRejectedValue(new Error('Unauthorized')),
+    } as never);
 
     await expect(
       service.create(admin, {
@@ -115,7 +117,12 @@ describe('ProviderAccountsService', () => {
     });
     prisma.repository.findMany.mockResolvedValue([{ providerRepositoryId: 'already-tracked' }]);
     const listRepositories = jest.fn().mockResolvedValue([
-      { name: 'Existing', owner: 'flowpeek', providerRepositoryId: 'already-tracked', url: 'https://example.test/existing' },
+      {
+        name: 'Existing',
+        owner: 'flowpeek',
+        providerRepositoryId: 'already-tracked',
+        url: 'https://example.test/existing',
+      },
       { name: 'New', owner: 'flowpeek', providerRepositoryId: 'new', url: 'https://example.test/new' },
     ]);
     adapters.get.mockReturnValue({ listRepositories } as never);
@@ -142,7 +149,12 @@ describe('ProviderAccountsService', () => {
     prisma.repository.create.mockResolvedValue({ id: 'repository-id' });
     adapters.get.mockReturnValue({
       listRepositories: jest.fn().mockResolvedValue([
-        { name: 'Flowpeek', owner: 'flowpeek', providerRepositoryId: 'repository-id', url: 'https://example.test/flowpeek' },
+        {
+          name: 'Flowpeek',
+          owner: 'flowpeek',
+          providerRepositoryId: 'repository-id',
+          url: 'https://example.test/flowpeek',
+        },
       ]),
     } as never);
 

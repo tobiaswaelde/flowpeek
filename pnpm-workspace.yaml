@@ -2,6 +2,10 @@ packages:
   - .
   - apps/*
 
+updateConfig:
+  ignoreDependencies:
+    - typescript
+
 publicHoistPattern:
   - '@intlify/*'
   - vue-i18n
@@ -16,6 +20,8 @@ allowBuilds:
   prisma: true
   esbuild: true
   vue-demi: false
+  msgpackr-extract: false
+  workerd: false
 
 minimumReleaseAgeExclude:
   - '@nestjs/common@11.2.3'
