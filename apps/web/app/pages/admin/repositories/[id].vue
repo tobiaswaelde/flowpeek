@@ -243,6 +243,8 @@ onMounted(() => void load());
         </div>
 
         <UTable
+          sticky
+          :column-pinning="{ right: ['actions'] }"
           :columns="[
             { accessorKey: 'mode', header: $t('repositoryDetails.mode') },
             { accessorKey: 'pattern', header: $t('repositoryDetails.pattern') },
@@ -256,15 +258,19 @@ onMounted(() => void load());
               {{ row.original.mode === 'DENY' ? $t('repositoryDetails.deny') : $t('repositoryDetails.allow') }}
             </UBadge>
           </template>
+          <template #actions-header="{ column }">
+            <span class="flex justify-end">{{ column.columnDef.header }}</span>
+          </template>
           <template #actions-cell="{ row }">
-            <UButton
-              :aria-label="$t('repositoryDetails.delete')"
-              color="error"
-              icon="i-lucide-trash-2"
-              size="sm"
-              variant="ghost"
-              @click="removeWorkflowFilter(row.original.id)"
-            />
+            <div class="flex justify-end">
+              <UButton
+                :aria-label="$t('repositoryDetails.delete')"
+                color="error"
+                icon="i-lucide-trash-2"
+                variant="ghost"
+                @click="removeWorkflowFilter(row.original.id)"
+              />
+            </div>
           </template>
         </UTable>
       </UCard>
@@ -297,6 +303,8 @@ onMounted(() => void load());
         </div>
 
         <UTable
+          sticky
+          :column-pinning="{ right: ['actions'] }"
           :columns="[
             { accessorKey: 'user.username', header: $t('repositoryDetails.user') },
             { accessorKey: 'role', header: $t('repositoryDetails.role') },
@@ -313,15 +321,19 @@ onMounted(() => void load());
               @update:model-value="updateMemberRole(row.original, $event as RepositoryRole)"
             />
           </template>
+          <template #actions-header="{ column }">
+            <span class="flex justify-end">{{ column.columnDef.header }}</span>
+          </template>
           <template #actions-cell="{ row }">
-            <UButton
-              :aria-label="$t('repositoryDetails.removeMember')"
-              color="error"
-              icon="i-lucide-user-minus"
-              size="sm"
-              variant="ghost"
-              @click="removeMember(row.original.userId)"
-            />
+            <div class="flex justify-end">
+              <UButton
+                :aria-label="$t('repositoryDetails.removeMember')"
+                color="error"
+                icon="i-lucide-user-minus"
+                variant="ghost"
+                @click="removeMember(row.original.userId)"
+              />
+            </div>
           </template>
         </UTable>
       </UCard>

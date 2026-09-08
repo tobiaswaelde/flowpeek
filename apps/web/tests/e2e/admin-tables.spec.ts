@@ -59,6 +59,11 @@ test('repository and user administration render full-page Query Kit tables', asy
     'href',
     'https://github.com/tobiaswaelde/flowpeek',
   );
+  const repositoryActionsHeader = page.getByRole('columnheader', { name: 'Actions' });
+  await expect(repositoryActionsHeader).toHaveCSS('position', 'sticky');
+  await expect(repositoryActionsHeader.getByText('Actions', { exact: true })).toHaveClass(/justify-end/);
+  await expect(page.locator('tbody td').first()).toHaveCSS('padding-top', '8px');
+  await expect(page.getByRole('link', { name: 'Open repository settings' })).toHaveClass(/text-sm/);
   await page.keyboard.press('Shift+O');
   await expect(page.getByText('Table options', { exact: true })).toBeVisible();
   await page.keyboard.press('Shift+O');
@@ -240,6 +245,8 @@ test('repository settings load retention, filters, and members', async ({ page }
   await expect(page.getByText('maintainer', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Add workflow filter' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Add member' })).toBeDisabled();
+  await expect(page.getByRole('columnheader', { name: 'Actions' }).first()).toHaveCSS('position', 'sticky');
+  await expect(page.getByRole('button', { name: 'Delete' })).toHaveClass(/text-sm/);
 });
 
 /** Verify that the workflow-run history is available directly after the dashboard navigation item. */

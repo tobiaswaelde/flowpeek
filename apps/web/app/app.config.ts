@@ -12,6 +12,12 @@ export default defineAppConfig({
       neutral: 'zinc',
       primary: 'sky',
     },
+    table: {
+      slots: {
+        td: 'p-2 border-b border-default',
+        th: 'p-2 truncate',
+      },
+    },
     icons: {
       arrowDown: 'i-tabler-arrow-down',
       arrowLeft: 'i-tabler-arrow-left',

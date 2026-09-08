@@ -117,14 +117,15 @@ onMounted(() => void userTable.initialize());
       />
       <UTable
         sticky
+        v-model:column-pinning="columnPinning"
         class="min-h-0 flex-1"
         :columns="columns"
         :data="items"
         :empty="$t('users.empty')"
         :loading="loading"
         :ui="{
-          th: 'first:pl-6 bg-neutral-100 dark:bg-neutral-950/20',
-          td: 'first:pl-6',
+          th: 'first:pl-8 bg-neutral-100 dark:bg-neutral-950/20',
+          td: 'first:pl-8',
         }"
       >
         <template #role-cell="{ row }">
@@ -136,16 +137,20 @@ onMounted(() => void userTable.initialize());
         <template #updatedAt-cell="{ row }">
           <span class="whitespace-nowrap text-sm text-muted">{{ formatTimestamp(row.original.updatedAt) }}</span>
         </template>
+        <template #actions-header="{ column }">
+          <span class="flex justify-end">{{ column.columnDef.header }}</span>
+        </template>
         <template #actions-cell="{ row }">
-          <UButton
-            :aria-label="$t('users.delete')"
-            :disabled="row.original.id === auth.user?.id"
-            color="error"
-            icon="i-lucide-trash-2"
-            size="sm"
-            variant="ghost"
-            @click="remove(row.original.id)"
-          />
+          <div class="flex justify-end">
+            <UButton
+              :aria-label="$t('users.delete')"
+              :disabled="row.original.id === auth.user?.id"
+              color="error"
+              icon="i-lucide-trash-2"
+              variant="ghost"
+              @click="remove(row.original.id)"
+            />
+          </div>
         </template>
       </UTable>
       <QTablePagination

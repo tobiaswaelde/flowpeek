@@ -2,7 +2,7 @@ import type { Filtering } from '@querry-kit/nuxt-ui/types';
 import { useTable as useQueryKitTable } from '@querry-kit/nuxt/table';
 import type { TableColumn as QueryKitTableColumn } from '@querry-kit/nuxt/types';
 import { useRouteQuery } from '@vueuse/router';
-import { computed, type Ref } from 'vue';
+import { computed, type Ref, watch } from 'vue';
 
 import type { Endpoint, Endpoints } from '~/types/api/endpoints';
 import type { ColumnDefinition } from '~/types/table';
@@ -36,6 +36,28 @@ export function toQueryKitColumns<TItem extends Record<string, unknown>>(
 }
 
 /**
+ * Keep an actions column fixed at the far right without disturbing other user-selected pinned columns.
+ *
+ * @param columns - The currently visible renderer columns.
+ * @param columnPinning - Persisted Query Kit pinning state.
+ * @returns The original state when no actions column exists or it is already pinned right; otherwise corrected state.
+ */
+export function pinActionsColumnRight(
+  columns: readonly { id?: string }[],
+  columnPinning: Record<string, string[]>,
+): Record<string, string[]> {
+  if (!columns.some((column) => column.id === 'actions')) return columnPinning;
+
+  const left = (columnPinning.left ?? []).filter((columnId) => columnId !== 'actions');
+  const right = (columnPinning.right ?? []).filter((columnId) => columnId !== 'actions');
+  if (left.length === (columnPinning.left ?? []).length && right.length !== (columnPinning.right ?? []).length) {
+    return columnPinning;
+  }
+
+  return { ...columnPinning, left, right: [...right, 'actions'] };
+}
+
+/**
  * Provide persistent, route-aware Query Kit table state for a Flowpeek resource endpoint.
  *
  * @param options - Endpoint, query configuration, and full renderer column metadata.
@@ -56,6 +78,15 @@ export const useTable = <TEndpoint extends Endpoint>(options: UseTableOptions<TE
     staticFields: options.staticFields,
     staticFilter: options.staticFilter,
   });
+
+  watch(
+    [columns, table.columnPinning],
+    ([currentColumns, currentPinning]) => {
+      const correctedPinning = pinActionsColumnRight(currentColumns, currentPinning);
+      if (correctedPinning !== currentPinning) table.columnPinning.value = correctedPinning;
+    },
+    { deep: true, immediate: true },
+  );
 
   return { ...table, filtering: table.filtering as Ref<Filtering> };
 };

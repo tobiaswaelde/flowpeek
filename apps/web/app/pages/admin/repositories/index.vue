@@ -216,14 +216,15 @@ onMounted(() => void repositoryTable.initialize());
       />
       <UTable
         sticky
+        v-model:column-pinning="columnPinning"
         class="min-h-0 flex-1"
         :columns="columns"
         :data="items"
         :empty="$t('repositories.empty')"
         :loading="loading"
         :ui="{
-          th: 'first:pl-6 bg-neutral-100 dark:bg-neutral-950/20',
-          td: 'first:pl-6',
+          th: 'first:pl-8 bg-neutral-100 dark:bg-neutral-950/20',
+          td: 'first:pl-8',
         }"
       >
         <template #name-cell="{ row }">
@@ -244,13 +245,15 @@ onMounted(() => void repositoryTable.initialize());
         <template #lastSyncAt-cell="{ row }">
           <span class="whitespace-nowrap text-sm text-muted">{{ formatLastSync(row.original.lastSyncAt) }}</span>
         </template>
+        <template #actions-header="{ column }">
+          <span class="flex justify-end">{{ column.columnDef.header }}</span>
+        </template>
         <template #actions-cell="{ row }">
           <div class="flex justify-end gap-1">
             <UButton
               :aria-label="$t('repositoryDetails.open')"
               color="neutral"
               icon="i-lucide-settings-2"
-              size="sm"
               :to="`/admin/repositories/${row.original.id}`"
               variant="ghost"
             />
@@ -258,7 +261,6 @@ onMounted(() => void repositoryTable.initialize());
               :aria-label="row.original.enabled ? $t('repositories.disable') : $t('repositories.enable')"
               :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
               color="neutral"
-              size="sm"
               variant="ghost"
               @click="toggle(row.original)"
             />
