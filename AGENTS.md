@@ -61,6 +61,27 @@
 
 - Follow the Machine Admin Web application layout and typed API-composable
   pattern.
+- Structure the Nuxt application by responsibility: route files in `app/pages`
+  coordinate a screen, reusable application shells and navigation live in
+  `app/components/layout`, generic UI belongs in `app/components/common`, and
+  feature-specific UI belongs in `app/components/modules/<feature>`.
+- Keep page components focused on route metadata, data loading, and composition.
+  Extract independently understandable cards, forms, tables, dialogs, and
+  feature sections into named components instead of allowing page files to grow
+  into monoliths. Nest closely related feature components by workflow when that
+  makes their ownership clear, for example `<feature>/{create,edit,details,table}`.
+- In Vue single-file components, place blocks in the order `<template>`,
+  `<script setup lang="ts">`, then `<style>`. Keep the script typed; use a
+  scoped style block only for component-specific CSS that cannot be expressed
+  through the established utility classes.
+- Keep API clients and query state in `app/composables/api`, app-wide
+  presentation concerns in `app/composables/app`, enum presentation mappings in
+  `app/composables/enums`, persistent client state in `app/store`, API contracts
+  in `app/types/api`, and small framework-independent helpers in `app/util`.
+  Do not hide these responsibilities in page or presentation components.
+- Keep template attributes in a consistent reading order: structural directives
+  (`v-for`, `v-if`), identity and two-way bindings (`ref`, `:key`, `v-model`),
+  static attributes, dynamic bindings, then event listeners.
 - Use `@querry-kit/nuxt` for API/table state. Use
   `@querry-kit/nuxt-ui/types` only for UI filtering and sorting contracts;
   preserve full column metadata when adapting local table controls.
