@@ -43,7 +43,13 @@ async function signIn(event: FormSubmitEvent<SignInRequest>): Promise<void> {
     </div>
 
     <UForm :schema="signInRequestSchema" :state="credentials" class="space-y-5" @submit="signIn">
-      <UAlert v-if="errorMessage" color="error" :description="errorMessage" icon="i-lucide-circle-alert" />
+      <UAlert
+        v-if="errorMessage"
+        color="error"
+        :description="errorMessage"
+        icon="i-lucide-circle-alert"
+        variant="subtle"
+      />
 
       <UFormField :label="$t('auth.username')" name="username" required>
         <UInput

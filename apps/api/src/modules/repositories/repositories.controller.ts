@@ -1,4 +1,17 @@
-import { Body, Controller, ForbiddenException, Get, Param, Patch, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiErrorResponses,
   ApiPaginatedResponse,
@@ -6,19 +19,29 @@ import {
   QueryTransformPipe,
   ResourceQuery,
 } from '@querry-kit/nest';
-import { IsBoolean, IsInt, IsOptional, Min } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
 import type { Repository } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { Authenticated } from '../auth/authenticated.decorator.js';
 import type { AuthenticatedUser } from '../auth/types.js';
 import { RepositoryQueryDto } from './dto/repository-query.dto.js';
-import { RepositoryDto } from './dto/resource.dto.js';
+import { RepositoryDto, RepositoryMembershipDto, WorkflowFilterDto } from './dto/resource.dto.js';
 import { RepositoriesQueryService } from './repositories-query.service.js';
+import { RepositoryConfigurationService } from './repository-configuration.service.js';
 
 class UpdateRepositoryDto {
   @IsOptional() @IsBoolean() enabled?: boolean;
   @IsOptional() @IsInt() @Min(1) workflowRunRetentionDays?: number | null;
+}
+
+class CreateWorkflowFilterDto {
+  @IsEnum(['ALLOW', 'DENY']) mode!: 'ALLOW' | 'DENY';
+  @IsString() @MaxLength(1024) pattern!: string;
+}
+
+class UpsertRepositoryMembershipDto {
+  @IsEnum(['VIEWER', 'MANAGER']) role!: 'VIEWER' | 'MANAGER';
 }
 
 /** Provides system-administrator tracking settings for persisted repositories. */
@@ -27,6 +50,7 @@ class UpdateRepositoryDto {
 export class RepositoriesController {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly configuration: RepositoryConfigurationService,
     private readonly repositories: RepositoriesQueryService,
   ) {}
 
@@ -45,6 +69,80 @@ export class RepositoriesController {
       service: this.repositories,
     });
   }
+
+  /** Get the selected repository's settings context. */
+  @Get(':id')
+  async findById(@Req() request: { user: AuthenticatedUser }, @Param('id') id: string): Promise<RepositoryDto> {
+    return RepositoryDto.fromModel(await this.configuration.getRepository(request.user, id));
+  }
+
+  /** List all workflow filters configured for one repository. */
+  @Get(':id/workflow-filters')
+  async listWorkflowFilters(
+    @Req() request: { user: AuthenticatedUser },
+    @Param('id') repositoryId: string,
+  ): Promise<WorkflowFilterDto[]> {
+    return (await this.configuration.listWorkflowFilters(request.user, repositoryId)).map((filter) =>
+      WorkflowFilterDto.fromModel(filter),
+    );
+  }
+
+  /** Add a validated workflow filter for one repository. */
+  @Post(':id/workflow-filters')
+  async createWorkflowFilter(
+    @Req() request: { user: AuthenticatedUser },
+    @Param('id') repositoryId: string,
+    @Body() body: CreateWorkflowFilterDto,
+  ): Promise<WorkflowFilterDto> {
+    return WorkflowFilterDto.fromModel(await this.configuration.createWorkflowFilter(request.user, repositoryId, body));
+  }
+
+  /** Remove one workflow filter from the selected repository. */
+  @Delete(':id/workflow-filters/:filterId')
+  @HttpCode(204)
+  async deleteWorkflowFilter(
+    @Req() request: { user: AuthenticatedUser },
+    @Param('id') repositoryId: string,
+    @Param('filterId') filterId: string,
+  ): Promise<void> {
+    await this.configuration.deleteWorkflowFilter(request.user, repositoryId, filterId);
+  }
+
+  /** List every user assigned to one repository. */
+  @Get(':id/memberships')
+  async listMemberships(
+    @Req() request: { user: AuthenticatedUser },
+    @Param('id') repositoryId: string,
+  ): Promise<RepositoryMembershipDto[]> {
+    return (await this.configuration.listMemberships(request.user, repositoryId)).map((membership) =>
+      RepositoryMembershipDto.fromModel(membership),
+    );
+  }
+
+  /** Add or update one repository member role. */
+  @Put(':id/memberships/:userId')
+  async upsertMembership(
+    @Req() request: { user: AuthenticatedUser },
+    @Param('id') repositoryId: string,
+    @Param('userId') userId: string,
+    @Body() body: UpsertRepositoryMembershipDto,
+  ): Promise<RepositoryMembershipDto> {
+    return RepositoryMembershipDto.fromModel(
+      await this.configuration.upsertMembership(request.user, repositoryId, { ...body, userId }),
+    );
+  }
+
+  /** Remove one user's access to the selected repository. */
+  @Delete(':id/memberships/:userId')
+  @HttpCode(204)
+  async deleteMembership(
+    @Req() request: { user: AuthenticatedUser },
+    @Param('id') repositoryId: string,
+    @Param('userId') userId: string,
+  ): Promise<void> {
+    await this.configuration.deleteMembership(request.user, repositoryId, userId);
+  }
+
   @Patch(':id') async update(
     @Req() request: { user: AuthenticatedUser },
     @Param('id') id: string,

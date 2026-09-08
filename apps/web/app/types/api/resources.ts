@@ -109,6 +109,26 @@ export interface Repository {
   workflowRunRetentionDays: number | null;
 }
 
+/** Workflow name filter persisted for one tracked repository. */
+export interface WorkflowFilter {
+  id: string;
+  mode: 'ALLOW' | 'DENY';
+  pattern: string;
+  repositoryId: string;
+}
+
+/** Repository-specific access role assignable to a system user. */
+export type RepositoryRole = 'VIEWER' | 'MANAGER';
+
+/** A system user with explicit access to one tracked repository. */
+export interface RepositoryMembership {
+  id: string;
+  repositoryId: string;
+  role: RepositoryRole;
+  user: Pick<User, 'id' | 'role' | 'username'>;
+  userId: string;
+}
+
 /** Safe system user representation. */
 export interface User {
   id: string;

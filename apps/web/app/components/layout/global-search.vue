@@ -97,6 +97,7 @@ let requestId = 0;
 const navigationItems = computed<NavigationSearchItem[]>(() => {
   const items: NavigationSearchItem[] = [
     { icon: 'i-tabler-layout-dashboard', label: t('layout.dashboard'), to: '/' },
+    { icon: 'i-tabler-list-details', label: t('layout.workflowRuns'), to: '/workflow-runs' },
     { icon: 'i-tabler-bell', label: t('layout.notifications'), to: '/notifications' },
   ];
 

@@ -107,7 +107,14 @@ onMounted(() => void userTable.initialize());
         </template>
       </UDashboardToolbar>
 
-      <UAlert v-if="tableError" class="m-4" color="error" :title="$t('users.loadError')" />
+      <UAlert
+        v-if="tableError"
+        class="m-4"
+        color="error"
+        icon="i-lucide-circle-alert"
+        :title="$t('users.loadError')"
+        variant="subtle"
+      />
       <UTable
         sticky
         class="min-h-0 flex-1"

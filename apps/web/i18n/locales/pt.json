@@ -57,7 +57,8 @@
     "themeDark": "Escuro",
     "themeLight": "Claro",
     "themeSystem": "Sistema",
-    "users": "Utilizadores"
+    "users": "Utilizadores",
+    "workflowRuns": "Execuções de workflow"
   },
   "roles": { "MANAGER": "Gestor de repositórios", "SYSTEM_ADMIN": "Administrador do sistema", "VIEWER": "Leitor" },
   "providers": {
@@ -157,6 +158,21 @@
     "SUCCESS": "Concluída",
     "UNKNOWN": "Desconhecida"
   },
+  "workflowRuns": {
+    "columns": {
+      "completed": "Concluído",
+      "created": "Hora do fornecedor",
+      "duration": "Duração",
+      "providerRunId": "ID de execução do fornecedor",
+      "started": "Iniciado",
+      "status": "Estado",
+      "workflow": "Workflow"
+    },
+    "durationValue": "{minutes} min {seconds} s",
+    "empty": "Não estão disponíveis execuções de workflow.",
+    "loadError": "Não foi possível carregar as execuções de workflow.",
+    "notAvailable": "—"
+  },
   "notifications": {
     "attempts": "{count} tentativas",
     "channels": "Canais",
@@ -207,5 +223,34 @@
     "repositoryPlaceholder": "Selecione um repositório",
     "retention": "Retenção",
     "title": "Repositórios"
+  },
+  "repositoryDetails": {
+    "actions": "Ações",
+    "addFilter": "Adicionar filtro de workflow",
+    "addMember": "Adicionar membro",
+    "allow": "Permitir",
+    "delete": "Eliminar",
+    "deny": "Excluir",
+    "filterPlaceholder": "por ex. build-*",
+    "generalDescription": "Configure a retenção e o acesso para este repositório monitorizado.",
+    "loadError": "Não foi possível carregar as definições do repositório.",
+    "memberPlaceholder": "Selecione um utilizador",
+    "members": "Membros",
+    "membersDescription": "Conceda aos utilizadores acesso de leitura ou de gestão do repositório.",
+    "mode": "Modo",
+    "noMembers": "Nenhum utilizador tem acesso explícito a este repositório.",
+    "noWorkflowFilters": "Não estão configurados filtros de workflow.",
+    "open": "Abrir definições do repositório",
+    "pattern": "Padrão de workflow",
+    "removeMember": "Remover membro",
+    "retention": "Retenção de execuções de workflow (dias)",
+    "retentionHelp": "Deixe vazio para usar a política global de retenção.",
+    "role": "Função do repositório",
+    "save": "Guardar",
+    "saveError": "Não foi possível guardar as definições do repositório.",
+    "title": "Definições do repositório",
+    "user": "Utilizador",
+    "workflowFilters": "Filtros de workflow",
+    "workflowFiltersDescription": "Os filtros de exclusão têm prioridade sobre os filtros de permissão."
   }
 }

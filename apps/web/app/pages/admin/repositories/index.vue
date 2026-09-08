@@ -206,7 +206,14 @@ onMounted(() => void repositoryTable.initialize());
         </template>
       </UDashboardToolbar>
 
-      <UAlert v-if="tableError" class="m-4" color="error" :title="$t('repositories.loadError')" />
+      <UAlert
+        v-if="tableError"
+        class="m-4"
+        color="error"
+        icon="i-lucide-circle-alert"
+        :title="$t('repositories.loadError')"
+        variant="subtle"
+      />
       <UTable
         sticky
         class="min-h-0 flex-1"
@@ -238,14 +245,24 @@ onMounted(() => void repositoryTable.initialize());
           <span class="whitespace-nowrap text-sm text-muted">{{ formatLastSync(row.original.lastSyncAt) }}</span>
         </template>
         <template #actions-cell="{ row }">
-          <UButton
-            :aria-label="row.original.enabled ? $t('repositories.disable') : $t('repositories.enable')"
-            :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
-            color="neutral"
-            size="sm"
-            variant="ghost"
-            @click="toggle(row.original)"
-          />
+          <div class="flex justify-end gap-1">
+            <UButton
+              :aria-label="$t('repositoryDetails.open')"
+              color="neutral"
+              icon="i-lucide-settings-2"
+              size="sm"
+              :to="`/admin/repositories/${row.original.id}`"
+              variant="ghost"
+            />
+            <UButton
+              :aria-label="row.original.enabled ? $t('repositories.disable') : $t('repositories.enable')"
+              :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
+              color="neutral"
+              size="sm"
+              variant="ghost"
+              @click="toggle(row.original)"
+            />
+          </div>
         </template>
       </UTable>
       <QTablePagination
@@ -264,8 +281,20 @@ onMounted(() => void repositoryTable.initialize());
       :title="$t('repositories.addDialogTitle')"
     >
       <template #body>
-        <UAlert v-if="addingRepositoryError" color="error" :title="$t('repositories.addError')" />
-        <UAlert v-else-if="providerAccountsError" color="error" :title="$t('repositories.providerLoadError')" />
+        <UAlert
+          v-if="addingRepositoryError"
+          color="error"
+          icon="i-lucide-circle-alert"
+          :title="$t('repositories.addError')"
+          variant="subtle"
+        />
+        <UAlert
+          v-else-if="providerAccountsError"
+          color="error"
+          icon="i-lucide-circle-alert"
+          :title="$t('repositories.providerLoadError')"
+          variant="subtle"
+        />
 
         <UStepper ref="stepper" class="mt-4" color="neutral" size="sm" :items="stepperItems">
           <template #provider>
@@ -293,7 +322,13 @@ onMounted(() => void repositoryTable.initialize());
           <template #repository>
             <div class="space-y-4">
               <p class="text-sm text-muted">{{ $t('repositories.repositoryDescription') }}</p>
-              <UAlert v-if="repositoriesError" color="error" :title="$t('repositories.repositoryLoadError')" />
+              <UAlert
+                v-if="repositoriesError"
+                color="error"
+                icon="i-lucide-circle-alert"
+                :title="$t('repositories.repositoryLoadError')"
+                variant="subtle"
+              />
               <UFormField :label="$t('repositories.repository')" required>
                 <USelectMenu
                   v-model="selectedProviderRepositoryId"
@@ -307,7 +342,12 @@ onMounted(() => void repositoryTable.initialize());
                 />
               </UFormField>
               <UAlert
-                v-if="!repositoriesLoading && !repositoriesError && selectedProviderAccountId && providerRepositoryOptions.length === 0"
+                v-if="
+                  !repositoriesLoading &&
+                  !repositoriesError &&
+                  selectedProviderAccountId &&
+                  providerRepositoryOptions.length === 0
+                "
                 color="info"
                 :title="$t('repositories.noAvailableRepositories')"
               />

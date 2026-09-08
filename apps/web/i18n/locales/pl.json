@@ -57,7 +57,8 @@
     "themeDark": "Ciemny",
     "themeLight": "Jasny",
     "themeSystem": "Systemowy",
-    "users": "Użytkownicy"
+    "users": "Użytkownicy",
+    "workflowRuns": "Wykonania workflow"
   },
   "roles": { "MANAGER": "Menedżer repozytoriów", "SYSTEM_ADMIN": "Administrator systemu", "VIEWER": "Obserwator" },
   "providers": {
@@ -157,6 +158,21 @@
     "SUCCESS": "Zakończone powodzeniem",
     "UNKNOWN": "Nieznane"
   },
+  "workflowRuns": {
+    "columns": {
+      "completed": "Zakończono",
+      "created": "Czas dostawcy",
+      "duration": "Czas trwania",
+      "providerRunId": "ID wykonania dostawcy",
+      "started": "Rozpoczęto",
+      "status": "Stan",
+      "workflow": "Workflow"
+    },
+    "durationValue": "{minutes} min {seconds} s",
+    "empty": "Brak dostępnych wykonań workflow.",
+    "loadError": "Nie można było wczytać wykonań workflow.",
+    "notAvailable": "—"
+  },
   "notifications": {
     "attempts": "{count} prób",
     "channels": "Kanały",
@@ -207,5 +223,34 @@
     "repositoryPlaceholder": "Wybierz repozytorium",
     "retention": "Przechowywanie",
     "title": "Repozytoria"
+  },
+  "repositoryDetails": {
+    "actions": "Działania",
+    "addFilter": "Dodaj filtr workflow",
+    "addMember": "Dodaj członka",
+    "allow": "Zezwalaj",
+    "delete": "Usuń",
+    "deny": "Wyklucz",
+    "filterPlaceholder": "np. build-*",
+    "generalDescription": "Skonfiguruj przechowywanie i dostęp do tego śledzonego repozytorium.",
+    "loadError": "Nie udało się wczytać ustawień repozytorium.",
+    "memberPlaceholder": "Wybierz użytkownika",
+    "members": "Członkowie",
+    "membersDescription": "Nadaj użytkownikom dostęp tylko do odczytu lub zarządzania repozytorium.",
+    "mode": "Tryb",
+    "noMembers": "Żaden użytkownik nie ma jawnego dostępu do tego repozytorium.",
+    "noWorkflowFilters": "Nie skonfigurowano filtrów workflow.",
+    "open": "Otwórz ustawienia repozytorium",
+    "pattern": "Wzorzec workflow",
+    "removeMember": "Usuń członka",
+    "retention": "Przechowywanie wykonań workflow (dni)",
+    "retentionHelp": "Pozostaw puste, aby użyć globalnej polityki przechowywania.",
+    "role": "Rola repozytorium",
+    "save": "Zapisz",
+    "saveError": "Nie udało się zapisać ustawień repozytorium.",
+    "title": "Ustawienia repozytorium",
+    "user": "Użytkownik",
+    "workflowFilters": "Filtry workflow",
+    "workflowFiltersDescription": "Filtry wykluczające mają pierwszeństwo przed filtrami zezwalającymi."
   }
 }

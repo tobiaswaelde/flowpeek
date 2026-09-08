@@ -96,7 +96,13 @@ onMounted(loadDashboard);
       />
     </div>
 
-    <UAlert v-if="error" color="error" :description="$t('dashboard.loadError')" icon="i-lucide-circle-alert" />
+    <UAlert
+      v-if="error"
+      color="error"
+      :description="$t('dashboard.loadError')"
+      icon="i-lucide-circle-alert"
+      variant="subtle"
+    />
 
     <div>
       <h2 class="mb-3 text-lg font-semibold">{{ $t('dashboard.failingWorkflows') }}</h2>

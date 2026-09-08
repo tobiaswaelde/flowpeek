@@ -57,7 +57,8 @@
     "themeDark": "Scuro",
     "themeLight": "Chiaro",
     "themeSystem": "Sistema",
-    "users": "Utenti"
+    "users": "Utenti",
+    "workflowRuns": "Esecuzioni workflow"
   },
   "roles": { "MANAGER": "Gestore dei repository", "SYSTEM_ADMIN": "Amministratore di sistema", "VIEWER": "Lettore" },
   "providers": {
@@ -157,6 +158,21 @@
     "SUCCESS": "Riuscita",
     "UNKNOWN": "Sconosciuta"
   },
+  "workflowRuns": {
+    "columns": {
+      "completed": "Completato",
+      "created": "Ora provider",
+      "duration": "Durata",
+      "providerRunId": "ID esecuzione provider",
+      "started": "Avviato",
+      "status": "Stato",
+      "workflow": "Workflow"
+    },
+    "durationValue": "{minutes} min {seconds} s",
+    "empty": "Non sono disponibili esecuzioni workflow.",
+    "loadError": "Non è stato possibile caricare le esecuzioni workflow.",
+    "notAvailable": "—"
+  },
   "notifications": {
     "attempts": "{count} tentativi",
     "channels": "Canali",
@@ -207,5 +223,34 @@
     "repositoryPlaceholder": "Seleziona un repository",
     "retention": "Conservazione",
     "title": "Repository"
+  },
+  "repositoryDetails": {
+    "actions": "Azioni",
+    "addFilter": "Aggiungi filtro workflow",
+    "addMember": "Aggiungi membro",
+    "allow": "Consenti",
+    "delete": "Elimina",
+    "deny": "Escludi",
+    "filterPlaceholder": "ad es. build-*",
+    "generalDescription": "Configura conservazione e accesso per questo repository monitorato.",
+    "loadError": "Non è stato possibile caricare le impostazioni del repository.",
+    "memberPlaceholder": "Seleziona un utente",
+    "members": "Membri",
+    "membersDescription": "Concedi agli utenti accesso in sola lettura o di gestione del repository.",
+    "mode": "Modalità",
+    "noMembers": "Nessun utente ha accesso esplicito a questo repository.",
+    "noWorkflowFilters": "Non sono configurati filtri workflow.",
+    "open": "Apri impostazioni repository",
+    "pattern": "Modello workflow",
+    "removeMember": "Rimuovi membro",
+    "retention": "Conservazione esecuzioni workflow (giorni)",
+    "retentionHelp": "Lascia vuoto per usare la politica globale di conservazione.",
+    "role": "Ruolo repository",
+    "save": "Salva",
+    "saveError": "Non è stato possibile salvare le impostazioni del repository.",
+    "title": "Impostazioni repository",
+    "user": "Utente",
+    "workflowFilters": "Filtri workflow",
+    "workflowFiltersDescription": "I filtri di esclusione hanno priorità su quelli di autorizzazione."
   }
 }

@@ -59,7 +59,8 @@
     "themeDark": "Dunkel",
     "themeLight": "Hell",
     "themeSystem": "System",
-    "users": "Benutzer"
+    "users": "Benutzer",
+    "workflowRuns": "Workflow-Ausführungen"
   },
   "roles": {
     "MANAGER": "Repository-Verwaltung",
@@ -163,6 +164,21 @@
     "SUCCESS": "Erfolgreich",
     "UNKNOWN": "Unbekannt"
   },
+  "workflowRuns": {
+    "columns": {
+      "completed": "Abgeschlossen",
+      "created": "Anbieter-Zeitpunkt",
+      "duration": "Dauer",
+      "providerRunId": "Anbieter-Ausführungs-ID",
+      "started": "Gestartet",
+      "status": "Status",
+      "workflow": "Workflow"
+    },
+    "durationValue": "{minutes} Min. {seconds} Sek.",
+    "empty": "Es sind keine Workflow-Ausführungen verfügbar.",
+    "loadError": "Workflow-Ausführungen konnten nicht geladen werden.",
+    "notAvailable": "—"
+  },
   "notifications": {
     "attempts": "{count} Versuche",
     "channels": "Kanäle",
@@ -217,5 +233,34 @@
     "repositoryPlaceholder": "Repository auswählen",
     "retention": "Aufbewahrung",
     "title": "Repositories"
+  },
+  "repositoryDetails": {
+    "addFilter": "Workflow-Filter hinzufügen",
+    "addMember": "Mitglied hinzufügen",
+    "actions": "Aktionen",
+    "allow": "Erlauben",
+    "delete": "Löschen",
+    "deny": "Ausschließen",
+    "filterPlaceholder": "z. B. build-*",
+    "generalDescription": "Konfiguriere Aufbewahrung und Zugriffe für dieses getrackte Repository.",
+    "loadError": "Repository-Einstellungen konnten nicht geladen werden.",
+    "memberPlaceholder": "Benutzer auswählen",
+    "members": "Mitglieder",
+    "membersDescription": "Vergib Lese- oder Repository-Verwaltungszugriff für Benutzer.",
+    "mode": "Modus",
+    "noMembers": "Kein Benutzer hat expliziten Zugriff auf dieses Repository.",
+    "noWorkflowFilters": "Es sind keine Workflow-Filter konfiguriert.",
+    "open": "Repository-Einstellungen öffnen",
+    "pattern": "Workflow-Muster",
+    "removeMember": "Mitglied entfernen",
+    "retention": "Aufbewahrung von Workflow-Ausführungen (Tage)",
+    "retentionHelp": "Leer lassen, um die globale Aufbewahrungsrichtlinie zu verwenden.",
+    "role": "Repository-Rolle",
+    "save": "Speichern",
+    "saveError": "Die Repository-Einstellungen konnten nicht gespeichert werden.",
+    "title": "Repository-Einstellungen",
+    "user": "Benutzer",
+    "workflowFilters": "Workflow-Filter",
+    "workflowFiltersDescription": "Ausschlussfilter haben Vorrang vor Erlaubnisfiltern."
   }
 }

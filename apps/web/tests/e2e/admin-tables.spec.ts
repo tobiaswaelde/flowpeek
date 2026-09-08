@@ -168,3 +168,122 @@ test('adds a repository selected from an enabled provider account', async ({ pag
 
   await expect(page.getByRole('heading', { name: 'Add repository' })).not.toBeVisible();
 });
+
+/** Verify the repository settings screen exposes retention, workflow filters, and memberships. */
+test('repository settings load retention, filters, and members', async ({ page }) => {
+  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.route('**/api/v1/repositories/repository-1', async (route) => {
+    if (route.request().method() !== 'GET') return route.fallback();
+    await route.fulfill({
+      contentType: 'application/json',
+      json: {
+        enabled: true,
+        id: 'repository-1',
+        lastSyncAt: null,
+        name: 'flowpeek',
+        owner: 'twaelde',
+        providerAccountId: 'provider-1',
+        url: 'https://github.com/tobiaswaelde/flowpeek',
+        workflowRunRetentionDays: 30,
+      },
+    });
+  });
+  await page.route('**/api/v1/repositories/repository-1/workflow-filters', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: [{ id: 'filter-1', mode: 'DENY', pattern: 'draft-*', repositoryId: 'repository-1' }],
+    });
+  });
+  await page.route('**/api/v1/repositories/repository-1/memberships', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: [
+        {
+          id: 'membership-1',
+          repositoryId: 'repository-1',
+          role: 'MANAGER',
+          user: { id: 'user-1', role: 'MANAGER', username: 'maintainer' },
+          userId: 'user-1',
+        },
+      ],
+    });
+  });
+  await page.route(/\/api\/v1\/users(?:\?.*)?$/, async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: {
+        items: [
+          {
+            createdAt: '2026-09-08T08:00:00.000Z',
+            id: 'user-2',
+            role: 'VIEWER',
+            updatedAt: '2026-09-08T08:00:00.000Z',
+            username: 'viewer',
+          },
+        ],
+        meta: { hasNextPage: false, hasPrevPage: false, itemCount: 1, page: 1, pageCount: 1, perPage: 100 },
+      },
+    });
+  });
+  await page.route('**/api/v1/auth/me', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: { id: 'playwright-admin', role: 'SYSTEM_ADMIN', username: 'playwright' },
+    });
+  });
+
+  await page.goto('/admin/repositories/repository-1');
+
+  await expect(page.getByRole('heading', { name: 'twaelde/flowpeek' })).toBeVisible();
+  await expect(page.locator('input[type=number]')).toHaveValue('30');
+  await expect(page.getByText('draft-*', { exact: true })).toBeVisible();
+  await expect(page.getByText('maintainer', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add workflow filter' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Add member' })).toBeDisabled();
+});
+
+/** Verify that the workflow-run history is available directly after the dashboard navigation item. */
+test('workflow runs render in a filterable and sortable full-page table', async ({ page }) => {
+  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.route(/\/api\/v1\/workflow-runs(?:\?.*)?$/, async (route) => {
+    expect(route.request().url()).toContain('fields=');
+    await route.fulfill({
+      contentType: 'application/json',
+      json: {
+        items: [
+          {
+            completedAt: '2026-09-08T08:02:30.000Z',
+            durationMs: 150_000,
+            id: 'run-1',
+            providerCreatedAt: '2026-09-08T08:00:00.000Z',
+            providerRunId: '42',
+            repositoryId: 'repository-1',
+            startedAt: '2026-09-08T08:00:00.000Z',
+            status: 'SUCCESS',
+            url: 'https://github.com/tobiaswaelde/flowpeek/actions/runs/42',
+            workflowName: 'Build',
+          },
+        ],
+        meta: { hasNextPage: false, hasPrevPage: false, itemCount: 1, page: 1, pageCount: 1, perPage: 25 },
+      },
+    });
+  });
+  await page.route('**/api/v1/auth/me', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: { id: 'playwright-admin', role: 'SYSTEM_ADMIN', username: 'playwright' },
+    });
+  });
+
+  await page.goto('/workflow-runs');
+
+  const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
+  await expect(navigation.getByRole('link', { name: 'Workflow runs' })).toHaveAttribute('href', '/workflow-runs');
+  await expect(page.getByRole('link', { name: 'Build', exact: true })).toHaveAttribute(
+    'href',
+    'https://github.com/tobiaswaelde/flowpeek/actions/runs/42',
+  );
+  await expect(page.getByText('Success', { exact: true })).toBeVisible();
+  await page.keyboard.press('Shift+O');
+  await expect(page.getByText('Table options', { exact: true })).toBeVisible();
+});

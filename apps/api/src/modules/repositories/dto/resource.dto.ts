@@ -4,7 +4,14 @@ import { filterCaslFields } from '@querry-kit/nest/casl';
 import { CaslAction } from '../../../casl/casl-action.js';
 import { CaslSubject } from '../../../casl/casl-subject.js';
 import type { AppAbility } from '../../../casl/types.js';
-import type { ProviderAccount, Repository, WorkflowFilter, WorkflowRun } from '../../../generated/prisma/client.js';
+import type {
+  ProviderAccount,
+  Repository,
+  RepositoryMembership,
+  User,
+  WorkflowFilter,
+  WorkflowRun,
+} from '../../../generated/prisma/client.js';
 
 /** Public provider-account representation that deliberately excludes its access token. */
 export class ProviderAccountDto {
@@ -83,15 +90,25 @@ export class RepositoryDto {
 
 /** Public workflow-run representation used by dashboard and history endpoints. */
 export class WorkflowRunDto {
+  @ApiProperty({ format: 'uuid' })
   id!: string;
+  @ApiProperty()
   providerRunId!: string;
+  @ApiProperty()
   workflowName!: string;
+  @ApiProperty({ format: 'uri' })
   url!: string;
+  @ApiProperty({ format: 'date-time' })
   providerCreatedAt!: Date;
+  @ApiPropertyOptional({ format: 'date-time', nullable: true })
   startedAt!: Date | null;
+  @ApiPropertyOptional({ format: 'date-time', nullable: true })
   completedAt!: Date | null;
+  @ApiPropertyOptional({ nullable: true })
   durationMs!: number | null;
+  @ApiProperty({ enum: ['QUEUED', 'RUNNING', 'SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED', 'UNKNOWN'] })
   status!: WorkflowRun['status'];
+  @ApiProperty({ format: 'uuid' })
   repositoryId!: string;
 
   /** Convert a normalized provider run to a permission-filtered API response. */
@@ -118,9 +135,13 @@ export class WorkflowRunDto {
 
 /** Public workflow filter representation. */
 export class WorkflowFilterDto {
+  @ApiProperty({ format: 'uuid' })
   id!: string;
+  @ApiProperty({ maxLength: 1024 })
   pattern!: string;
+  @ApiProperty({ enum: ['ALLOW', 'DENY'] })
   mode!: WorkflowFilter['mode'];
+  @ApiProperty({ format: 'uuid' })
   repositoryId!: string;
 
   /** Convert a workflow filter to a repository-scoped API response. */
@@ -131,5 +152,32 @@ export class WorkflowFilterDto {
       ability,
       { action: CaslAction.Read },
     );
+  }
+}
+
+/** Safe repository member representation without credential material. */
+export class RepositoryMembershipDto {
+  @ApiProperty({ format: 'uuid' })
+  id!: string;
+  @ApiProperty({ enum: ['VIEWER', 'MANAGER'] })
+  role!: RepositoryMembership['role'];
+  @ApiProperty({ format: 'uuid' })
+  repositoryId!: string;
+  @ApiProperty({ format: 'uuid' })
+  userId!: string;
+  @ApiProperty()
+  user!: Pick<User, 'id' | 'role' | 'username'>;
+
+  /** Convert a membership and its safe user relation into a public representation. */
+  static fromModel(
+    model: RepositoryMembership & { user: Pick<User, 'id' | 'role' | 'username'> },
+  ): RepositoryMembershipDto {
+    return {
+      id: model.id,
+      repositoryId: model.repositoryId,
+      role: model.role,
+      user: { id: model.user.id, role: model.user.role, username: model.user.username },
+      userId: model.userId,
+    };
   }
 }

@@ -59,7 +59,8 @@
     "themeDark": "Sombre",
     "themeLight": "Clair",
     "themeSystem": "Système",
-    "users": "Utilisateurs"
+    "users": "Utilisateurs",
+    "workflowRuns": "Exécutions de flux"
   },
   "roles": { "MANAGER": "Gestionnaire de dépôts", "SYSTEM_ADMIN": "Administrateur système", "VIEWER": "Lecteur" },
   "providers": {
@@ -159,6 +160,21 @@
     "SUCCESS": "Réussie",
     "UNKNOWN": "Inconnue"
   },
+  "workflowRuns": {
+    "columns": {
+      "completed": "Terminé",
+      "created": "Heure du fournisseur",
+      "duration": "Durée",
+      "providerRunId": "ID d’exécution fournisseur",
+      "started": "Démarré",
+      "status": "Statut",
+      "workflow": "Flux"
+    },
+    "durationValue": "{minutes} min {seconds} s",
+    "empty": "Aucune exécution de flux n’est disponible.",
+    "loadError": "Les exécutions de flux n’ont pas pu être chargées.",
+    "notAvailable": "—"
+  },
   "notifications": {
     "attempts": "{count} tentatives",
     "channels": "Canaux",
@@ -209,5 +225,34 @@
     "repositoryPlaceholder": "Sélectionnez un dépôt",
     "retention": "Rétention",
     "title": "Dépôts"
+  },
+  "repositoryDetails": {
+    "actions": "Actions",
+    "addFilter": "Ajouter un filtre de flux",
+    "addMember": "Ajouter un membre",
+    "allow": "Autoriser",
+    "delete": "Supprimer",
+    "deny": "Exclure",
+    "filterPlaceholder": "par ex. build-*",
+    "generalDescription": "Configurez la rétention et les accès pour ce dépôt suivi.",
+    "loadError": "Les paramètres du dépôt n’ont pas pu être chargés.",
+    "memberPlaceholder": "Sélectionnez un utilisateur",
+    "members": "Membres",
+    "membersDescription": "Accordez aux utilisateurs un accès en lecture seule ou en gestion du dépôt.",
+    "mode": "Mode",
+    "noMembers": "Aucun utilisateur n’a d’accès explicite à ce dépôt.",
+    "noWorkflowFilters": "Aucun filtre de flux n’est configuré.",
+    "open": "Ouvrir les paramètres du dépôt",
+    "pattern": "Motif de flux",
+    "removeMember": "Retirer le membre",
+    "retention": "Rétention des exécutions de flux (jours)",
+    "retentionHelp": "Laissez vide pour utiliser la politique de rétention globale.",
+    "role": "Rôle du dépôt",
+    "save": "Enregistrer",
+    "saveError": "Les paramètres du dépôt n’ont pas pu être enregistrés.",
+    "title": "Paramètres du dépôt",
+    "user": "Utilisateur",
+    "workflowFilters": "Filtres de flux",
+    "workflowFiltersDescription": "Les filtres d’exclusion ont priorité sur les filtres d’autorisation."
   }
 }

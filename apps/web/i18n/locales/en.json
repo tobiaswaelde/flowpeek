@@ -59,7 +59,8 @@
     "themeDark": "Dark",
     "themeLight": "Light",
     "themeSystem": "System",
-    "users": "Users"
+    "users": "Users",
+    "workflowRuns": "Workflow runs"
   },
   "roles": {
     "MANAGER": "Repository manager",
@@ -163,6 +164,21 @@
     "SUCCESS": "Success",
     "UNKNOWN": "Unknown"
   },
+  "workflowRuns": {
+    "columns": {
+      "completed": "Completed",
+      "created": "Provider time",
+      "duration": "Duration",
+      "providerRunId": "Provider run ID",
+      "started": "Started",
+      "status": "Status",
+      "workflow": "Workflow"
+    },
+    "durationValue": "{minutes}m {seconds}s",
+    "empty": "No workflow runs are available.",
+    "loadError": "Workflow runs could not be loaded.",
+    "notAvailable": "—"
+  },
   "notifications": {
     "attempts": "{count} attempts",
     "channels": "Channels",
@@ -217,5 +233,34 @@
     "repositoryPlaceholder": "Select a repository",
     "retention": "Retention",
     "title": "Repositories"
+  },
+  "repositoryDetails": {
+    "addFilter": "Add workflow filter",
+    "addMember": "Add member",
+    "actions": "Actions",
+    "allow": "Allow",
+    "delete": "Delete",
+    "deny": "Deny",
+    "filterPlaceholder": "e.g. build-*",
+    "generalDescription": "Configure retention and access for this tracked repository.",
+    "loadError": "Repository settings could not be loaded.",
+    "memberPlaceholder": "Select a user",
+    "members": "Members",
+    "membersDescription": "Grant users read-only or repository-management access.",
+    "mode": "Mode",
+    "noMembers": "No users have explicit access to this repository.",
+    "noWorkflowFilters": "No workflow filters are configured.",
+    "open": "Open repository settings",
+    "pattern": "Workflow pattern",
+    "removeMember": "Remove member",
+    "retention": "Workflow-run retention (days)",
+    "retentionHelp": "Leave empty to use the global retention policy.",
+    "role": "Repository role",
+    "save": "Save",
+    "saveError": "The repository settings could not be saved.",
+    "title": "Repository settings",
+    "user": "User",
+    "workflowFilters": "Workflow filters",
+    "workflowFiltersDescription": "Deny filters take precedence over allow filters."
   }
 }

@@ -62,6 +62,11 @@ const navigationItems = computed<NavigationMenuItem[]>(() => {
       to: '/',
     },
     {
+      icon: 'i-lucide-list-tree',
+      label: t('layout.workflowRuns'),
+      to: '/workflow-runs',
+    },
+    {
       icon: 'i-lucide-bell',
       label: t('layout.notifications'),
       to: '/notifications',

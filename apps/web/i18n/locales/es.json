@@ -57,7 +57,8 @@
     "themeDark": "Oscuro",
     "themeLight": "Claro",
     "themeSystem": "Sistema",
-    "users": "Usuarios"
+    "users": "Usuarios",
+    "workflowRuns": "Ejecuciones de flujo"
   },
   "roles": {
     "MANAGER": "Administrador de repositorios",
@@ -161,6 +162,21 @@
     "SUCCESS": "Correcta",
     "UNKNOWN": "Desconocida"
   },
+  "workflowRuns": {
+    "columns": {
+      "completed": "Completado",
+      "created": "Hora del proveedor",
+      "duration": "Duración",
+      "providerRunId": "ID de ejecución del proveedor",
+      "started": "Iniciado",
+      "status": "Estado",
+      "workflow": "Flujo"
+    },
+    "durationValue": "{minutes} min {seconds} s",
+    "empty": "No hay ejecuciones de flujo disponibles.",
+    "loadError": "No se pudieron cargar las ejecuciones de flujo.",
+    "notAvailable": "—"
+  },
   "notifications": {
     "attempts": "{count} intentos",
     "channels": "Canales",
@@ -211,5 +227,34 @@
     "repositoryPlaceholder": "Selecciona un repositorio",
     "retention": "Retención",
     "title": "Repositorios"
+  },
+  "repositoryDetails": {
+    "actions": "Acciones",
+    "addFilter": "Añadir filtro de flujo",
+    "addMember": "Añadir miembro",
+    "allow": "Permitir",
+    "delete": "Eliminar",
+    "deny": "Excluir",
+    "filterPlaceholder": "p. ej., build-*",
+    "generalDescription": "Configura la retención y el acceso para este repositorio supervisado.",
+    "loadError": "No se pudieron cargar los ajustes del repositorio.",
+    "memberPlaceholder": "Selecciona un usuario",
+    "members": "Miembros",
+    "membersDescription": "Concede a los usuarios acceso de solo lectura o de gestión del repositorio.",
+    "mode": "Modo",
+    "noMembers": "Ningún usuario tiene acceso explícito a este repositorio.",
+    "noWorkflowFilters": "No hay filtros de flujo configurados.",
+    "open": "Abrir ajustes del repositorio",
+    "pattern": "Patrón de flujo",
+    "removeMember": "Eliminar miembro",
+    "retention": "Retención de ejecuciones de flujo (días)",
+    "retentionHelp": "Déjalo vacío para usar la política de retención global.",
+    "role": "Rol de repositorio",
+    "save": "Guardar",
+    "saveError": "No se pudieron guardar los ajustes del repositorio.",
+    "title": "Ajustes del repositorio",
+    "user": "Usuario",
+    "workflowFilters": "Filtros de flujo",
+    "workflowFiltersDescription": "Los filtros de exclusión tienen prioridad sobre los filtros de permiso."
   }
 }

@@ -83,6 +83,27 @@ describe('resource DTO mappings', () => {
     });
   });
 
+  it('allows Query Kit to project every workflow-run table field', () => {
+    const schema = buildFieldSchemaFromDto(WorkflowRunDto);
+
+    expect(
+      Fields.parseAndValidate(
+        'id,url,workflowName,status,providerCreatedAt,startedAt,completedAt,durationMs,providerRunId',
+        schema,
+      ),
+    ).toEqual({
+      completedAt: true,
+      durationMs: true,
+      id: true,
+      providerCreatedAt: true,
+      providerRunId: true,
+      startedAt: true,
+      status: true,
+      url: true,
+      workflowName: true,
+    });
+  });
+
   it('excludes raw provider statuses from public workflow runs', () => {
     const dto = WorkflowRunDto.fromModel({
       id: 'run',

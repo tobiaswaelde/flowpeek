@@ -169,7 +169,13 @@ onMounted(() => void Promise.all([providerTable.initialize(), loadAuthentication
 <template>
   <section class="flex min-h-0 flex-1 flex-col">
     <UAlert v-if="oauthStatus === 'connected'" color="success" :title="$t('providers.oauthConnected')" />
-    <UAlert v-else-if="oauthStatus === 'failed'" color="error" :title="$t('providers.oauthError')" />
+    <UAlert
+      v-else-if="oauthStatus === 'failed'"
+      color="error"
+      icon="i-lucide-circle-alert"
+      :title="$t('providers.oauthError')"
+      variant="subtle"
+    />
 
     <div class="flex min-h-0 flex-1 flex-col">
       <UDashboardToolbar>
@@ -195,7 +201,14 @@ onMounted(() => void Promise.all([providerTable.initialize(), loadAuthentication
         </template>
       </UDashboardToolbar>
 
-      <UAlert v-if="tableError" class="m-4" color="error" :title="$t('providers.loadError')" />
+      <UAlert
+        v-if="tableError"
+        class="m-4"
+        color="error"
+        icon="i-lucide-circle-alert"
+        :title="$t('providers.loadError')"
+        variant="subtle"
+      />
       <UTable
         sticky
         class="min-h-0 flex-1"
@@ -262,7 +275,9 @@ onMounted(() => void Promise.all([providerTable.initialize(), loadAuthentication
         <UAlert
           v-if="connectionError"
           color="error"
+          icon="i-lucide-circle-alert"
           :title="$t(usePat ? 'providers.credentialsError' : 'providers.oauthError')"
+          variant="subtle"
         />
         <UForm :schema="providerFormSchema" :state="form" class="mt-4 space-y-6" @submit="addProvider">
           <div class="grid gap-4 sm:grid-cols-2">

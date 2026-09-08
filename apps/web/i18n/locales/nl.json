@@ -57,7 +57,8 @@
     "themeDark": "Donker",
     "themeLight": "Licht",
     "themeSystem": "Systeem",
-    "users": "Gebruikers"
+    "users": "Gebruikers",
+    "workflowRuns": "Workflowuitvoeringen"
   },
   "roles": { "MANAGER": "Repositorybeheerder", "SYSTEM_ADMIN": "Systeembeheerder", "VIEWER": "Lezer" },
   "providers": {
@@ -157,6 +158,21 @@
     "SUCCESS": "Geslaagd",
     "UNKNOWN": "Onbekend"
   },
+  "workflowRuns": {
+    "columns": {
+      "completed": "Voltooid",
+      "created": "Providertijd",
+      "duration": "Duur",
+      "providerRunId": "Provider-uitvoerings-ID",
+      "started": "Gestart",
+      "status": "Status",
+      "workflow": "Workflow"
+    },
+    "durationValue": "{minutes}m {seconds}s",
+    "empty": "Er zijn geen workflowuitvoeringen beschikbaar.",
+    "loadError": "Workflowuitvoeringen konden niet worden geladen.",
+    "notAvailable": "—"
+  },
   "notifications": {
     "attempts": "{count} pogingen",
     "channels": "Kanalen",
@@ -207,5 +223,34 @@
     "repositoryPlaceholder": "Selecteer een repository",
     "retention": "Bewaartermijn",
     "title": "Repositories"
+  },
+  "repositoryDetails": {
+    "actions": "Acties",
+    "addFilter": "Workflowfilter toevoegen",
+    "addMember": "Lid toevoegen",
+    "allow": "Toestaan",
+    "delete": "Verwijderen",
+    "deny": "Uitsluiten",
+    "filterPlaceholder": "bijv. build-*",
+    "generalDescription": "Configureer bewaartermijn en toegang voor deze gevolgde repository.",
+    "loadError": "Repository-instellingen konden niet worden geladen.",
+    "memberPlaceholder": "Selecteer een gebruiker",
+    "members": "Leden",
+    "membersDescription": "Geef gebruikers alleen-lezen- of repositorybeheertoegang.",
+    "mode": "Modus",
+    "noMembers": "Geen gebruiker heeft expliciete toegang tot deze repository.",
+    "noWorkflowFilters": "Er zijn geen workflowfilters geconfigureerd.",
+    "open": "Repository-instellingen openen",
+    "pattern": "Workflowpatroon",
+    "removeMember": "Lid verwijderen",
+    "retention": "Bewaartermijn workflowuitvoeringen (dagen)",
+    "retentionHelp": "Laat leeg om het algemene bewaarbeleid te gebruiken.",
+    "role": "Repositoryrol",
+    "save": "Opslaan",
+    "saveError": "Repository-instellingen konden niet worden opgeslagen.",
+    "title": "Repository-instellingen",
+    "user": "Gebruiker",
+    "workflowFilters": "Workflowfilters",
+    "workflowFiltersDescription": "Uitsluitfilters hebben voorrang op toestaanfilters."
   }
 }

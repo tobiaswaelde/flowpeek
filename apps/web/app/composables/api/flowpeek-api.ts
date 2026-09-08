@@ -16,10 +16,13 @@ import type {
   ProviderOAuthAuthorization,
   ProviderRepository,
   Repository,
+  RepositoryMembership,
   StartProviderOAuth,
   UpdateNotificationChannel,
   UpdateNotificationRule,
   UpdateProviderAccount,
+  User,
+  WorkflowFilter,
   WorkflowRunTrendBucket,
   WorkflowRunTrendQuery,
 } from '~/types/api/resources';
@@ -79,13 +82,37 @@ export function useFlowpeekApi() {
         api.patch(`${apiEndpoints.providerAccounts.base}/${id}`, input),
     },
     repositories: {
+      createWorkflowFilter: (
+        id: string,
+        input: Pick<WorkflowFilter, 'mode' | 'pattern'>,
+      ): Promise<AxiosResponse<WorkflowFilter>> =>
+        api.post(`${apiEndpoints.repositories}/${id}/workflow-filters`, input),
+      deleteMembership: (id: string, userId: string): Promise<AxiosResponse<void>> =>
+        api.delete(`${apiEndpoints.repositories}/${id}/memberships/${userId}`),
+      deleteWorkflowFilter: (id: string, filterId: string): Promise<AxiosResponse<void>> =>
+        api.delete(`${apiEndpoints.repositories}/${id}/workflow-filters/${filterId}`),
+      get: (id: string): Promise<AxiosResponse<Repository>> => api.get(`${apiEndpoints.repositories}/${id}`),
+      listMemberships: (id: string): Promise<AxiosResponse<RepositoryMembership[]>> =>
+        api.get(`${apiEndpoints.repositories}/${id}/memberships`),
+      listWorkflowFilters: (id: string): Promise<AxiosResponse<WorkflowFilter[]>> =>
+        api.get(`${apiEndpoints.repositories}/${id}/workflow-filters`),
       update: (
         id: string,
         input: { enabled: boolean; workflowRunRetentionDays: number | null },
       ): Promise<AxiosResponse<void>> => api.patch(`${apiEndpoints.repositories}/${id}`, input),
+      upsertMembership: (
+        id: string,
+        userId: string,
+        input: Pick<RepositoryMembership, 'role'>,
+      ): Promise<AxiosResponse<RepositoryMembership>> =>
+        api.put(`${apiEndpoints.repositories}/${id}/memberships/${userId}`, input),
     },
     users: {
       delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.users}/${id}`),
+      list: (): Promise<AxiosResponse<PaginatedResource<User>>> =>
+        api.get(apiEndpoints.users, {
+          params: { fields: 'id,username,role,createdAt,updatedAt', page: 1, perPage: 100 },
+        }),
     },
   };
 }
