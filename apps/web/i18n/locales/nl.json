@@ -134,7 +134,20 @@
       }
     }
   },
-  "users": { "delete": "Verwijderen", "description": "Beheer van systeemgebruikers.", "title": "Gebruikers" },
+  "users": {
+    "columns": {
+      "actions": "Acties",
+      "createdAt": "Aangemaakt",
+      "role": "Rol",
+      "updatedAt": "Bijgewerkt",
+      "username": "Gebruikersnaam"
+    },
+    "delete": "Verwijderen",
+    "description": "Beheer van systeemgebruikers.",
+    "empty": "Er zijn geen systeemgebruikers geconfigureerd.",
+    "loadError": "Systeemgebruikers konden niet worden geladen.",
+    "title": "Gebruikers"
+  },
   "workflowStatus": {
     "CANCELLED": "Geannuleerd",
     "FAILED": "Mislukt",
@@ -160,7 +173,20 @@
     "default": "standaard",
     "description": "Workflowinstellingen voor gevolgde repositories.",
     "disable": "Uitschakelen",
+    "disabled": "Uitgeschakeld",
+    "columns": {
+      "actions": "Acties",
+      "lastSync": "Laatste synchronisatie",
+      "name": "Repository",
+      "owner": "Eigenaar",
+      "retention": "Bewaartermijn",
+      "status": "Status"
+    },
+    "empty": "Er worden geen repositories gevolgd.",
+    "enabled": "Ingeschakeld",
     "enable": "Inschakelen",
+    "loadError": "Repositories konden niet worden geladen.",
+    "neverSynced": "Nooit",
     "retention": "Bewaartermijn",
     "title": "Repositories"
   }

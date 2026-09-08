@@ -140,7 +140,20 @@
       }
     }
   },
-  "users": { "delete": "Delete", "description": "System user administration.", "title": "Users" },
+  "users": {
+    "columns": {
+      "actions": "Actions",
+      "createdAt": "Created",
+      "role": "Role",
+      "updatedAt": "Updated",
+      "username": "Username"
+    },
+    "delete": "Delete",
+    "description": "System user administration.",
+    "empty": "No system users are configured.",
+    "loadError": "System users could not be loaded.",
+    "title": "Users"
+  },
   "workflowStatus": {
     "CANCELLED": "Cancelled",
     "FAILED": "Failed",
@@ -170,7 +183,20 @@
     "default": "default",
     "description": "Tracked repository workflow settings.",
     "disable": "Disable",
+    "disabled": "Disabled",
+    "columns": {
+      "actions": "Actions",
+      "lastSync": "Last sync",
+      "name": "Repository",
+      "owner": "Owner",
+      "retention": "Retention",
+      "status": "Status"
+    },
+    "empty": "No repositories are tracked.",
+    "enabled": "Enabled",
     "enable": "Enable",
+    "loadError": "Repositories could not be loaded.",
+    "neverSynced": "Never",
     "retention": "Retention",
     "title": "Repositories"
   }

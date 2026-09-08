@@ -134,7 +134,20 @@
       }
     }
   },
-  "users": { "delete": "Elimina", "description": "Amministrazione degli utenti di sistema.", "title": "Utenti" },
+  "users": {
+    "columns": {
+      "actions": "Azioni",
+      "createdAt": "Creato",
+      "role": "Ruolo",
+      "updatedAt": "Aggiornato",
+      "username": "Nome utente"
+    },
+    "delete": "Elimina",
+    "description": "Amministrazione degli utenti di sistema.",
+    "empty": "Non sono configurati utenti di sistema.",
+    "loadError": "Non è stato possibile caricare gli utenti di sistema.",
+    "title": "Utenti"
+  },
   "workflowStatus": {
     "CANCELLED": "Annullata",
     "FAILED": "Non riuscita",
@@ -160,7 +173,20 @@
     "default": "predefinito",
     "description": "Impostazioni dei flussi di lavoro dei repository monitorati.",
     "disable": "Disabilita",
+    "disabled": "Disabilitato",
+    "columns": {
+      "actions": "Azioni",
+      "lastSync": "Ultima sincronizzazione",
+      "name": "Repository",
+      "owner": "Proprietario",
+      "retention": "Conservazione",
+      "status": "Stato"
+    },
+    "empty": "Non vengono monitorati repository.",
+    "enabled": "Abilitato",
     "enable": "Abilita",
+    "loadError": "Non è stato possibile caricare i repository.",
+    "neverSynced": "Mai",
     "retention": "Conservazione",
     "title": "Repository"
   }

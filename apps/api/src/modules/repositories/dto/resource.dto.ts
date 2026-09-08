@@ -41,14 +41,23 @@ export class ProviderAccountDto {
 
 /** Public tracked-repository representation. */
 export class RepositoryDto {
+  @ApiProperty({ format: 'uuid' })
   id!: string;
+  @ApiProperty()
   providerRepositoryId!: string;
+  @ApiProperty()
   owner!: string;
+  @ApiProperty()
   name!: string;
+  @ApiProperty({ format: 'uri' })
   url!: string;
+  @ApiProperty()
   enabled!: boolean;
+  @ApiPropertyOptional({ format: 'date-time', nullable: true })
   lastSyncAt!: Date | null;
+  @ApiPropertyOptional({ nullable: true })
   workflowRunRetentionDays!: number | null;
+  @ApiProperty({ format: 'uuid' })
   providerAccountId!: string;
 
   /** Convert a tracked repository to a permission-filtered API response. */

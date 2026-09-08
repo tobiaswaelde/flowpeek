@@ -140,7 +140,20 @@
       }
     }
   },
-  "users": { "delete": "Löschen", "description": "System-Benutzerverwaltung.", "title": "Benutzer" },
+  "users": {
+    "columns": {
+      "actions": "Aktionen",
+      "createdAt": "Erstellt",
+      "role": "Rolle",
+      "updatedAt": "Aktualisiert",
+      "username": "Benutzername"
+    },
+    "delete": "Löschen",
+    "description": "System-Benutzerverwaltung.",
+    "empty": "Es sind keine System-Benutzer konfiguriert.",
+    "loadError": "System-Benutzer konnten nicht geladen werden.",
+    "title": "Benutzer"
+  },
   "workflowStatus": {
     "CANCELLED": "Abgebrochen",
     "FAILED": "Fehlgeschlagen",
@@ -170,7 +183,20 @@
     "default": "Standard",
     "description": "Workflow-Einstellungen getrackter Repositories.",
     "disable": "Deaktivieren",
+    "disabled": "Deaktiviert",
+    "columns": {
+      "actions": "Aktionen",
+      "lastSync": "Letzte Synchronisierung",
+      "name": "Repository",
+      "owner": "Besitzer",
+      "retention": "Aufbewahrung",
+      "status": "Status"
+    },
+    "empty": "Es werden keine Repositories getrackt.",
+    "enabled": "Aktiviert",
     "enable": "Aktivieren",
+    "loadError": "Repositories konnten nicht geladen werden.",
+    "neverSynced": "Nie",
     "retention": "Aufbewahrung",
     "title": "Repositories"
   }

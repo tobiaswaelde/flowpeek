@@ -6,8 +6,10 @@ import type {
   NotificationChannel,
   NotificationRule,
   ProviderAccount,
+  Repository,
   UpdateNotificationChannel,
   UpdateNotificationRule,
+  User,
   WorkflowRun,
 } from './resources';
 
@@ -43,6 +45,16 @@ export interface Endpoints {
   'provider-accounts': {
     create: never;
     dto: ProviderAccount;
+    update: never;
+  };
+  repositories: {
+    create: never;
+    dto: Repository;
+    update: never;
+  };
+  users: {
+    create: never;
+    dto: User;
     update: never;
   };
   'workflow-runs': {

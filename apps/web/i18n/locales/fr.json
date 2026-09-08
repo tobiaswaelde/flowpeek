@@ -137,8 +137,17 @@
     }
   },
   "users": {
+    "columns": {
+      "actions": "Actions",
+      "createdAt": "Créé",
+      "role": "Rôle",
+      "updatedAt": "Mis à jour",
+      "username": "Nom d’utilisateur"
+    },
     "delete": "Supprimer",
     "description": "Administration des utilisateurs système.",
+    "empty": "Aucun utilisateur système n’est configuré.",
+    "loadError": "Les utilisateurs système n’ont pas pu être chargés.",
     "title": "Utilisateurs"
   },
   "workflowStatus": {
@@ -166,7 +175,20 @@
     "default": "par défaut",
     "description": "Paramètres des flux de travail des dépôts suivis.",
     "disable": "Désactiver",
+    "disabled": "Désactivé",
+    "columns": {
+      "actions": "Actions",
+      "lastSync": "Dernière synchronisation",
+      "name": "Dépôt",
+      "owner": "Propriétaire",
+      "retention": "Rétention",
+      "status": "État"
+    },
+    "empty": "Aucun dépôt n’est suivi.",
+    "enabled": "Activé",
     "enable": "Activer",
+    "loadError": "Les dépôts n’ont pas pu être chargés.",
+    "neverSynced": "Jamais",
     "retention": "Rétention",
     "title": "Dépôts"
   }

@@ -79,6 +79,7 @@ export interface UpdateProviderAccount {
 export interface Repository {
   enabled: boolean;
   id: string;
+  lastSyncAt: ApiTimestamp | null;
   name: string;
   owner: string;
   providerAccountId: string;

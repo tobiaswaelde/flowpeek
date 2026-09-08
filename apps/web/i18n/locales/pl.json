@@ -134,7 +134,20 @@
       }
     }
   },
-  "users": { "delete": "Usuń", "description": "Administracja użytkownikami systemu.", "title": "Użytkownicy" },
+  "users": {
+    "columns": {
+      "actions": "Działania",
+      "createdAt": "Utworzono",
+      "role": "Rola",
+      "updatedAt": "Zaktualizowano",
+      "username": "Nazwa użytkownika"
+    },
+    "delete": "Usuń",
+    "description": "Administracja użytkownikami systemu.",
+    "empty": "Nie skonfigurowano użytkowników systemowych.",
+    "loadError": "Nie można było wczytać użytkowników systemowych.",
+    "title": "Użytkownicy"
+  },
   "workflowStatus": {
     "CANCELLED": "Anulowane",
     "FAILED": "Nieudane",
@@ -160,7 +173,20 @@
     "default": "domyślne",
     "description": "Ustawienia przepływów pracy śledzonych repozytoriów.",
     "disable": "Wyłącz",
+    "disabled": "Wyłączone",
+    "columns": {
+      "actions": "Działania",
+      "lastSync": "Ostatnia synchronizacja",
+      "name": "Repozytorium",
+      "owner": "Właściciel",
+      "retention": "Przechowywanie",
+      "status": "Stan"
+    },
+    "empty": "Nie są śledzone żadne repozytoria.",
+    "enabled": "Włączone",
     "enable": "Włącz",
+    "loadError": "Nie można było wczytać repozytoriów.",
+    "neverSynced": "Nigdy",
     "retention": "Przechowywanie",
     "title": "Repozytoria"
   }

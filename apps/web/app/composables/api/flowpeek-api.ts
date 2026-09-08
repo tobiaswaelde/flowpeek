@@ -13,12 +13,10 @@ import type {
   ProviderAccount,
   ProviderAuthenticationOptions,
   ProviderOAuthAuthorization,
-  Repository,
   StartProviderOAuth,
   UpdateNotificationChannel,
   UpdateNotificationRule,
   UpdateProviderAccount,
-  User,
   WorkflowRunTrendBucket,
   WorkflowRunTrendQuery,
 } from '~/types/api/resources';
@@ -70,14 +68,12 @@ export function useFlowpeekApi() {
         api.patch(`${apiEndpoints.providerAccounts.base}/${id}`, input),
     },
     repositories: {
-      list: (): Promise<AxiosResponse<Repository[]>> => api.get(apiEndpoints.repositories),
       update: (
         id: string,
-        input: Pick<Repository, 'enabled' | 'workflowRunRetentionDays'>,
-      ): Promise<AxiosResponse<Repository>> => api.patch(`${apiEndpoints.repositories}/${id}`, input),
+        input: { enabled: boolean; workflowRunRetentionDays: number | null },
+      ): Promise<AxiosResponse<void>> => api.patch(`${apiEndpoints.repositories}/${id}`, input),
     },
     users: {
-      list: (): Promise<AxiosResponse<User[]>> => api.get(apiEndpoints.users),
       delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.users}/${id}`),
     },
   };

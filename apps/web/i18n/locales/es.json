@@ -138,7 +138,20 @@
       }
     }
   },
-  "users": { "delete": "Eliminar", "description": "Administración de usuarios del sistema.", "title": "Usuarios" },
+  "users": {
+    "columns": {
+      "actions": "Acciones",
+      "createdAt": "Creado",
+      "role": "Rol",
+      "updatedAt": "Actualizado",
+      "username": "Nombre de usuario"
+    },
+    "delete": "Eliminar",
+    "description": "Administración de usuarios del sistema.",
+    "empty": "No hay usuarios del sistema configurados.",
+    "loadError": "No se pudieron cargar los usuarios del sistema.",
+    "title": "Usuarios"
+  },
   "workflowStatus": {
     "CANCELLED": "Cancelada",
     "FAILED": "Fallida",
@@ -164,7 +177,20 @@
     "default": "predeterminado",
     "description": "Configuración de flujos de trabajo de repositorios supervisados.",
     "disable": "Desactivar",
+    "disabled": "Desactivado",
+    "columns": {
+      "actions": "Acciones",
+      "lastSync": "Última sincronización",
+      "name": "Repositorio",
+      "owner": "Propietario",
+      "retention": "Retención",
+      "status": "Estado"
+    },
+    "empty": "No se supervisan repositorios.",
+    "enabled": "Activado",
     "enable": "Activar",
+    "loadError": "No se pudieron cargar los repositorios.",
+    "neverSynced": "Nunca",
     "retention": "Retención",
     "title": "Repositorios"
   }

@@ -7,6 +7,7 @@ import { ENV } from '../../config/env.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { JwtStrategy } from './jwt.strategy.js';
+import { UsersQueryService } from './users-query.service.js';
 import { UsersController } from './users.controller.js';
 
 @Module({
@@ -22,7 +23,7 @@ import { UsersController } from './users.controller.js';
     }),
   ],
   controllers: [AuthController, UsersController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, UsersQueryService],
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -135,8 +135,17 @@
     }
   },
   "users": {
+    "columns": {
+      "actions": "Ações",
+      "createdAt": "Criado",
+      "role": "Função",
+      "updatedAt": "Atualizado",
+      "username": "Nome de utilizador"
+    },
     "delete": "Eliminar",
     "description": "Administração de utilizadores do sistema.",
+    "empty": "Não estão configurados utilizadores do sistema.",
+    "loadError": "Não foi possível carregar os utilizadores do sistema.",
     "title": "Utilizadores"
   },
   "workflowStatus": {
@@ -164,7 +173,20 @@
     "default": "predefinido",
     "description": "Definições de fluxos de trabalho dos repositórios monitorizados.",
     "disable": "Desativar",
+    "disabled": "Desativado",
+    "columns": {
+      "actions": "Ações",
+      "lastSync": "Última sincronização",
+      "name": "Repositório",
+      "owner": "Proprietário",
+      "retention": "Retenção",
+      "status": "Estado"
+    },
+    "empty": "Não são monitorizados repositórios.",
+    "enabled": "Ativado",
     "enable": "Ativar",
+    "loadError": "Não foi possível carregar os repositórios.",
+    "neverSynced": "Nunca",
     "retention": "Retenção",
     "title": "Repositórios"
   }
