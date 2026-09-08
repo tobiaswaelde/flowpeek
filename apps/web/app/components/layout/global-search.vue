@@ -8,10 +8,10 @@
       <input
         ref="searchInput"
         v-model="query"
-        :aria-label="t('layout.search')"
-        :placeholder="t('layout.searchPlaceholder')"
         autocomplete="off"
         class="w-full border-0 bg-transparent py-1.5 pl-2 text-sm outline-none placeholder:text-muted"
+        :aria-label="t('layout.search')"
+        :placeholder="t('layout.searchPlaceholder')"
         @focus="isOpen = true"
         @keydown.escape="close"
       />
@@ -34,7 +34,7 @@
             :to="item.to"
             @click="close"
           >
-            <UIcon :name="item.icon" class="size-4 shrink-0 text-muted" />
+            <UIcon class="size-4 shrink-0 text-muted" :name="item.icon" />
             <span class="font-medium">{{ item.label }}</span>
           </NuxtLink>
         </template>
@@ -47,9 +47,9 @@
             v-for="workflowRun in workflowRuns"
             :key="workflowRun.id"
             class="flex items-center gap-3 px-3 py-2 text-sm transition-colors hover:bg-elevated"
-            :href="workflowRun.url"
             rel="noopener"
             target="_blank"
+            :href="workflowRun.url"
             @click="close"
           >
             <UIcon name="i-tabler-activity" class="size-4 shrink-0 text-muted" />

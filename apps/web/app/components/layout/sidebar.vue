@@ -3,22 +3,22 @@
     id="flowpeek"
     collapsible
     resizable
-    :default-size="16"
-    :aria-label="t('layout.sidebarNavigation')"
     class="bg-elevated/25"
     role="complementary"
+    :default-size="16"
+    :aria-label="t('layout.sidebarNavigation')"
     :ui="{ footer: 'flex-col items-stretch' }"
   >
     <template #header="{ collapsed }">
       <UButton
         class="w-full p-0.5"
         color="neutral"
+        to="/"
+        variant="ghost"
         :label="collapsed ? undefined : 'Flowpeek'"
         :square="collapsed"
         :class="[!collapsed && 'py-2']"
         :block="collapsed"
-        to="/"
-        variant="ghost"
       >
         <template #leading>
           <span class="flex size-7 items-center justify-center rounded-md bg-primary font-bold text-inverted">F</span>
@@ -28,10 +28,10 @@
 
     <template #default="{ collapsed }">
       <UNavigationMenu
+        orientation="vertical"
         :aria-label="t('layout.primaryNavigation')"
         :collapsed="collapsed"
         :items="navigationItems"
-        orientation="vertical"
         popover
         tooltip
       />

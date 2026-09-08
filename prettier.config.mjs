@@ -5,4 +5,12 @@ export default {
   semi: true,
   singleQuote: true,
   trailingComma: 'all',
+  overrides: [
+    {
+      files: '*.vue',
+      options: {
+        htmlWhitespaceSensitivity: 'ignore',
+      },
+    },
+  ],
 };

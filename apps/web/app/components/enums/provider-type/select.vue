@@ -1,11 +1,11 @@
 <template>
   <USelect
     v-model="value"
+    label-key="label"
+    value-key="value"
     :disabled="disabled"
     :items="items"
     :placeholder="placeholder"
-    label-key="label"
-    value-key="value"
   />
 </template>
 

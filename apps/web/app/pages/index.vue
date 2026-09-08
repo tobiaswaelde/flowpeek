@@ -1,3 +1,44 @@
+<template>
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-semibold">{{ $t('dashboard.title') }}</h1>
+        <p class="mt-1 text-sm text-muted">{{ $t('dashboard.description') }}</p>
+      </div>
+      <UButton
+        icon="i-lucide-refresh-cw"
+        variant="soft"
+        :label="$t('dashboard.refresh')"
+        :loading="isLoading"
+        @click="loadDashboard"
+      />
+    </div>
+
+    <UAlert
+      v-if="error"
+      color="error"
+      icon="i-lucide-circle-alert"
+      variant="subtle"
+      :description="$t('dashboard.loadError')"
+    />
+
+    <ModulesDashboardFailingWorkflows :runs="failures" />
+
+    <div class="grid gap-6 xl:grid-cols-5">
+      <ModulesDashboardLatestRuns class="xl:col-span-3" :runs="latestRuns" />
+      <UCard class="xl:col-span-2">
+        <template #header>
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="font-semibold">{{ $t('dashboard.trend') }}</h2>
+            <USelect v-model="range" class="w-36" :items="rangeOptions" @update:model-value="loadDashboard" />
+          </div>
+        </template>
+        <TrendChart :buckets="trend" />
+      </UCard>
+    </div>
+  </section>
+</template>
+
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
@@ -5,7 +46,7 @@ import TrendChart from '~/components/modules/dashboard/trend-chart.vue';
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
 import type { DashboardWorkflowRun, WorkflowRunTrendBucket } from '~/types/api/resources';
 
-const { locale, t } = useI18n();
+const { t } = useI18n();
 const api = useFlowpeekApi();
 const failures = ref<DashboardWorkflowRun[]>([]);
 const latestRuns = ref<DashboardWorkflowRun[]>([]);
@@ -21,38 +62,6 @@ const rangeOptions = computed(() => [
   { label: t('dashboard.last30Days'), value: '30d' },
   { label: t('dashboard.last90Days'), value: '90d' },
 ]);
-
-/** Format an optional workflow duration for compact table display. */
-function formatDuration(durationMs: number | null): string {
-  if (durationMs === null) return t('dashboard.durationUnknown');
-  const seconds = Math.round(durationMs / 1000);
-  const formatter = new Intl.NumberFormat(locale.value);
-  return seconds >= 60
-    ? t('dashboard.durationMinutesSeconds', {
-        minutes: formatter.format(Math.floor(seconds / 60)),
-        seconds: formatter.format(seconds % 60),
-      })
-    : t('dashboard.durationSeconds', { seconds: formatter.format(seconds) });
-}
-
-/** Format an API timestamp in the user's browser locale. */
-function formatTimestamp(timestamp: string): string {
-  return new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(timestamp));
-}
-
-/** Translate a persisted normalized workflow status for display. */
-function formatStatus(status: DashboardWorkflowRun['status']): string {
-  return t(`workflowStatus.${status}`);
-}
-
-/** Map normalized workflow states to Nuxt UI badge colors. */
-function statusColor(status: DashboardWorkflowRun['status']): 'error' | 'info' | 'neutral' | 'success' | 'warning' {
-  if (status === 'SUCCESS') return 'success';
-  if (status === 'FAILED') return 'error';
-  if (status === 'RUNNING') return 'info';
-  if (status === 'QUEUED') return 'warning';
-  return 'neutral';
-}
 
 /** Fetch the dashboard resources visible to the current user. */
 async function loadDashboard(): Promise<void> {
@@ -79,94 +88,3 @@ async function loadDashboard(): Promise<void> {
 
 onMounted(loadDashboard);
 </script>
-
-<template>
-  <section class="space-y-8">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-semibold">{{ $t('dashboard.title') }}</h1>
-        <p class="mt-1 text-sm text-muted">{{ $t('dashboard.description') }}</p>
-      </div>
-      <UButton
-        :label="$t('dashboard.refresh')"
-        icon="i-lucide-refresh-cw"
-        :loading="isLoading"
-        variant="soft"
-        @click="loadDashboard"
-      />
-    </div>
-
-    <UAlert
-      v-if="error"
-      color="error"
-      :description="$t('dashboard.loadError')"
-      icon="i-lucide-circle-alert"
-      variant="subtle"
-    />
-
-    <div>
-      <h2 class="mb-3 text-lg font-semibold">{{ $t('dashboard.failingWorkflows') }}</h2>
-      <div v-if="failures.length" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <UCard v-for="run in failures" :key="run.id">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <p class="font-medium">{{ run.workflowName }}</p>
-              <p class="text-sm text-muted">{{ run.repository.owner }}/{{ run.repository.name }}</p>
-            </div>
-            <UBadge :color="statusColor(run.status)">{{ formatStatus(run.status) }}</UBadge>
-          </div>
-          <UButton class="mt-4" :label="$t('dashboard.openProvider')" :to="run.url" target="_blank" variant="link" />
-        </UCard>
-      </div>
-      <UCard v-else
-        ><p class="py-5 text-center text-sm text-muted">{{ $t('dashboard.noFailures') }}</p></UCard
-      >
-    </div>
-
-    <div class="grid gap-6 xl:grid-cols-5">
-      <UCard class="xl:col-span-3"
-        ><template #header
-          ><h2 class="font-semibold">{{ $t('dashboard.latestRuns') }}</h2></template
-        >
-        <div v-if="latestRuns.length" class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="border-b border-default text-muted">
-              <tr>
-                <th class="pb-3">{{ $t('dashboard.workflow') }}</th>
-                <th class="pb-3">{{ $t('dashboard.status') }}</th>
-                <th class="pb-3">{{ $t('dashboard.duration') }}</th>
-                <th class="pb-3">{{ $t('dashboard.createdAt') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="run in latestRuns" :key="run.id" class="border-b border-default last:border-0">
-                <td class="py-3">
-                  <UButton :label="run.workflowName" :to="run.url" target="_blank" variant="link" />
-                  <p class="text-xs text-muted">{{ run.repository.owner }}/{{ run.repository.name }}</p>
-                </td>
-                <td class="py-3">
-                  <UBadge :color="statusColor(run.status)">{{ formatStatus(run.status) }}</UBadge>
-                </td>
-                <td class="py-3">{{ formatDuration(run.durationMs) }}</td>
-                <td class="py-3 whitespace-nowrap">{{ formatTimestamp(run.providerCreatedAt) }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p v-else class="py-12 text-center text-sm text-muted">{{ $t('dashboard.noRuns') }}</p>
-      </UCard>
-      <UCard class="xl:col-span-2"
-        ><template #header
-          ><div class="flex items-center justify-between gap-3">
-            <h2 class="font-semibold">{{ $t('dashboard.trend') }}</h2>
-            <USelect
-              v-model="range"
-              :items="rangeOptions"
-              class="w-36"
-              @update:model-value="loadDashboard"
-            /></div></template
-        ><TrendChart :buckets="trend"
-      /></UCard>
-    </div>
-  </section>
-</template>

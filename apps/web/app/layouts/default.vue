@@ -1,9 +1,3 @@
-<script setup lang="ts">
-const { t } = useI18n();
-const route = useRoute();
-const usesFullWidthContent = computed(() => route.meta.fullWidth === true);
-</script>
-
 <template>
   <UDashboardGroup class="min-h-screen" storage="local" storage-key="flowpeek" unit="rem">
     <a
@@ -23,11 +17,11 @@ const usesFullWidthContent = computed(() => route.meta.fullWidth === true);
       <template #body>
         <main
           id="main-content"
+          tabindex="-1"
           :class="[
             'w-full',
             usesFullWidthContent ? 'flex min-h-full flex-1 flex-col' : 'mx-auto max-w-7xl p-4 sm:p-6 lg:p-8',
           ]"
-          tabindex="-1"
         >
           <slot />
         </main>
@@ -35,3 +29,9 @@ const usesFullWidthContent = computed(() => route.meta.fullWidth === true);
     </UDashboardPanel>
   </UDashboardGroup>
 </template>
+
+<script setup lang="ts">
+const { t } = useI18n();
+const route = useRoute();
+const usesFullWidthContent = computed(() => route.meta.fullWidth === true);
+</script>

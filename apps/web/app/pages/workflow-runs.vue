@@ -1,3 +1,87 @@
+<template>
+  <section class="flex min-h-0 flex-1 flex-col">
+    <div class="flex min-h-0 flex-1 flex-col">
+      <UDashboardToolbar>
+        <template #left>
+          <UBreadcrumb
+            :items="[
+              { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
+              { icon: 'i-lucide-list-tree', label: $t('layout.workflowRuns') },
+            ]"
+          />
+        </template>
+        <template #right>
+          <QTableSorting v-model:sorting="sorting" :fields="sortableFields" shortcuts />
+          <QTableFiltering v-model:filtering="filtering" :fields="filterFields" shortcuts />
+          <QTableOptions
+            v-model:column-order="columnOrder"
+            v-model:column-pinning="columnPinning"
+            v-model:invisible-columns="columnVisibility"
+            :columns="columnDefinition"
+            shortcuts
+          />
+        </template>
+      </UDashboardToolbar>
+
+      <UAlert
+        v-if="tableError"
+        class="m-4"
+        color="error"
+        icon="i-lucide-circle-alert"
+        variant="subtle"
+        :title="$t('workflowRuns.loadError')"
+      />
+      <UTable
+        sticky
+        class="min-h-0 flex-1"
+        :columns="columns"
+        :data="items"
+        :empty="$t('workflowRuns.empty')"
+        :loading="loading"
+        :ui="{
+          th: 'first:pl-6 bg-neutral-100 dark:bg-neutral-950/20',
+          td: 'first:pl-6',
+        }"
+      >
+        <template #workflowName-cell="{ row }">
+          <a class="font-medium hover:underline" rel="noreferrer" target="_blank" :href="row.original.url">
+            {{ row.original.workflowName }}
+          </a>
+        </template>
+        <template #status-cell="{ row }">
+          <UBadge variant="subtle" :color="statusColor(row.original.status)">
+            {{ $t(`workflowStatus.${row.original.status}`) }}
+          </UBadge>
+        </template>
+        <template #providerCreatedAt-cell="{ row }">
+          <span class="whitespace-nowrap text-sm text-muted">
+            {{ formatTimestamp(row.original.providerCreatedAt) }}
+          </span>
+        </template>
+        <template #startedAt-cell="{ row }">
+          <span class="whitespace-nowrap text-sm text-muted">{{ formatTimestamp(row.original.startedAt) }}</span>
+        </template>
+        <template #completedAt-cell="{ row }">
+          <span class="whitespace-nowrap text-sm text-muted">{{ formatTimestamp(row.original.completedAt) }}</span>
+        </template>
+        <template #durationMs-cell="{ row }">
+          <span class="whitespace-nowrap text-sm text-muted">{{ formatDuration(row.original.durationMs) }}</span>
+        </template>
+        <template #providerRunId-cell="{ row }">
+          <span class="font-mono text-xs text-muted">{{ row.original.providerRunId }}</span>
+        </template>
+      </UTable>
+      <QTablePagination
+        v-model:items-per-page="itemsPerPage"
+        v-model:page="page"
+        class="border-t border-default"
+        :total-items="totalItems"
+        shortcuts
+      />
+    </div>
+  </section>
+</template>
+
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 
@@ -97,87 +181,3 @@ function statusColor(status: WorkflowRunStatus): 'error' | 'info' | 'neutral' | 
 
 onMounted(() => void workflowRunTable.initialize());
 </script>
-
-<template>
-  <section class="flex min-h-0 flex-1 flex-col">
-    <div class="flex min-h-0 flex-1 flex-col">
-      <UDashboardToolbar>
-        <template #left>
-          <UBreadcrumb
-            :items="[
-              { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
-              { icon: 'i-lucide-list-tree', label: $t('layout.workflowRuns') },
-            ]"
-          />
-        </template>
-        <template #right>
-          <QTableSorting v-model:sorting="sorting" :fields="sortableFields" shortcuts />
-          <QTableFiltering v-model:filtering="filtering" :fields="filterFields" shortcuts />
-          <QTableOptions
-            v-model:column-order="columnOrder"
-            v-model:column-pinning="columnPinning"
-            v-model:invisible-columns="columnVisibility"
-            :columns="columnDefinition"
-            shortcuts
-          />
-        </template>
-      </UDashboardToolbar>
-
-      <UAlert
-        v-if="tableError"
-        class="m-4"
-        color="error"
-        icon="i-lucide-circle-alert"
-        :title="$t('workflowRuns.loadError')"
-        variant="subtle"
-      />
-      <UTable
-        sticky
-        class="min-h-0 flex-1"
-        :columns="columns"
-        :data="items"
-        :empty="$t('workflowRuns.empty')"
-        :loading="loading"
-        :ui="{
-          th: 'first:pl-6 bg-neutral-100 dark:bg-neutral-950/20',
-          td: 'first:pl-6',
-        }"
-      >
-        <template #workflowName-cell="{ row }">
-          <a class="font-medium hover:underline" :href="row.original.url" rel="noreferrer" target="_blank">
-            {{ row.original.workflowName }}
-          </a>
-        </template>
-        <template #status-cell="{ row }">
-          <UBadge :color="statusColor(row.original.status)" variant="subtle">
-            {{ $t(`workflowStatus.${row.original.status}`) }}
-          </UBadge>
-        </template>
-        <template #providerCreatedAt-cell="{ row }">
-          <span class="whitespace-nowrap text-sm text-muted">{{
-            formatTimestamp(row.original.providerCreatedAt)
-          }}</span>
-        </template>
-        <template #startedAt-cell="{ row }">
-          <span class="whitespace-nowrap text-sm text-muted">{{ formatTimestamp(row.original.startedAt) }}</span>
-        </template>
-        <template #completedAt-cell="{ row }">
-          <span class="whitespace-nowrap text-sm text-muted">{{ formatTimestamp(row.original.completedAt) }}</span>
-        </template>
-        <template #durationMs-cell="{ row }">
-          <span class="whitespace-nowrap text-sm text-muted">{{ formatDuration(row.original.durationMs) }}</span>
-        </template>
-        <template #providerRunId-cell="{ row }">
-          <span class="font-mono text-xs text-muted">{{ row.original.providerRunId }}</span>
-        </template>
-      </UTable>
-      <QTablePagination
-        v-model:items-per-page="itemsPerPage"
-        v-model:page="page"
-        class="border-t border-default"
-        :total-items="totalItems"
-        shortcuts
-      />
-    </div>
-  </section>
-</template>

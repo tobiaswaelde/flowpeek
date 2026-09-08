@@ -1,3 +1,45 @@
+<template>
+  <div class="space-y-6">
+    <div class="space-y-1">
+      <h1 class="text-xl font-semibold">{{ $t('auth.signIn') }}</h1>
+      <p class="text-sm text-muted">{{ $t('auth.signInDescription') }}</p>
+    </div>
+
+    <UForm class="space-y-5" :schema="signInRequestSchema" :state="credentials" @submit="signIn">
+      <UAlert
+        v-if="errorMessage"
+        color="error"
+        icon="i-lucide-circle-alert"
+        variant="subtle"
+        :description="errorMessage"
+      />
+
+      <UFormField name="username" :label="$t('auth.username')" required>
+        <UInput
+          v-model="credentials.username"
+          autocomplete="username"
+          class="w-full"
+          icon="i-lucide-user"
+          :placeholder="$t('auth.usernamePlaceholder')"
+        />
+      </UFormField>
+
+      <UFormField name="password" :label="$t('auth.password')" required>
+        <UInput
+          v-model="credentials.password"
+          autocomplete="current-password"
+          class="w-full"
+          icon="i-lucide-key-round"
+          type="password"
+          :placeholder="$t('auth.passwordPlaceholder')"
+        />
+      </UFormField>
+
+      <UButton block type="submit" :label="$t('auth.signIn')" :loading="isSubmitting" />
+    </UForm>
+  </div>
+</template>
+
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { reactive, ref } from 'vue';
@@ -34,45 +76,3 @@ async function signIn(event: FormSubmitEvent<SignInRequest>): Promise<void> {
   }
 }
 </script>
-
-<template>
-  <div class="space-y-6">
-    <div class="space-y-1">
-      <h1 class="text-xl font-semibold">{{ $t('auth.signIn') }}</h1>
-      <p class="text-sm text-muted">{{ $t('auth.signInDescription') }}</p>
-    </div>
-
-    <UForm :schema="signInRequestSchema" :state="credentials" class="space-y-5" @submit="signIn">
-      <UAlert
-        v-if="errorMessage"
-        color="error"
-        :description="errorMessage"
-        icon="i-lucide-circle-alert"
-        variant="subtle"
-      />
-
-      <UFormField :label="$t('auth.username')" name="username" required>
-        <UInput
-          v-model="credentials.username"
-          :placeholder="$t('auth.usernamePlaceholder')"
-          autocomplete="username"
-          class="w-full"
-          icon="i-lucide-user"
-        />
-      </UFormField>
-
-      <UFormField :label="$t('auth.password')" name="password" required>
-        <UInput
-          v-model="credentials.password"
-          :placeholder="$t('auth.passwordPlaceholder')"
-          autocomplete="current-password"
-          class="w-full"
-          icon="i-lucide-key-round"
-          type="password"
-        />
-      </UFormField>
-
-      <UButton block :label="$t('auth.signIn')" :loading="isSubmitting" type="submit" />
-    </UForm>
-  </div>
-</template>
