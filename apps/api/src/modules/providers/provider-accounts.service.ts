@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 
 import { PrismaService } from '../../prisma/prisma.service.js';
 import type { AuthenticatedUser } from '../auth/types.js';
+import { ProviderAdapterRegistry } from './provider-adapter.registry.js';
 import { ProviderCredentialService } from './provider-credential.service.js';
 
 /** Admin-only persistence service for Flowpeek provider accounts. */
@@ -10,6 +11,7 @@ export class ProviderAccountsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly credentials: ProviderCredentialService,
+    private readonly adapters: ProviderAdapterRegistry,
   ) {}
 
   async list(user: AuthenticatedUser) {
@@ -57,6 +59,7 @@ export class ProviderAccountsService {
     if (input.providerType === 'GITEA' && !input.baseUrl) {
       throw new BadRequestException('A Gitea base URL is required.');
     }
+    await this.validateCredentials(input);
     return this.prisma.providerAccount.create({
       data: {
         providerType: input.providerType,
@@ -113,5 +116,23 @@ export class ProviderAccountsService {
     const account = await this.prisma.providerAccount.findUnique({ where: { id } });
     if (!account) throw new NotFoundException('Provider account not found.');
     return account;
+  }
+
+  /** Verify a candidate's credentials through the provider's read-only account endpoint. */
+  private async validateCredentials(input: {
+    providerType: 'GITHUB' | 'GITLAB' | 'FORGEJO' | 'GITEA';
+    baseUrl?: string;
+    accessToken: string;
+  }): Promise<void> {
+    try {
+      const validation = await this.adapters.get(input.providerType).validateAccount({
+        accessToken: input.accessToken,
+        baseUrl: input.baseUrl ?? null,
+        providerAccountId: 'unpersisted-provider-account',
+      });
+      if (!validation.valid) throw new Error('Provider rejected the credentials.');
+    } catch {
+      throw new BadRequestException('Provider credentials could not be validated.');
+    }
   }
 }

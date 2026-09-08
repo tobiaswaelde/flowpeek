@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 process.env.NODE_ENV ??= 'test';
 process.env.AUTH_JWT_SECRET ??= 'test-jwt-secret';
 process.env.DATABASE_URL ??= 'postgresql://flowpeek:flowpeek@localhost:5432/flowpeek_test';

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n();
+const route = useRoute();
+const usesFullWidthContent = computed(() => route.meta.fullWidth === true);
 </script>
 
 <template>
@@ -13,13 +15,20 @@ const { t } = useI18n();
 
     <LayoutSidebar />
 
-    <UDashboardPanel id="main" :ui="{ body: 'overflow-y-auto p-0' }">
+    <UDashboardPanel id="main" :ui="{ body: 'overflow-y-auto p-0!' }">
       <template #header>
         <LayoutNavbar />
       </template>
 
       <template #body>
-        <main id="main-content" class="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8" tabindex="-1">
+        <main
+          id="main-content"
+          :class="[
+            'w-full',
+            usesFullWidthContent ? 'flex min-h-full flex-1 flex-col' : 'mx-auto max-w-7xl p-4 sm:p-6 lg:p-8',
+          ]"
+          tabindex="-1"
+        >
           <slot />
         </main>
       </template>

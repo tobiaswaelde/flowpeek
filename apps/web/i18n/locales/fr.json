@@ -66,13 +66,24 @@
     "accessToken": "Jeton d’accès personnel",
     "accessTokenPlaceholder": "Collez un jeton en lecture seule",
     "add": "Ajouter un fournisseur",
+    "addAndVerify": "Vérifier et ajouter le fournisseur",
+    "addDialogTitle": "Ajouter un compte fournisseur",
     "authentication": "Authentification",
     "authenticationOAuth": "Connexion OAuth",
     "authenticationPat": "Jeton d’accès personnel",
-    "baseUrl": "URL de base Gitea",
-    "baseUrlPlaceholder": "https://gitea.example.com",
+    "baseUrl": "URL de base du fournisseur",
+    "baseUrlPlaceholder": "https://provider.example.com",
     "connect": "Connecter le fournisseur",
     "connectDescription": "Utilisez la connexion OAuth ou un jeton d’accès personnel pour accorder à Flowpeek un accès en lecture seule.",
+    "credentialsError": "Les identifiants du fournisseur n’ont pas pu être vérifiés. Le compte n’a pas été ajouté.",
+    "columns": {
+      "actions": "Actions",
+      "baseUrl": "URL de base",
+      "lastSync": "Dernière synchronisation",
+      "name": "Nom",
+      "status": "État",
+      "type": "Type de fournisseur"
+    },
     "defaultUrl": "URL de fournisseur par défaut",
     "delete": "Supprimer",
     "description": "Gérez les connexions aux fournisseurs de flux de travail en lecture seule.",
@@ -82,14 +93,48 @@
     "enabled": "Activé",
     "enable": "Activer",
     "loadError": "Les comptes fournisseurs n’ont pas pu être chargés.",
+    "filterPlaceholder": "Filtrer les comptes fournisseurs",
     "name": "Nom",
     "namePlaceholder": "ex. GitHub de production",
+    "neverSynced": "Jamais",
     "oauthConnected": "Compte fournisseur connecté.",
     "oauthError": "Le compte fournisseur n’a pas pu être connecté.",
     "refresh": "Actualiser",
     "title": "Comptes fournisseurs",
+    "tableDescription": "Connexions fournisseurs en lecture seule configurées",
     "type": "Type de fournisseur",
-    "typePlaceholder": "Sélectionnez un fournisseur"
+    "typePlaceholder": "Sélectionnez un fournisseur",
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+  },
+  "querrykit": {
+    "table": {
+      "filtering": {
+        "add": "Ajouter un filtre",
+        "clear": "Effacer les filtres",
+        "field": "Sélectionner un champ",
+        "mode": "Basculer le mode de filtre",
+        "remove": "Supprimer le filtre",
+        "title": "Filtrer"
+      },
+      "options": {
+        "center": "Détacher",
+        "left": "Gauche",
+        "pin": "Épingler la colonne",
+        "right": "Droite",
+        "title": "Options du tableau",
+        "visibility": "Basculer la visibilité de la colonne"
+      },
+      "pagination": { "summary": "Affichage de {start}–{end} sur {total}" },
+      "search": { "placeholder": "Rechercher" },
+      "sorting": {
+        "add": "Ajouter un tri",
+        "clear": "Effacer les tris",
+        "field": "Sélectionner un champ",
+        "remove": "Supprimer le tri",
+        "title": "Trier",
+        "toggle": "Basculer le sens du tri"
+      }
+    }
   },
   "users": {
     "delete": "Supprimer",

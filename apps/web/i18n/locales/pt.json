@@ -64,13 +64,24 @@
     "accessToken": "Token de acesso pessoal",
     "accessTokenPlaceholder": "Cole um token apenas de leitura",
     "add": "Adicionar fornecedor",
+    "addAndVerify": "Verificar e adicionar fornecedor",
+    "addDialogTitle": "Adicionar conta de fornecedor",
     "authentication": "Autenticação",
     "authenticationOAuth": "Início de sessão OAuth",
     "authenticationPat": "Token de acesso pessoal",
-    "baseUrl": "URL base do Gitea",
-    "baseUrlPlaceholder": "https://gitea.example.com",
+    "baseUrl": "URL base do fornecedor",
+    "baseUrlPlaceholder": "https://provider.example.com",
     "connect": "Ligar fornecedor",
     "connectDescription": "Use o início de sessão OAuth ou um token de acesso pessoal para conceder acesso apenas de leitura ao Flowpeek.",
+    "credentialsError": "Não foi possível verificar as credenciais do fornecedor. A conta não foi adicionada.",
+    "columns": {
+      "actions": "Ações",
+      "baseUrl": "URL base",
+      "lastSync": "Última sincronização",
+      "name": "Nome",
+      "status": "Estado",
+      "type": "Tipo de fornecedor"
+    },
     "defaultUrl": "URL predefinido do fornecedor",
     "delete": "Eliminar",
     "description": "Gira ligações apenas de leitura a fornecedores de fluxos de trabalho.",
@@ -80,14 +91,48 @@
     "enabled": "Ativado",
     "enable": "Ativar",
     "loadError": "Não foi possível carregar as contas de fornecedores.",
+    "filterPlaceholder": "Filtrar contas de fornecedores",
     "name": "Nome",
     "namePlaceholder": "por ex., GitHub de produção",
+    "neverSynced": "Nunca",
     "oauthConnected": "Conta do fornecedor ligada.",
     "oauthError": "Não foi possível ligar a conta do fornecedor.",
     "refresh": "Atualizar",
     "title": "Contas de fornecedores",
+    "tableDescription": "Ligações de fornecedores apenas de leitura configuradas",
     "type": "Tipo de fornecedor",
-    "typePlaceholder": "Selecione um fornecedor"
+    "typePlaceholder": "Selecione um fornecedor",
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+  },
+  "querrykit": {
+    "table": {
+      "filtering": {
+        "add": "Adicionar filtro",
+        "clear": "Limpar filtros",
+        "field": "Selecionar campo",
+        "mode": "Alternar modo de filtro",
+        "remove": "Remover filtro",
+        "title": "Filtrar"
+      },
+      "options": {
+        "center": "Desafixar",
+        "left": "Esquerda",
+        "pin": "Fixar coluna",
+        "right": "Direita",
+        "title": "Opções da tabela",
+        "visibility": "Alternar visibilidade da coluna"
+      },
+      "pagination": { "summary": "A mostrar {start}–{end} de {total}" },
+      "search": { "placeholder": "Pesquisar" },
+      "sorting": {
+        "add": "Adicionar ordenação",
+        "clear": "Limpar ordenações",
+        "field": "Selecionar campo",
+        "remove": "Remover ordenação",
+        "title": "Ordenar",
+        "toggle": "Alternar direção de ordenação"
+      }
+    }
   },
   "users": {
     "delete": "Eliminar",

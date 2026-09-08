@@ -1,3 +1,4 @@
+import { Fields, buildFieldSchemaFromDto } from '@querry-kit/nest';
 import type { ProviderAccount, WorkflowRun } from '../../../generated/prisma/client.js';
 import { ProviderAccountDto, WorkflowRunDto } from './resource.dto.js';
 
@@ -24,6 +25,20 @@ describe('resource DTO mappings', () => {
       enabled: true,
       lastSyncAt: null,
     });
+  });
+
+  it('allows Query Kit to project every provider-table field', () => {
+    const schema = buildFieldSchemaFromDto(ProviderAccountDto);
+
+    expect(schema).toEqual({
+      baseUrl: true,
+      displayName: true,
+      enabled: true,
+      id: true,
+      lastSyncAt: true,
+      providerType: true,
+    });
+    expect(Fields.parseAndValidate('id,displayName,providerType,baseUrl,enabled,lastSyncAt', schema)).toEqual(schema);
   });
 
   it('excludes raw provider statuses from public workflow runs', () => {

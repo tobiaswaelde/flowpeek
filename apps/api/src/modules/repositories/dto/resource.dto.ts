@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { filterCaslFields } from '@querry-kit/nest/casl';
 
 import { CaslAction } from '../../../casl/casl-action.js';
@@ -7,11 +8,17 @@ import type { ProviderAccount, Repository, WorkflowFilter, WorkflowRun } from '.
 
 /** Public provider-account representation that deliberately excludes its access token. */
 export class ProviderAccountDto {
+  @ApiProperty({ format: 'uuid' })
   id!: string;
+  @ApiProperty({ enum: ['GITHUB', 'GITLAB', 'FORGEJO', 'GITEA'] })
   providerType!: ProviderAccount['providerType'];
+  @ApiProperty({ maxLength: 255 })
   displayName!: string;
+  @ApiPropertyOptional({ format: 'uri', nullable: true })
   baseUrl!: string | null;
+  @ApiProperty()
   enabled!: boolean;
+  @ApiPropertyOptional({ format: 'date-time', nullable: true })
   lastSyncAt!: Date | null;
 
   /** Convert a provider account to its safe public representation. */

@@ -70,13 +70,24 @@
     "accessToken": "Persönlicher Zugriffstoken",
     "accessTokenPlaceholder": "Schreibgeschützten Token einfügen",
     "add": "Anbieter hinzufügen",
+    "addAndVerify": "Prüfen und Anbieter hinzufügen",
+    "addDialogTitle": "Anbieter-Konto hinzufügen",
     "authentication": "Authentifizierung",
     "authenticationOAuth": "OAuth-Anmeldung",
     "authenticationPat": "Persönlicher Zugriffstoken",
-    "baseUrl": "Gitea-Basis-URL",
-    "baseUrlPlaceholder": "https://gitea.example.com",
+    "baseUrl": "Anbieter-Basis-URL",
+    "baseUrlPlaceholder": "https://provider.example.com",
     "connect": "Anbieter verbinden",
     "connectDescription": "Nutze eine OAuth-Anmeldung oder einen persönlichen Zugriffstoken, um Flowpeek schreibgeschützten Zugriff zu geben.",
+    "credentialsError": "Die Zugangsdaten konnten nicht geprüft werden. Das Konto wurde nicht hinzugefügt.",
+    "columns": {
+      "actions": "Aktionen",
+      "baseUrl": "Basis-URL",
+      "lastSync": "Letzte Synchronisierung",
+      "name": "Name",
+      "status": "Status",
+      "type": "Anbieter-Typ"
+    },
     "defaultUrl": "Standard-URL des Anbieters",
     "delete": "Löschen",
     "description": "Verwalte schreibgeschützte Workflow-Anbieter-Verbindungen.",
@@ -86,14 +97,48 @@
     "enabled": "Aktiviert",
     "enable": "Aktivieren",
     "loadError": "Anbieter-Konten konnten nicht geladen werden.",
+    "filterPlaceholder": "Anbieter-Konten filtern",
     "name": "Name",
     "namePlaceholder": "z. B. Produktion GitHub",
+    "neverSynced": "Nie",
     "oauthConnected": "Anbieter-Konto verbunden.",
     "oauthError": "Das Anbieter-Konto konnte nicht verbunden werden.",
     "refresh": "Aktualisieren",
     "title": "Anbieter-Konten",
+    "tableDescription": "Konfigurierte schreibgeschützte Anbieter-Verbindungen",
     "type": "Anbieter-Typ",
-    "typePlaceholder": "Anbieter auswählen"
+    "typePlaceholder": "Anbieter auswählen",
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+  },
+  "querrykit": {
+    "table": {
+      "filtering": {
+        "add": "Filter hinzufügen",
+        "clear": "Filter löschen",
+        "field": "Feld auswählen",
+        "mode": "Filtermodus wechseln",
+        "remove": "Filter entfernen",
+        "title": "Filtern"
+      },
+      "options": {
+        "center": "Fixierung entfernen",
+        "left": "Links",
+        "pin": "Spalte anheften",
+        "right": "Rechts",
+        "title": "Tabellenoptionen",
+        "visibility": "Spaltensichtbarkeit umschalten"
+      },
+      "pagination": { "summary": "Zeige {start}–{end} von {total}" },
+      "search": { "placeholder": "Suchen" },
+      "sorting": {
+        "add": "Sortierung hinzufügen",
+        "clear": "Sortierungen löschen",
+        "field": "Feld auswählen",
+        "remove": "Sortierung entfernen",
+        "title": "Sortieren",
+        "toggle": "Sortierrichtung wechseln"
+      }
+    }
   },
   "users": { "delete": "Löschen", "description": "System-Benutzerverwaltung.", "title": "Benutzer" },
   "workflowStatus": {

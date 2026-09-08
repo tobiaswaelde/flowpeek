@@ -47,6 +47,7 @@ export class ProviderOAuthService {
 
     const configuration = this.getConfiguration(input.providerType);
     const state = this.states.create({
+      baseUrl: input.baseUrl,
       displayName: input.displayName,
       providerType: input.providerType,
       userId: user.id,
@@ -116,7 +117,7 @@ export class ProviderOAuthService {
 
     await this.accounts.createFromOAuth(user, {
       accessToken: token.access_token,
-      baseUrl: configuration.accountBaseUrl,
+      baseUrl: state.baseUrl ?? configuration.accountBaseUrl,
       displayName: state.displayName,
       providerType: state.providerType,
     });

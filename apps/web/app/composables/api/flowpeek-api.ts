@@ -66,7 +66,6 @@ export function useFlowpeekApi() {
       create: (input: CreateProviderAccount): Promise<AxiosResponse<ProviderAccount>> =>
         api.post(apiEndpoints.providerAccounts.base, input),
       delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.providerAccounts.base}/${id}`),
-      list: (): Promise<AxiosResponse<ProviderAccount[]>> => api.get(apiEndpoints.providerAccounts.base),
       update: (id: string, input: UpdateProviderAccount): Promise<AxiosResponse<ProviderAccount>> =>
         api.patch(`${apiEndpoints.providerAccounts.base}/${id}`, input),
     },

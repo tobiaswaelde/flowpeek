@@ -17,7 +17,13 @@ describe('web API contracts', () => {
   });
 
   it('requires a personal access token only for PAT provider forms', () => {
-    expect(providerOAuthFormSchema.safeParse({ displayName: 'GitHub', providerType: 'GITHUB' }).success).toBe(true);
+    expect(
+      providerOAuthFormSchema.safeParse({
+        baseUrl: 'https://github.example.test',
+        displayName: 'GitHub',
+        providerType: 'GITHUB',
+      }).success,
+    ).toBe(true);
     expect(providerPatFormSchema.safeParse({ displayName: 'GitHub', providerType: 'GITHUB' }).success).toBe(false);
   });
 

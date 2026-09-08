@@ -5,6 +5,7 @@ import type {
   CreateNotificationRule,
   NotificationChannel,
   NotificationRule,
+  ProviderAccount,
   UpdateNotificationChannel,
   UpdateNotificationRule,
   WorkflowRun,
@@ -39,6 +40,11 @@ export const apiEndpoints = {
 
 /** Resource endpoints that use the shared Query Kit pagination contract. */
 export interface Endpoints {
+  'provider-accounts': {
+    create: never;
+    dto: ProviderAccount;
+    update: never;
+  };
   'workflow-runs': {
     create: never;
     dto: WorkflowRun;

@@ -9,13 +9,28 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '#ui/types';
 
+import { useLocales } from '~/composables/app/locales';
+import { useThemes } from '~/composables/app/themes';
 import { useAuthStore } from '~/store/auth';
 
 const auth = useAuthStore();
 
 const { t } = useI18n();
+const { dropdownMenuItems: localeItems } = useLocales();
+const { dropdownMenuItems: themeItems } = useThemes();
 
 const items = computed<DropdownMenuItem[]>(() => [
+  {
+    children: localeItems.value,
+    icon: 'i-tabler-language',
+    label: t('layout.language'),
+  },
+  {
+    children: themeItems.value,
+    icon: 'i-tabler-palette',
+    label: t('layout.theme'),
+  },
+  { type: 'separator' },
   {
     color: 'error',
     icon: 'i-tabler-logout',
@@ -32,3 +47,19 @@ async function signOut(): Promise<void> {
   await navigateTo('/auth/signin');
 }
 </script>
+
+<style lang="css">
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+</style>

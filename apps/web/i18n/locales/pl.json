@@ -64,13 +64,24 @@
     "accessToken": "Osobisty token dostępu",
     "accessTokenPlaceholder": "Wklej token tylko do odczytu",
     "add": "Dodaj dostawcę",
+    "addAndVerify": "Sprawdź i dodaj dostawcę",
+    "addDialogTitle": "Dodaj konto dostawcy",
     "authentication": "Uwierzytelnianie",
     "authenticationOAuth": "Logowanie OAuth",
     "authenticationPat": "Osobisty token dostępu",
-    "baseUrl": "Podstawowy adres URL Gitea",
-    "baseUrlPlaceholder": "https://gitea.example.com",
+    "baseUrl": "Podstawowy adres URL dostawcy",
+    "baseUrlPlaceholder": "https://provider.example.com",
     "connect": "Połącz dostawcę",
     "connectDescription": "Użyj logowania OAuth lub osobistego tokenu dostępu, aby przyznać Flowpeek dostęp tylko do odczytu.",
+    "credentialsError": "Nie można było zweryfikować danych dostawcy. Konto nie zostało dodane.",
+    "columns": {
+      "actions": "Działania",
+      "baseUrl": "Podstawowy adres URL",
+      "lastSync": "Ostatnia synchronizacja",
+      "name": "Nazwa",
+      "status": "Stan",
+      "type": "Typ dostawcy"
+    },
     "defaultUrl": "Domyślny adres URL dostawcy",
     "delete": "Usuń",
     "description": "Zarządzaj połączeniami z dostawcami przepływów pracy tylko do odczytu.",
@@ -80,14 +91,48 @@
     "enabled": "Włączone",
     "enable": "Włącz",
     "loadError": "Nie można było wczytać kont dostawców.",
+    "filterPlaceholder": "Filtruj konta dostawców",
     "name": "Nazwa",
     "namePlaceholder": "np. Produkcyjny GitHub",
+    "neverSynced": "Nigdy",
     "oauthConnected": "Konto dostawcy połączone.",
     "oauthError": "Nie można było połączyć konta dostawcy.",
     "refresh": "Odśwież",
     "title": "Konta dostawców",
+    "tableDescription": "Skonfigurowane połączenia dostawców tylko do odczytu",
     "type": "Typ dostawcy",
-    "typePlaceholder": "Wybierz dostawcę"
+    "typePlaceholder": "Wybierz dostawcę",
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+  },
+  "querrykit": {
+    "table": {
+      "filtering": {
+        "add": "Dodaj filtr",
+        "clear": "Wyczyść filtry",
+        "field": "Wybierz pole",
+        "mode": "Przełącz tryb filtra",
+        "remove": "Usuń filtr",
+        "title": "Filtruj"
+      },
+      "options": {
+        "center": "Odepnij",
+        "left": "Lewo",
+        "pin": "Przypnij kolumnę",
+        "right": "Prawo",
+        "title": "Opcje tabeli",
+        "visibility": "Przełącz widoczność kolumny"
+      },
+      "pagination": { "summary": "Wyświetlanie {start}–{end} z {total}" },
+      "search": { "placeholder": "Szukaj" },
+      "sorting": {
+        "add": "Dodaj sortowanie",
+        "clear": "Wyczyść sortowania",
+        "field": "Wybierz pole",
+        "remove": "Usuń sortowanie",
+        "title": "Sortuj",
+        "toggle": "Przełącz kierunek sortowania"
+      }
+    }
   },
   "users": { "delete": "Usuń", "description": "Administracja użytkownikami systemu.", "title": "Użytkownicy" },
   "workflowStatus": {

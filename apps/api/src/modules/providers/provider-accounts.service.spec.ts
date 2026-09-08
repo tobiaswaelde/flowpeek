@@ -13,7 +13,8 @@ describe('ProviderAccountsService', () => {
     },
   };
   const credentials = { encrypt: jest.fn((value: string) => `encrypted:${value}`) };
-  const service = new ProviderAccountsService(prisma as never, credentials as never);
+  const adapters = { get: jest.fn(() => ({ validateAccount: jest.fn().mockResolvedValue({ valid: true }) })) };
+  const service = new ProviderAccountsService(prisma as never, credentials as never, adapters as never);
   const admin = { id: 'admin', role: 'SYSTEM_ADMIN' as const, username: 'admin' };
 
   beforeEach(() => jest.clearAllMocks());
@@ -26,6 +27,7 @@ describe('ProviderAccountsService', () => {
     });
 
     expect(credentials.encrypt).toHaveBeenCalledWith('access-token');
+    expect(adapters.get).toHaveBeenCalledWith('GITHUB');
     expect(prisma.providerAccount.create).toHaveBeenCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ encryptedAccessToken: 'encrypted:access-token' }) }),
     );
@@ -74,5 +76,20 @@ describe('ProviderAccountsService', () => {
       ForbiddenException,
     );
     expect(prisma.providerAccount.findMany).not.toHaveBeenCalled();
+  });
+
+  it('does not persist a provider account when its credentials cannot be validated', async () => {
+    adapters.get.mockReturnValueOnce({ validateAccount: jest.fn().mockRejectedValue(new Error('Unauthorized')) });
+
+    await expect(
+      service.create(admin, {
+        accessToken: 'invalid-token',
+        displayName: 'GitHub',
+        providerType: 'GITHUB',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(prisma.providerAccount.create).not.toHaveBeenCalled();
+    expect(credentials.encrypt).not.toHaveBeenCalled();
   });
 });

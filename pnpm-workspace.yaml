@@ -2,7 +2,12 @@ packages:
   - .
   - apps/*
 
+publicHoistPattern:
+  - '@intlify/*'
+  - vue-i18n
+
 allowBuilds:
+  '@parcel/watcher': false
   '@scarf/scarf': false
   '@prisma/engines': true
   bcrypt: true

@@ -13,6 +13,7 @@ describe('ProviderOAuthStateService', () => {
 
   it('encrypts and restores a short-lived OAuth authorization context', () => {
     const state = service.create({
+      baseUrl: 'https://github.example.test',
       displayName: 'GitHub',
       providerType: 'GITHUB',
       userId: 'admin-id',
@@ -20,7 +21,12 @@ describe('ProviderOAuthStateService', () => {
 
     expect(state).toContain('encrypted:');
     expect(service.consume(state)).toEqual(
-      expect.objectContaining({ displayName: 'GitHub', providerType: 'GITHUB', userId: 'admin-id' }),
+      expect.objectContaining({
+        baseUrl: 'https://github.example.test',
+        displayName: 'GitHub',
+        providerType: 'GITHUB',
+        userId: 'admin-id',
+      }),
     );
   });
 

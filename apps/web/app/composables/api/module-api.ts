@@ -4,7 +4,6 @@ import type { AxiosResponse } from 'axios';
 
 import { useApi } from '~/composables/api/api';
 import type { Endpoint, Endpoints, QueryKitEndpoints } from '~/types/api/endpoints';
-import type { WorkflowRun } from '~/types/api/resources';
 
 /** Paginated response shape returned by Query Kit resource endpoints. */
 export interface PaginatedDto<TItem> {
@@ -16,18 +15,20 @@ export interface PaginatedDto<TItem> {
   };
 }
 
+type EndpointDto<TEndpoint extends Endpoint> = Endpoints[TEndpoint]['dto'];
+
 type ModuleApi<TEndpoint extends Endpoint> = {
   count(query?: QueryParameters): Promise<AxiosResponse<number>>;
-  create(data: Endpoints[TEndpoint]['create'], query?: QueryParameters): Promise<AxiosResponse<WorkflowRun>>;
-  delete(id: string | number, query?: QueryParameters): Promise<AxiosResponse<WorkflowRun>>;
-  findById(id: string | number, query?: QueryParameters): Promise<AxiosResponse<WorkflowRun>>;
-  get(id: string | number, query?: QueryParameters): Promise<AxiosResponse<WorkflowRun>>;
-  query(query?: QueryParameters): Promise<AxiosResponse<PaginatedDto<WorkflowRun>>>;
+  create(data: Endpoints[TEndpoint]['create'], query?: QueryParameters): Promise<AxiosResponse<EndpointDto<TEndpoint>>>;
+  delete(id: string | number, query?: QueryParameters): Promise<AxiosResponse<EndpointDto<TEndpoint>>>;
+  findById(id: string | number, query?: QueryParameters): Promise<AxiosResponse<EndpointDto<TEndpoint>>>;
+  get(id: string | number, query?: QueryParameters): Promise<AxiosResponse<EndpointDto<TEndpoint>>>;
+  query(query?: QueryParameters): Promise<AxiosResponse<PaginatedDto<EndpointDto<TEndpoint>>>>;
   update(
     id: string | number,
     data: Endpoints[TEndpoint]['update'],
     query?: QueryParameters,
-  ): Promise<AxiosResponse<WorkflowRun>>;
+  ): Promise<AxiosResponse<EndpointDto<TEndpoint>>>;
 };
 
 /** Provide a typed Query Kit resource client using Flowpeek's authenticated Axios client. */

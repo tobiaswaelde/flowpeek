@@ -1,10 +1,21 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  ApiErrorResponses,
+  ApiPaginatedResponse,
+  ApiResourceQuery,
+  QueryTransformPipe,
+  ResourceQuery,
+} from '@querry-kit/nest';
+
 import { IsBoolean, IsEnum, IsOptional, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
+import type { ProviderAccount } from '../../generated/prisma/client.js';
 
 import { Authenticated } from '../auth/authenticated.decorator.js';
 import type { AuthenticatedUser } from '../auth/types.js';
 import { ProviderAccountDto } from '../repositories/dto/resource.dto.js';
+import { ProviderAccountQueryDto } from './dto/provider-account-query.dto.js';
 import { StartProviderOAuthDto, type ProviderOAuthAuthorizationDto } from './dto/provider-oauth.dto.js';
+import { ProviderAccountsQueryService } from './provider-accounts-query.service.js';
 import { ProviderAccountsService } from './provider-accounts.service.js';
 import { ProviderOAuthService } from './provider-oauth.service.js';
 
@@ -30,10 +41,27 @@ class UpdateProviderAccountDto {
 export class ProviderAccountsController {
   constructor(
     private readonly accounts: ProviderAccountsService,
+    private readonly accountQueries: ProviderAccountsQueryService,
     private readonly oauth: ProviderOAuthService,
   ) {}
-  @Get() async list(@Req() req: { user: AuthenticatedUser }): Promise<ProviderAccountDto[]> {
-    return (await this.accounts.list(req.user)).map((account) => ProviderAccountDto.fromModel(account));
+
+  /** Query provider accounts with server-side filtering, sorting, field selection, and pagination. */
+  @Get()
+  @ApiResourceQuery()
+  @ApiPaginatedResponse({ description: 'Configured provider accounts.', model: ProviderAccountDto })
+  @ApiErrorResponses({ badRequestDescription: 'Invalid provider-account query.' })
+  async query(
+    @Req() req: { user: AuthenticatedUser },
+    @Query(new QueryTransformPipe()) query: ProviderAccountQueryDto,
+  ) {
+    const ability = this.accountQueries.getReadAbility(req.user);
+    return ResourceQuery.query({
+      ability,
+      map: (account: ProviderAccount, currentAbility) => ProviderAccountDto.fromModel(account, currentAbility),
+      query: this.accountQueries.toQueryOptions(query),
+      schema: ProviderAccountDto,
+      service: this.accountQueries,
+    });
   }
   /** Returns providers for which this installation has a configured OAuth client. */
   @Get('authentication-options') authenticationOptions(@Req() req: { user: AuthenticatedUser }): {

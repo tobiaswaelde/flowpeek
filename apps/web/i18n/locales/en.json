@@ -70,13 +70,24 @@
     "accessToken": "Personal access token",
     "accessTokenPlaceholder": "Paste a read-only token",
     "add": "Add provider",
+    "addAndVerify": "Verify and add provider",
+    "addDialogTitle": "Add provider account",
     "authentication": "Authentication",
     "authenticationOAuth": "OAuth sign-in",
     "authenticationPat": "Personal access token",
-    "baseUrl": "Gitea base URL",
-    "baseUrlPlaceholder": "https://gitea.example.com",
+    "baseUrl": "Provider base URL",
+    "baseUrlPlaceholder": "https://provider.example.com",
     "connect": "Connect provider",
     "connectDescription": "Use OAuth sign-in or a personal access token to grant Flowpeek read-only access.",
+    "credentialsError": "The provider credentials could not be verified. The account was not added.",
+    "columns": {
+      "actions": "Actions",
+      "baseUrl": "Base URL",
+      "lastSync": "Last sync",
+      "name": "Name",
+      "status": "Status",
+      "type": "Provider type"
+    },
     "defaultUrl": "Default provider URL",
     "delete": "Delete",
     "description": "Manage read-only workflow provider connections.",
@@ -86,14 +97,48 @@
     "enabled": "Enabled",
     "enable": "Enable",
     "loadError": "Provider accounts could not be loaded.",
+    "filterPlaceholder": "Filter provider accounts",
     "name": "Name",
     "namePlaceholder": "e.g. Production GitHub",
+    "neverSynced": "Never",
     "oauthConnected": "Provider account connected.",
     "oauthError": "The provider account could not be connected.",
     "refresh": "Refresh",
     "title": "Provider accounts",
+    "tableDescription": "Configured read-only provider connections",
     "type": "Provider type",
-    "typePlaceholder": "Select a provider"
+    "typePlaceholder": "Select a provider",
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+  },
+  "querrykit": {
+    "table": {
+      "filtering": {
+        "add": "Add filter",
+        "clear": "Clear filters",
+        "field": "Select field",
+        "mode": "Toggle filter mode",
+        "remove": "Remove filter",
+        "title": "Filter"
+      },
+      "options": {
+        "center": "Unpin",
+        "left": "Left",
+        "pin": "Pin column",
+        "right": "Right",
+        "title": "Table options",
+        "visibility": "Toggle column visibility"
+      },
+      "pagination": { "summary": "Showing {start}–{end} of {total}" },
+      "search": { "placeholder": "Search" },
+      "sorting": {
+        "add": "Add sort",
+        "clear": "Clear sorting",
+        "field": "Select field",
+        "remove": "Remove sort",
+        "title": "Sort",
+        "toggle": "Toggle sort direction"
+      }
+    }
   },
   "users": { "delete": "Delete", "description": "System user administration.", "title": "Users" },
   "workflowStatus": {

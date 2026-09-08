@@ -64,13 +64,24 @@
     "accessToken": "Persoonlijk toegangstoken",
     "accessTokenPlaceholder": "Plak een alleen-lezentoken",
     "add": "Provider toevoegen",
+    "addAndVerify": "Provider verifiëren en toevoegen",
+    "addDialogTitle": "Provideraccount toevoegen",
     "authentication": "Authenticatie",
     "authenticationOAuth": "OAuth-aanmelding",
     "authenticationPat": "Persoonlijk toegangstoken",
-    "baseUrl": "Gitea-basis-URL",
-    "baseUrlPlaceholder": "https://gitea.example.com",
+    "baseUrl": "Providerbasis-URL",
+    "baseUrlPlaceholder": "https://provider.example.com",
     "connect": "Provider verbinden",
     "connectDescription": "Gebruik OAuth-aanmelding of een persoonlijk toegangstoken om Flowpeek alleen-lezentoegang te geven.",
+    "credentialsError": "De providergegevens konden niet worden geverifieerd. Het account is niet toegevoegd.",
+    "columns": {
+      "actions": "Acties",
+      "baseUrl": "Basis-URL",
+      "lastSync": "Laatste synchronisatie",
+      "name": "Naam",
+      "status": "Status",
+      "type": "Providertype"
+    },
     "defaultUrl": "Standaardprovider-URL",
     "delete": "Verwijderen",
     "description": "Beheer alleen-lezenverbindingen met workflowproviders.",
@@ -80,14 +91,48 @@
     "enabled": "Ingeschakeld",
     "enable": "Inschakelen",
     "loadError": "De provideraccounts konden niet worden geladen.",
+    "filterPlaceholder": "Provideraccounts filteren",
     "name": "Naam",
     "namePlaceholder": "bijv. Productie GitHub",
+    "neverSynced": "Nooit",
     "oauthConnected": "Provideraccount verbonden.",
     "oauthError": "Het provideraccount kon niet worden verbonden.",
     "refresh": "Vernieuwen",
     "title": "Provideraccounts",
+    "tableDescription": "Geconfigureerde alleen-lezenproviderverbindingen",
     "type": "Providertype",
-    "typePlaceholder": "Selecteer een provider"
+    "typePlaceholder": "Selecteer een provider",
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+  },
+  "querrykit": {
+    "table": {
+      "filtering": {
+        "add": "Filter toevoegen",
+        "clear": "Filters wissen",
+        "field": "Veld selecteren",
+        "mode": "Filtermodus wisselen",
+        "remove": "Filter verwijderen",
+        "title": "Filteren"
+      },
+      "options": {
+        "center": "Losmaken",
+        "left": "Links",
+        "pin": "Kolom vastzetten",
+        "right": "Rechts",
+        "title": "Tabelopties",
+        "visibility": "Kolomzichtbaarheid wisselen"
+      },
+      "pagination": { "summary": "Toont {start}–{end} van {total}" },
+      "search": { "placeholder": "Zoeken" },
+      "sorting": {
+        "add": "Sortering toevoegen",
+        "clear": "Sorteringen wissen",
+        "field": "Veld selecteren",
+        "remove": "Sortering verwijderen",
+        "title": "Sorteren",
+        "toggle": "Sorteerrichting wisselen"
+      }
+    }
   },
   "users": { "delete": "Verwijderen", "description": "Beheer van systeemgebruikers.", "title": "Gebruikers" },
   "workflowStatus": {

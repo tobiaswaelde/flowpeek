@@ -5,6 +5,7 @@ import { ProviderCredentialService } from './provider-credential.service.js';
 type ProviderType = 'GITHUB' | 'GITLAB' | 'FORGEJO';
 
 interface ProviderOAuthState {
+  baseUrl?: string;
   displayName: string;
   expiresAt: number;
   providerType: ProviderType;
@@ -42,6 +43,7 @@ export class ProviderOAuthStateService {
         typeof state.expiresAt !== 'number' ||
         state.expiresAt <= Date.now() ||
         !isProviderType(state.providerType) ||
+        (state.baseUrl !== undefined && typeof state.baseUrl !== 'string') ||
         typeof state.userId !== 'string'
       ) {
         throw new Error('Invalid OAuth state');

@@ -1,6 +1,13 @@
 /** Shared Nuxt UI presentation configuration for the Flowpeek web application. */
 export default defineAppConfig({
   ui: {
+    breadcrumb: {
+      slots: {
+        linkLabel: 'text-xs',
+        linkLeadingIcon: 'size-4',
+        separatorIcon: 'size-3.5',
+      },
+    },
     colors: {
       neutral: 'zinc',
       primary: 'sky',

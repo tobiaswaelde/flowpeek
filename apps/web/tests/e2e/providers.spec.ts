@@ -1,10 +1,26 @@
 import { expect, test } from '@playwright/test';
 
-/** Verify the provider-account form's native controls and retain a review screenshot. */
-test('provider account form renders as a structured native UI form', async ({ page }, testInfo) => {
+/** Verify the Query Kit provider table and its credential-validated add dialog. */
+test('provider account table opens an add dialog with structured native controls', async ({ page }, testInfo) => {
   await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
-  await page.route('**/api/v1/provider-accounts', async (route) => {
-    await route.fulfill({ contentType: 'application/json', json: [] });
+  await page.route(/\/api\/v1\/provider-accounts(?:\?.*)?$/, async (route) => {
+    expect(route.request().url()).toContain('fields=');
+    await route.fulfill({
+      contentType: 'application/json',
+      json: {
+        items: [
+          {
+            baseUrl: null,
+            displayName: 'Production GitHub',
+            enabled: true,
+            id: 'provider-1',
+            lastSyncAt: null,
+            providerType: 'GITHUB',
+          },
+        ],
+        meta: { itemCount: 1, pageCount: 1 },
+      },
+    });
   });
   await page.route('**/api/v1/provider-accounts/authentication-options', async (route) => {
     await route.fulfill({ contentType: 'application/json', json: { oauthProviderTypes: [] } });
@@ -18,16 +34,43 @@ test('provider account form renders as a structured native UI form', async ({ pa
 
   await page.goto('/admin/providers');
 
-  await expect(page.getByRole('heading', { level: 1, name: /provider accounts|anbieter-konten/i })).toBeVisible();
+  const breadcrumb = page.getByRole('navigation', { name: 'breadcrumb' });
+  await expect(breadcrumb).toContainText('Dashboard');
+  await expect(breadcrumb).toContainText('Provider accounts');
+  await expect(breadcrumb.getByRole('link', { name: 'Dashboard' })).toHaveAttribute('href', '/');
+  await expect(breadcrumb.locator('[class~="i-lucide:layout-dashboard"]')).toBeVisible();
+  await expect(breadcrumb.locator('[class~="i-lucide:plug-zap"]')).toBeVisible();
+  await expect(page.getByText('Production GitHub')).toBeVisible();
+  await expect(page.locator('[class~="i-tabler:brand-github"]')).toBeVisible();
+  await expect(page.getByRole('button', { name: /add provider|anbieter hinzufügen/i })).toBeVisible();
+
+  await page.getByRole('button', { name: 'playwright' }).click();
+  await expect(page.getByText('Language', { exact: true })).toBeVisible();
+  await expect(page.getByText('Theme', { exact: true })).toBeVisible();
+  await page.getByText('Theme', { exact: true }).click();
+  await expect(page.getByText('System', { exact: true })).toBeVisible();
+  await expect(page.getByText('Light', { exact: true })).toBeVisible();
+  await expect(page.getByText('Dark', { exact: true })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Escape');
+
+  await page.keyboard.press('Shift+O');
+  await expect(page.getByText('Table options', { exact: true })).toBeVisible();
+  await page.keyboard.press('Shift+O');
+
+  await page.keyboard.press('Shift+N');
+
+  await expect(page.getByRole('heading', { name: /add provider account|anbieter-konto hinzufügen/i })).toBeVisible();
   await expect(page.getByPlaceholder(/production github|produktion github/i)).toBeVisible();
   await expect(page.getByRole('combobox').first()).toBeVisible();
   await expect(page.getByPlaceholder(/read-only token|schreibgeschützten token/i)).toBeVisible();
+  await expect(page.getByPlaceholder('https://provider.example.com')).toBeVisible();
 
   await page.getByRole('combobox').first().click();
   await page.getByRole('option', { name: 'Gitea' }).click();
 
   await expect(page.getByRole('option', { name: 'Gitea' })).not.toBeVisible();
-  await expect(page.getByPlaceholder('https://gitea.example.com')).toBeVisible();
+  await expect(page.getByPlaceholder('https://provider.example.com')).toBeVisible();
 
   await page.screenshot({ path: testInfo.outputPath('provider-account-form.png'), fullPage: true });
 });

@@ -11,6 +11,7 @@ export type ProviderType = (typeof providerTypes)[number];
 
 /** Validate the fields required for an OAuth provider authorization. */
 export const providerOAuthFormSchema = z.object({
+  baseUrl: z.string().url().optional().or(z.literal('')),
   displayName: z.string().trim().min(1).max(255),
   providerType: z.enum(providerTypes),
 });
@@ -39,6 +40,7 @@ export interface ProviderAccount {
 
 /** Input used to start a provider OAuth authorization. */
 export interface StartProviderOAuth {
+  baseUrl?: string;
   displayName: string;
   providerType: ProviderType;
 }

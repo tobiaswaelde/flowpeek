@@ -68,13 +68,24 @@
     "accessToken": "Token de acceso personal",
     "accessTokenPlaceholder": "Pega un token de solo lectura",
     "add": "Añadir proveedor",
+    "addAndVerify": "Verificar y añadir proveedor",
+    "addDialogTitle": "Añadir cuenta de proveedor",
     "authentication": "Autenticación",
     "authenticationOAuth": "Inicio de sesión con OAuth",
     "authenticationPat": "Token de acceso personal",
-    "baseUrl": "URL base de Gitea",
-    "baseUrlPlaceholder": "https://gitea.example.com",
+    "baseUrl": "URL base del proveedor",
+    "baseUrlPlaceholder": "https://provider.example.com",
     "connect": "Conectar proveedor",
     "connectDescription": "Usa el inicio de sesión con OAuth o un token de acceso personal para conceder acceso de solo lectura a Flowpeek.",
+    "credentialsError": "No se pudieron verificar las credenciales del proveedor. La cuenta no se añadió.",
+    "columns": {
+      "actions": "Acciones",
+      "baseUrl": "URL base",
+      "lastSync": "Última sincronización",
+      "name": "Nombre",
+      "status": "Estado",
+      "type": "Tipo de proveedor"
+    },
     "defaultUrl": "URL predeterminada del proveedor",
     "delete": "Eliminar",
     "description": "Gestiona conexiones de proveedores de flujos de trabajo de solo lectura.",
@@ -84,14 +95,48 @@
     "enabled": "Activado",
     "enable": "Activar",
     "loadError": "No se pudieron cargar las cuentas de proveedores.",
+    "filterPlaceholder": "Filtrar cuentas de proveedores",
     "name": "Nombre",
     "namePlaceholder": "p. ej., GitHub de producción",
+    "neverSynced": "Nunca",
     "oauthConnected": "Cuenta del proveedor conectada.",
     "oauthError": "No se pudo conectar la cuenta del proveedor.",
     "refresh": "Actualizar",
     "title": "Cuentas de proveedores",
+    "tableDescription": "Conexiones de proveedores de solo lectura configuradas",
     "type": "Tipo de proveedor",
-    "typePlaceholder": "Selecciona un proveedor"
+    "typePlaceholder": "Selecciona un proveedor",
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+  },
+  "querrykit": {
+    "table": {
+      "filtering": {
+        "add": "Añadir filtro",
+        "clear": "Borrar filtros",
+        "field": "Seleccionar campo",
+        "mode": "Cambiar modo de filtro",
+        "remove": "Eliminar filtro",
+        "title": "Filtrar"
+      },
+      "options": {
+        "center": "Desfijar",
+        "left": "Izquierda",
+        "pin": "Fijar columna",
+        "right": "Derecha",
+        "title": "Opciones de tabla",
+        "visibility": "Cambiar visibilidad de columna"
+      },
+      "pagination": { "summary": "Mostrando {start}–{end} de {total}" },
+      "search": { "placeholder": "Buscar" },
+      "sorting": {
+        "add": "Añadir ordenación",
+        "clear": "Borrar ordenaciones",
+        "field": "Seleccionar campo",
+        "remove": "Eliminar ordenación",
+        "title": "Ordenar",
+        "toggle": "Cambiar dirección de ordenación"
+      }
+    }
   },
   "users": { "delete": "Eliminar", "description": "Administración de usuarios del sistema.", "title": "Usuarios" },
   "workflowStatus": {

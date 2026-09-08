@@ -33,10 +33,19 @@ describe('ProviderOAuthService', () => {
       tokenUrl: 'https://provider.example.test/oauth/token',
     });
 
-    const result = service.start(admin, { displayName: 'Provider', providerType: 'GITHUB' });
+    const result = service.start(admin, {
+      baseUrl: 'https://github.example.test',
+      displayName: 'Provider',
+      providerType: 'GITHUB',
+    });
 
     expect(accounts.assertAdmin).toHaveBeenCalledWith(admin);
-    expect(states.create).toHaveBeenCalledWith({ displayName: 'Provider', providerType: 'GITHUB', userId: 'admin-id' });
+    expect(states.create).toHaveBeenCalledWith({
+      baseUrl: 'https://github.example.test',
+      displayName: 'Provider',
+      providerType: 'GITHUB',
+      userId: 'admin-id',
+    });
     expect(result.authorizationUrl).toContain('state=protected-state');
     expect(result.authorizationUrl).toContain('client_id=client-id');
   });
@@ -50,7 +59,12 @@ describe('ProviderOAuthService', () => {
       scopes: 'read',
       tokenUrl: 'https://provider.example.test/oauth/token',
     });
-    states.consume.mockReturnValue({ displayName: 'Provider', providerType: 'GITHUB', userId: 'admin-id' });
+    states.consume.mockReturnValue({
+      baseUrl: 'https://github.example.test',
+      displayName: 'Provider',
+      providerType: 'GITHUB',
+      userId: 'admin-id',
+    });
     prisma.user.findUnique.mockResolvedValue(admin);
     fetch.mockResolvedValue({ json: jest.fn().mockResolvedValue({ access_token: 'oauth-access-token' }), ok: true });
 
@@ -62,7 +76,12 @@ describe('ProviderOAuthService', () => {
     );
     expect(accounts.createFromOAuth).toHaveBeenCalledWith(
       admin,
-      expect.objectContaining({ accessToken: 'oauth-access-token', displayName: 'Provider', providerType: 'GITHUB' }),
+      expect.objectContaining({
+        accessToken: 'oauth-access-token',
+        baseUrl: 'https://github.example.test',
+        displayName: 'Provider',
+        providerType: 'GITHUB',
+      }),
     );
   });
 });
