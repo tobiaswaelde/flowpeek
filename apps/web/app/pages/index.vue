@@ -1,6 +1,7 @@
 <template>
   <LayoutPage
     banner-id="dashboard"
+    full-width
     icon="i-lucide-layout-dashboard"
     :breadcrumbs="[{ icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard') }]"
     :description="$t('dashboard.description')"

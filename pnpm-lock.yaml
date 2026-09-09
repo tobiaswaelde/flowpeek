@@ -214,8 +214,8 @@ importers:
         specifier: ^0.2.3
         version: 0.2.3(ae360acc296cfe70da5c4f8e51cc7686)
       '@querry-kit/nuxt-ui':
-        specifier: ^3.3.0
-        version: 3.3.0(@nuxt/ui@4.11.1(b3a2e53850eeff556719a4769c125c91))(@querry-kit/nuxt@0.2.3(ae360acc296cfe70da5c4f8e51cc7686))(@tanstack/table-core@8.21.3)(@types/sortablejs@1.15.9)(@vueuse/core@14.4.0(vue@3.5.42(typescript@6.0.3)))(nuxt@4.5.2(881b048494b924e7e6b8932ee159ff5d))(vue@3.5.42(typescript@6.0.3))
+        specifier: ^3.3.1
+        version: 3.3.1(@nuxt/ui@4.11.1(b3a2e53850eeff556719a4769c125c91))(@querry-kit/nuxt@0.2.3(ae360acc296cfe70da5c4f8e51cc7686))(@tanstack/table-core@8.21.3)(@types/sortablejs@1.15.9)(@vueuse/core@14.4.0(vue@3.5.42(typescript@6.0.3)))(nuxt@4.5.2(881b048494b924e7e6b8932ee159ff5d))(vue@3.5.42(typescript@6.0.3))
       '@tanstack/table-core':
         specifier: ^8.21.3
         version: 8.21.3
@@ -2391,8 +2391,8 @@ packages:
       '@casl/prisma':
         optional: true
 
-  '@querry-kit/nuxt-ui@3.3.0':
-    resolution: {integrity: sha512-O2jduJLDFnEyVmsboXCHVZQHk/m7VcEvgMn4W0h9wsIY58zsUYUFhB7B8xjc/Zn3sOLKvtWZEp06Ny24wpYguA==}
+  '@querry-kit/nuxt-ui@3.3.1':
+    resolution: {integrity: sha512-CiVNeIOHVQ2qLyQslBSZR+sUA4cl+kwBXyMUsoImmSCsa3IU26r5miM2ohUGqTfSCbKQ0HbjJUyIO1VsLB/YJw==}
     engines: {node: '>=24'}
     peerDependencies:
       '@nuxt/ui': ^4.0.0
@@ -11191,7 +11191,7 @@ snapshots:
       '@casl/ability': 7.0.1
       '@casl/prisma': 2.0.2(@casl/ability@7.0.1)(@prisma/client@7.10.0(prisma@7.10.0(@types/node@24.13.3)(@types/react@19.2.18)(magicast@0.5.4)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(typescript@6.0.3))
 
-  '@querry-kit/nuxt-ui@3.3.0(@nuxt/ui@4.11.1(b3a2e53850eeff556719a4769c125c91))(@querry-kit/nuxt@0.2.3(ae360acc296cfe70da5c4f8e51cc7686))(@tanstack/table-core@8.21.3)(@types/sortablejs@1.15.9)(@vueuse/core@14.4.0(vue@3.5.42(typescript@6.0.3)))(nuxt@4.5.2(881b048494b924e7e6b8932ee159ff5d))(vue@3.5.42(typescript@6.0.3))':
+  '@querry-kit/nuxt-ui@3.3.1(@nuxt/ui@4.11.1(b3a2e53850eeff556719a4769c125c91))(@querry-kit/nuxt@0.2.3(ae360acc296cfe70da5c4f8e51cc7686))(@tanstack/table-core@8.21.3)(@types/sortablejs@1.15.9)(@vueuse/core@14.4.0(vue@3.5.42(typescript@6.0.3)))(nuxt@4.5.2(881b048494b924e7e6b8932ee159ff5d))(vue@3.5.42(typescript@6.0.3))':
     dependencies:
       '@nuxt/ui': 4.11.1(b3a2e53850eeff556719a4769c125c91)
       '@querry-kit/nuxt': 0.2.3(ae360acc296cfe70da5c4f8e51cc7686)

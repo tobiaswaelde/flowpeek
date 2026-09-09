@@ -191,6 +191,36 @@ test('keeps table breadcrumbs, controls, and creation actions in one toolbar row
   }
 });
 
+test('keeps the page toolbar fixed while only the dashboard content scrolls', async ({ page }) => {
+  await page.setViewportSize({ height: 500, width: 1800 });
+  await mockApplication(page, { dismissedBannerIds: new Set() });
+  await page.goto('/');
+
+  const content = page.locator('[data-page-content]');
+  const toolbar = page.locator('[data-page-toolbar]');
+  const toolbarTop = await toolbar.evaluate((element) => element.getBoundingClientRect().top);
+  await expect.poll(() => content.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true);
+
+  await content.evaluate((element) => element.scrollTo({ top: element.scrollHeight }));
+
+  await expect.poll(() => content.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+  await expect.poll(() => toolbar.evaluate((element) => element.getBoundingClientRect().top)).toBe(toolbarTop);
+  await expect.poll(() => page.evaluate(() => document.scrollingElement?.scrollTop ?? window.scrollY)).toBe(0);
+  await expect
+    .poll(() =>
+      content.evaluate((element) => {
+        const contentBounds = element.getBoundingClientRect();
+        const shellBounds = element.closest('[data-page-shell]')?.getBoundingClientRect();
+        return Boolean(
+          shellBounds &&
+          Math.abs(contentBounds.left - shellBounds.left) <= 1 &&
+          Math.abs(contentBounds.right - shellBounds.right) <= 1,
+        );
+      }),
+    )
+    .toBe(true);
+});
+
 test('persists a dismissal and restores all banners from personal settings', async ({ page }, testInfo) => {
   let releaseDismiss: (() => void) | undefined;
   const waitForDismiss = new Promise<void>((resolve) => {

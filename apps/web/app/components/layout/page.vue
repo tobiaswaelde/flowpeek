@@ -14,7 +14,7 @@
       </template>
     </UDashboardToolbar>
 
-    <div :class="contentClasses">
+    <div data-page-content :class="contentClasses">
       <div v-if="bannerVisible" :class="bannerContainerClasses" data-page-introduction>
         <UAlert
           class="min-w-0 max-w-full"
@@ -64,11 +64,12 @@ const props = withDefaults(
     bannerId: string;
     breadcrumbs: PageBreadcrumbItem[];
     description: string;
+    fullWidth?: boolean;
     icon?: string;
     padded?: boolean;
     title: string;
   }>(),
-  { icon: 'i-lucide-info', padded: true },
+  { fullWidth: false, icon: 'i-lucide-info', padded: true },
 );
 
 const { t } = useI18n();
@@ -76,11 +77,14 @@ const toast = useToast();
 const preferences = useUserPreferencesStore();
 const dismissing = ref(false);
 const bannerVisible = computed(() => !preferences.isIntroBannerDismissed(props.bannerId));
-const contentClasses = computed(() =>
-  props.padded
-    ? 'mx-auto w-full max-w-7xl flex-1 space-y-6 p-4 sm:p-6 lg:p-8'
-    : 'flex min-h-0 min-w-0 w-full flex-1 flex-col',
-);
+const contentClasses = computed(() => {
+  if (!props.padded) return 'flex min-h-0 min-w-0 w-full flex-1 flex-col overflow-y-auto';
+
+  return [
+    'min-h-0 w-full flex-1 space-y-6 overflow-y-auto p-4 sm:p-6 lg:p-8',
+    props.fullWidth ? undefined : 'mx-auto max-w-7xl',
+  ];
+});
 const bannerContainerClasses = computed(() =>
   props.padded ? 'w-full min-w-0 shrink-0' : 'w-full min-w-0 shrink-0 px-4 pt-4',
 );
