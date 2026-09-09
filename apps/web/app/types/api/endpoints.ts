@@ -69,6 +69,11 @@ export interface Endpoints {
     dto: WorkflowRun;
     update: never;
   };
+  'workflow-runs/needs-attention': {
+    create: never;
+    dto: WorkflowRun;
+    update: never;
+  };
 }
 
 /** Name of a resource endpoint that uses the shared Query Kit pagination contract. */

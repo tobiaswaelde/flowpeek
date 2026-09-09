@@ -82,6 +82,7 @@
     "trendChartLabel": "Workflow-Trend mit {successes} erfolgreichen und {errors} fehlgeschlagenen Ausführungen.",
     "trendDescription": "Erfolge verwenden die linke Skala, Fehler die rechte Skala.",
     "viewAwaitingApproval": "Workflows anzeigen",
+    "viewNeedsAttention": "Alle anzeigen",
     "workflow": "Workflow"
   },
   "layout": {
@@ -108,6 +109,12 @@
     "themeSystem": "System",
     "users": "Benutzer",
     "workflowRuns": "Workflow-Ausführungen"
+  },
+  "needsAttention": {
+    "description": "Durchsuche alle Workflow-Kontexte, deren letzte abgeschlossene Ausführung fehlgeschlagen ist. Deine Repository-Berechtigungen werden berücksichtigt.",
+    "empty": "Derzeit benötigt kein Workflow Aufmerksamkeit.",
+    "loadError": "Workflows, die Aufmerksamkeit benötigen, konnten nicht geladen werden.",
+    "title": "Benötigt Aufmerksamkeit"
   },
   "pageIntro": {
     "dismiss": "Einführung für {title} ausblenden",
@@ -256,6 +263,7 @@
     "UNKNOWN": "Unbekannt"
   },
   "workflowRuns": {
+    "allRuns": "Alle Ausführungen",
     "description": "Durchsuche Workflow-Ausführungen in allen Repositories, auf die du Zugriff hast.",
     "columns": {
       "completed": "Abgeschlossen",
@@ -270,6 +278,8 @@
     "empty": "Es sind keine Workflow-Ausführungen verfügbar.",
     "loadError": "Workflow-Ausführungen konnten nicht geladen werden.",
     "notAvailable": "—",
+    "search": "Workflow-Ausführungen durchsuchen",
+    "searchPlaceholder": "Workflows oder Repositories durchsuchen",
     "title": "Workflow-Ausführungen"
   },
   "notifications": {

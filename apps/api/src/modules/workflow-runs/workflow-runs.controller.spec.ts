@@ -81,4 +81,32 @@ describe('WorkflowRunsController', () => {
       },
     ]);
   });
+
+  it('applies the canonical needs-attention predicate before Query Kit pagination and projection', async () => {
+    const ability = {};
+    const query = { page: 2, perPage: 10, search: 'deploy' } as WorkflowRunQueryDto;
+    const needsAttentionQuery = {
+      page: 2,
+      perPage: 10,
+      where: { id: { in: ['run-1'] } },
+    } as WorkflowRunQueryDto;
+    const workflowRuns = {
+      getReadAbility: jest.fn().mockResolvedValue(ability),
+      query: jest.fn().mockResolvedValue({
+        items: [],
+        pageMeta: { hasNextPage: false, hasPrevPage: true, itemCount: 1, page: 2, pageCount: 1, perPage: 10 },
+      }),
+      toNeedsAttentionQueryOptions: jest.fn().mockResolvedValue(needsAttentionQuery),
+    };
+    const controller = new WorkflowRunsController(workflowRuns as unknown as WorkflowRunsQueryService);
+
+    await expect(
+      controller.queryNeedsAttention({ user: { id: 'viewer', role: 'VIEWER', username: 'viewer' } }, query),
+    ).resolves.toMatchObject({ items: [] });
+    expect(workflowRuns.toNeedsAttentionQueryOptions).toHaveBeenCalledWith(query, ability);
+    expect(workflowRuns.query).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: { in: ['run-1'] } } }),
+      ability,
+    );
+  });
 });

@@ -82,6 +82,7 @@
     "trendChartLabel": "Workflow trend with {successes} successful and {errors} failed runs.",
     "trendDescription": "Successful runs use the left scale; failed runs use the right scale.",
     "viewAwaitingApproval": "View workflows",
+    "viewNeedsAttention": "View all",
     "workflow": "Workflow"
   },
   "layout": {
@@ -108,6 +109,12 @@
     "themeSystem": "System",
     "users": "Users",
     "workflowRuns": "Workflow runs"
+  },
+  "needsAttention": {
+    "description": "Browse every workflow context whose latest completed run failed. Results respect your repository access.",
+    "empty": "No workflows currently need attention.",
+    "loadError": "Workflow runs that need attention could not be loaded.",
+    "title": "Needs attention"
   },
   "pageIntro": {
     "dismiss": "Dismiss introduction for {title}",
@@ -256,6 +263,7 @@
     "UNKNOWN": "Unknown"
   },
   "workflowRuns": {
+    "allRuns": "All runs",
     "description": "Search and inspect workflow runs across the repositories you can access.",
     "columns": {
       "completed": "Completed",
@@ -270,6 +278,8 @@
     "empty": "No workflow runs are available.",
     "loadError": "Workflow runs could not be loaded.",
     "notAvailable": "—",
+    "search": "Search workflow runs",
+    "searchPlaceholder": "Search workflows or repositories",
     "title": "Workflow runs"
   },
   "notifications": {

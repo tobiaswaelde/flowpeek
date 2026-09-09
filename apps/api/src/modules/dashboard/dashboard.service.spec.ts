@@ -7,86 +7,32 @@ import { WorkflowRunsQueryService } from '../workflow-runs/workflow-runs-query.s
 import { DashboardService } from './dashboard.service.js';
 
 describe('DashboardService', () => {
-  it('returns failures only when they are the latest provider run for a visible repository workflow', async () => {
+  it('limits the needs-attention dashboard preview to 15 newest visible runs', async () => {
     const ability = {};
+    const failures = Array.from({ length: 15 }, (_, index) =>
+      run({
+        completedAt: `2026-08-26T${String(23 - index).padStart(2, '0')}:00:00.000Z`,
+        repositoryId: 'repository-a',
+        status: 'FAILED',
+        workflowName: `Workflow ${index}`,
+      }),
+    );
     const workflowRuns = {
-      findMany: jest.fn().mockResolvedValue([
-        run({
-          completedAt: '2026-08-26T13:00:00.000Z',
-          repositoryId: 'repository-a',
-          status: 'FAILED',
-          workflowName: 'Test',
-        }),
-        run({
-          completedAt: null,
-          providerCreatedAt: '2026-08-26T12:00:00.000Z',
-          repositoryId: 'repository-a',
-          status: 'RUNNING',
-          workflowName: 'Build',
-        }),
-        run({
-          completedAt: '2026-08-26T11:00:00.000Z',
-          repositoryId: 'repository-a',
-          status: 'FAILED',
-          workflowName: 'Build',
-        }),
-        run({
-          completedAt: '2026-08-26T10:00:00.000Z',
-          repositoryId: 'repository-b',
-          status: 'SUCCESS',
-          workflowName: 'Build',
-        }),
-        run({
-          completedAt: '2026-08-26T09:00:00.000Z',
-          repositoryId: 'repository-b',
-          status: 'FAILED',
-          workflowName: 'Build',
-        }),
-      ]),
+      findNeedsAttention: jest.fn().mockResolvedValue(failures),
       getReadAbility: jest.fn().mockResolvedValue(ability),
     } as unknown as WorkflowRunsQueryService;
     const service = new DashboardService(workflowRuns);
 
-    await expect(service.getLatestFailures({ id: 'viewer', role: 'VIEWER', username: 'viewer' })).resolves.toEqual([
-      expect.objectContaining({ repositoryId: 'repository-a', status: 'FAILED', workflowName: 'Test' }),
-    ]);
-    expect(workflowRuns.findMany).toHaveBeenCalledWith(
+    await expect(service.getLatestFailures({ id: 'viewer', role: 'VIEWER', username: 'viewer' })).resolves.toEqual(
+      failures,
+    );
+    expect(workflowRuns.findNeedsAttention).toHaveBeenCalledWith(
       expect.objectContaining({
-        distinct: ['workflowId', 'scopeKey'],
         orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
-        where: { workflow: { kind: 'STANDARD' } },
+        take: 15,
       }),
       ability,
     );
-  });
-
-  it('keeps failures from separate execution contexts of the same workflow independent', async () => {
-    const ability = {};
-    const workflowRuns = {
-      findMany: jest.fn().mockResolvedValue([
-        run({
-          completedAt: '2026-08-26T13:00:00.000Z',
-          repositoryId: 'repository-a',
-          scopeKey: 'branch:main',
-          status: 'SUCCESS',
-          workflowId: 'workflow-a',
-          workflowName: 'Test',
-        }),
-        run({
-          completedAt: '2026-08-26T12:00:00.000Z',
-          repositoryId: 'repository-a',
-          scopeKey: 'change-request:42',
-          status: 'FAILED',
-          workflowId: 'workflow-a',
-          workflowName: 'Test',
-        }),
-      ]),
-      getReadAbility: jest.fn().mockResolvedValue(ability),
-    } as unknown as WorkflowRunsQueryService;
-
-    await expect(
-      new DashboardService(workflowRuns).getLatestFailures({ id: 'viewer', role: 'VIEWER', username: 'viewer' }),
-    ).resolves.toEqual([expect.objectContaining({ scopeKey: 'change-request:42', status: 'FAILED' })]);
   });
 
   it('limits the latest-run dashboard result to ten visible runs', async () => {
@@ -325,7 +271,7 @@ describe('DashboardService', () => {
         to: '2026-08-26T23:59:59.999Z',
       }),
     ).resolves.toEqual([{ bucketStart: new Date('2026-08-26T00:00:00.000Z'), errorCount: 1, successCount: 0 }]);
-    expect(prisma.workflowRun.findMany).toHaveBeenCalledTimes(3);
+    expect(prisma.workflowRun.findMany).toHaveBeenCalledTimes(4);
   });
 });
 

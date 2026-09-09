@@ -175,9 +175,12 @@ describe('workflow-run authorization integration', () => {
     },
   );
 
-  it.each(['RUNNING', 'SUCCESS'] as const)(
-    'does not report an earlier failure after a newer %s run of the same repository workflow',
-    async (status) => {
+  it.each([
+    ['RUNNING', 1],
+    ['SUCCESS', 0],
+  ] as const)(
+    'reports an earlier failure after a newer %s run only when it remains the latest terminal result',
+    async (status, expectedFailures) => {
       const previousFailure = await prisma.workflowRun.findUniqueOrThrow({ where: { id: visibleRunId } });
       const laterTimestamp = new Date('2026-08-26T11:00:00.000Z');
       await prisma.workflowRun.create({
@@ -197,9 +200,48 @@ describe('workflow-run authorization integration', () => {
         },
       });
 
-      await expect(dashboard.getLatestFailures(users.viewer)).resolves.toEqual([]);
+      await expect(dashboard.getLatestFailures(users.viewer)).resolves.toHaveLength(expectedFailures);
     },
   );
+
+  it('paginates the complete needs-attention set without leaking inaccessible runs through metadata', async () => {
+    const visibleFailure = await prisma.workflowRun.findUniqueOrThrow({ where: { id: visibleRunId } });
+    const secondFailure = await prisma.workflowRun.create({
+      data: {
+        completedAt: new Date('2026-08-26T12:00:00.000Z'),
+        displayTitle: 'Visible pull request failure',
+        providerCreatedAt: new Date('2026-08-26T12:00:00.000Z'),
+        providerRunId: 'visible-run-2',
+        rawStatus: 'failure',
+        repositoryId: visibleFailure.repositoryId,
+        scopeKey: 'change-request:42',
+        status: 'FAILED',
+        url: 'https://github.com/flowpeek/visible/actions/runs/2',
+        workflowId: visibleFailure.workflowId,
+        workflowName: visibleFailure.workflowName,
+      },
+    });
+    const viewerAbility = await runs.getReadAbility(users.viewer);
+    const viewerOptions = await runs.toNeedsAttentionQueryOptions(
+      { page: 2, perPage: 1, select: { id: true } },
+      viewerAbility,
+    );
+    const viewerPage = await runs.query<{ id: string }>(viewerOptions, viewerAbility);
+
+    expect(viewerPage.pageMeta).toMatchObject({ itemCount: 2, page: 2, pageCount: 2, perPage: 1 });
+    expect(viewerPage.items).toEqual([{ id: visibleRunId }]);
+    expect(viewerPage.items).not.toContainEqual({ id: hiddenRunId });
+    expect(secondFailure.id).not.toBe(visibleRunId);
+
+    const outsiderAbility = await runs.getReadAbility(users.outsider);
+    const outsiderOptions = await runs.toNeedsAttentionQueryOptions(
+      { page: 1, perPage: 25, select: { id: true } },
+      outsiderAbility,
+    );
+    const outsiderPage = await runs.query<{ id: string }>(outsiderOptions, outsiderAbility);
+    expect(outsiderPage.pageMeta.itemCount).toBe(0);
+    expect(outsiderPage.items).toEqual([]);
+  });
 
   it('keeps internal Dependabot runs in history but excludes them from needs attention', async () => {
     const timestamp = new Date('2026-08-26T12:00:00.000Z');

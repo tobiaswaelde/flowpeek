@@ -80,6 +80,7 @@
     "trendChartLabel": "Tendenza con {successes} esecuzioni riuscite e {errors} non riuscite.",
     "trendDescription": "Le riuscite usano la scala sinistra; gli errori quella destra.",
     "viewAwaitingApproval": "Visualizza workflow",
+    "viewNeedsAttention": "Visualizza tutti",
     "workflow": "Flusso di lavoro"
   },
   "layout": {
@@ -106,6 +107,12 @@
     "themeSystem": "Sistema",
     "users": "Utenti",
     "workflowRuns": "Esecuzioni workflow"
+  },
+  "needsAttention": {
+    "description": "Consulta tutti i contesti il cui ultimo workflow completato non è riuscito. I risultati rispettano l’accesso ai repository.",
+    "empty": "Nessun workflow richiede attenzione al momento.",
+    "loadError": "Impossibile caricare i workflow che richiedono attenzione.",
+    "title": "Richiede attenzione"
   },
   "pageIntro": {
     "dismiss": "Nascondi l’introduzione di {title}",
@@ -250,6 +257,7 @@
     "UNKNOWN": "Sconosciuta"
   },
   "workflowRuns": {
+    "allRuns": "Tutte le esecuzioni",
     "description": "Cerca e consulta le esecuzioni nei repository a cui puoi accedere.",
     "title": "Esecuzioni dei workflow",
     "columns": {
@@ -264,7 +272,9 @@
     "durationValue": "{minutes} min {seconds} s",
     "empty": "Non sono disponibili esecuzioni workflow.",
     "loadError": "Non è stato possibile caricare le esecuzioni workflow.",
-    "notAvailable": "—"
+    "notAvailable": "—",
+    "search": "Cerca esecuzioni workflow",
+    "searchPlaceholder": "Cerca workflow o repository"
   },
   "notifications": {
     "loadError": "Impossibile caricare i dati delle notifiche.",

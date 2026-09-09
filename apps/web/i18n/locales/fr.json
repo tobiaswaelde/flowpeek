@@ -82,6 +82,7 @@
     "trendChartLabel": "Tendance avec {successes} exécutions réussies et {errors} échouées.",
     "trendDescription": "Les réussites utilisent l’échelle gauche, les échecs l’échelle droite.",
     "viewAwaitingApproval": "Voir les workflows",
+    "viewNeedsAttention": "Tout afficher",
     "workflow": "Flux de travail"
   },
   "layout": {
@@ -108,6 +109,12 @@
     "themeSystem": "Système",
     "users": "Utilisateurs",
     "workflowRuns": "Exécutions de flux"
+  },
+  "needsAttention": {
+    "description": "Consultez tous les contextes dont la dernière exécution terminée a échoué. Les résultats respectent vos accès aux dépôts.",
+    "empty": "Aucun workflow ne requiert actuellement votre attention.",
+    "loadError": "Les workflows nécessitant une attention n’ont pas pu être chargés.",
+    "title": "Attention requise"
   },
   "pageIntro": {
     "dismiss": "Masquer l’introduction de {title}",
@@ -252,6 +259,7 @@
     "UNKNOWN": "Inconnue"
   },
   "workflowRuns": {
+    "allRuns": "Toutes les exécutions",
     "description": "Recherchez et consultez les exécutions des dépôts auxquels vous avez accès.",
     "title": "Exécutions de workflows",
     "columns": {
@@ -266,7 +274,9 @@
     "durationValue": "{minutes} min {seconds} s",
     "empty": "Aucune exécution de flux n’est disponible.",
     "loadError": "Les exécutions de flux n’ont pas pu être chargées.",
-    "notAvailable": "—"
+    "notAvailable": "—",
+    "search": "Rechercher des exécutions",
+    "searchPlaceholder": "Rechercher des workflows ou des dépôts"
   },
   "notifications": {
     "loadError": "Impossible de charger les données de notification.",

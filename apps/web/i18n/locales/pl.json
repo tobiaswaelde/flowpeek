@@ -80,6 +80,7 @@
     "trendChartLabel": "Trend z {successes} udanymi i {errors} nieudanymi uruchomieniami.",
     "trendDescription": "Udane uruchomienia korzystają z lewej skali, błędy z prawej.",
     "viewAwaitingApproval": "Pokaż przepływy",
+    "viewNeedsAttention": "Pokaż wszystkie",
     "workflow": "Przepływ pracy"
   },
   "layout": {
@@ -106,6 +107,12 @@
     "themeSystem": "Systemowy",
     "users": "Użytkownicy",
     "workflowRuns": "Wykonania workflow"
+  },
+  "needsAttention": {
+    "description": "Przeglądaj wszystkie konteksty, których ostatnie zakończone wykonanie nie powiodło się. Wyniki uwzględniają dostęp do repozytoriów.",
+    "empty": "Żaden przepływ pracy nie wymaga obecnie uwagi.",
+    "loadError": "Nie można było wczytać przepływów wymagających uwagi.",
+    "title": "Wymaga uwagi"
   },
   "pageIntro": {
     "dismiss": "Ukryj wprowadzenie do {title}",
@@ -250,6 +257,7 @@
     "UNKNOWN": "Nieznane"
   },
   "workflowRuns": {
+    "allRuns": "Wszystkie wykonania",
     "description": "Wyszukuj i przeglądaj uruchomienia w repozytoriach, do których masz dostęp.",
     "title": "Uruchomienia workflow",
     "columns": {
@@ -264,7 +272,9 @@
     "durationValue": "{minutes} min {seconds} s",
     "empty": "Brak dostępnych wykonań workflow.",
     "loadError": "Nie można było wczytać wykonań workflow.",
-    "notAvailable": "—"
+    "notAvailable": "—",
+    "search": "Szukaj wykonań workflow",
+    "searchPlaceholder": "Szukaj przepływów lub repozytoriów"
   },
   "notifications": {
     "loadError": "Nie udało się wczytać danych powiadomień.",

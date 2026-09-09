@@ -53,18 +53,21 @@ export class DashboardService {
   constructor(private readonly workflowRuns: WorkflowRunsQueryService) {}
 
   /**
-   * Return each visible workflow whose newest provider run failed.
+   * Return the 15 newest visible workflow contexts whose latest terminal run failed.
    *
    * @param user - Authenticated user requesting the dashboard.
-   * @returns The latest failed run for every currently failing repository workflow.
+   * @returns A limited newest-first preview of current terminal failures.
    */
   async getLatestFailures(user: AuthenticatedUser): Promise<DashboardWorkflowRunModel[]> {
-    const runs = await this.findVisibleRuns(user, {
-      distinct: ['workflowId', 'scopeKey'],
-      orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
-      where: { workflow: { kind: 'STANDARD' } },
-    });
-    return this.selectLatestFailures(runs);
+    const ability = await this.workflowRuns.getReadAbility(user);
+    return this.workflowRuns.findNeedsAttention<DashboardWorkflowRunModel>(
+      {
+        include: dashboardRunInclude,
+        orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+        take: 15,
+      },
+      ability,
+    );
   }
 
   /**
@@ -267,15 +270,6 @@ export class DashboardService {
 
   private roundPercentage(value: number): number {
     return Math.round(value * 10) / 10;
-  }
-
-  private selectLatestFailures(runs: DashboardWorkflowRunModel[]): DashboardWorkflowRunModel[] {
-    const latestByContext = new Map<string, DashboardWorkflowRunModel>();
-    for (const run of runs) {
-      const key = `${run.workflowId}\u0000${run.scopeKey}`;
-      if (!latestByContext.has(key)) latestByContext.set(key, run);
-    }
-    return [...latestByContext.values()].filter((run) => run.status === 'FAILED');
   }
 
   private floorBucket(value: Date, size: TrendBucketSize): Date {

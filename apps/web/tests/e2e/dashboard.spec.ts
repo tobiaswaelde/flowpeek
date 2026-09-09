@@ -118,7 +118,9 @@ test('renders dashboard values, reloads for range filters, and presents request 
   await expect(page.getByText('Failed', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('2m 0s', { exact: true })).toBeVisible();
   await expect(page.getByText('Success rate')).toBeVisible();
-  await expect(page.getByText('Awaiting approval', { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: 'Workflow health summary' }).getByText('Awaiting approval', { exact: true }),
+  ).toBeVisible();
   await expect(page.getByRole('link', { name: 'View workflows' })).toHaveAttribute(
     'href',
     '/workflows/awaiting-approval',
@@ -126,6 +128,7 @@ test('renders dashboard values, reloads for range filters, and presents request 
   await expect(page.getByRole('region', { name: 'Workflow health summary' }).getByText('50 %')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Status distribution' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Repository health' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'View all' })).toHaveAttribute('href', '/workflow-runs/needs-attention');
   await expect(page.getByRole('img', { name: /1 successful and 1 failed run/ })).toBeVisible();
   const latestRunsTable = page.locator('table');
   await expect(latestRunsTable.getByRole('link', { name: 'CI', exact: true })).toHaveCount(0);

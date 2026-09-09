@@ -59,4 +59,67 @@ describe('WorkflowRunsQueryService', () => {
       orderBy: { completedAt: 'asc' },
     });
   });
+
+  it('centralizes latest-terminal failure selection before applying public Query Kit filters', async () => {
+    const mocks = {
+      workflowRun: {
+        findMany: jest.fn().mockResolvedValue([
+          { id: 'failed-run', status: 'FAILED' },
+          { id: 'successful-run', status: 'SUCCESS' },
+        ]),
+      },
+    };
+    const service = new WorkflowRunsQueryService(mocks as unknown as PrismaService, new CaslAbilityFactory());
+    const ability = new CaslAbilityFactory().createForUser(
+      { id: 'admin', role: 'SYSTEM_ADMIN', username: 'admin' },
+      [],
+    );
+
+    await expect(
+      service.toNeedsAttentionQueryOptions(
+        { page: 2, perPage: 10, search: 'deploy', where: { repositoryId: 'repository-a' } },
+        ability,
+      ),
+    ).resolves.toMatchObject({
+      orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+      page: 2,
+      perPage: 10,
+      where: {
+        AND: [
+          { id: { in: ['failed-run'] } },
+          {
+            AND: [
+              { repositoryId: 'repository-a' },
+              {
+                OR: [
+                  { displayTitle: { contains: 'deploy', mode: 'insensitive' } },
+                  { workflowName: { contains: 'deploy', mode: 'insensitive' } },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
+    expect(mocks.workflowRun.findMany).toHaveBeenCalledWith({
+      cursor: undefined,
+      distinct: ['workflowId', 'scopeKey'],
+      include: undefined,
+      orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+      select: { id: true, status: true },
+      skip: undefined,
+      take: undefined,
+      where: {
+        AND: [
+          {},
+          {
+            awaitingApproval: false,
+            completedAt: { not: null },
+            status: { in: ['SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED', 'UNKNOWN'] },
+            workflow: { kind: 'STANDARD' },
+          },
+        ],
+      },
+    });
+  });
 });

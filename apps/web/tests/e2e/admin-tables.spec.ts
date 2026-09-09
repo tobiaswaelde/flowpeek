@@ -305,7 +305,7 @@ test('repository settings load retention, filters, and members', async ({ page }
   await expect(page.getByRole('button', { name: 'Delete' })).toHaveClass(/text-sm/);
 });
 
-/** Verify that the workflow-run history is available directly after the dashboard navigation item. */
+/** Verify that workflow-run history is available as a child of the workflow-runs navigation group. */
 test('workflow runs render in a filterable and sortable full-page table', async ({ page }) => {
   await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
   await page.route(/\/api\/v1\/workflow-runs(?:\?.*)?$/, async (route) => {
@@ -349,7 +349,10 @@ test('workflow runs render in a filterable and sortable full-page table', async 
   await page.goto('/workflow-runs');
 
   const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
-  await expect(navigation.getByRole('link', { name: 'Workflow runs' })).toHaveAttribute('href', '/workflow-runs');
+  await expect(navigation.getByRole('button', { name: 'Workflow runs' })).toHaveAttribute('aria-expanded', 'true');
+  await expect(
+    navigation.getByRole('region', { name: 'Workflow runs' }).getByRole('link', { name: 'All runs' }),
+  ).toHaveAttribute('href', '/workflow-runs');
   await expect(page.locator('tbody').getByRole('link', { name: 'Build', exact: true })).toHaveCount(0);
   await expect(page.getByText('twaelde/flowpeek', { exact: true })).toBeVisible();
   await expect(page.getByText('GitHub', { exact: true })).toBeVisible();

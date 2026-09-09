@@ -1,9 +1,19 @@
 <template>
   <UCard class="h-full">
     <template #header>
-      <div>
-        <h2 class="font-semibold">{{ $t('dashboard.needsAttention') }}</h2>
-        <p class="mt-1 text-xs text-muted">{{ $t('dashboard.needsAttentionDescription') }}</p>
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 class="font-semibold">{{ $t('dashboard.needsAttention') }}</h2>
+          <p class="mt-1 text-xs text-muted">{{ $t('dashboard.needsAttentionDescription') }}</p>
+        </div>
+        <UButton
+          color="neutral"
+          icon="i-lucide-arrow-right"
+          size="sm"
+          to="/workflow-runs/needs-attention"
+          variant="ghost"
+          :label="$t('dashboard.viewNeedsAttention')"
+        />
       </div>
     </template>
 

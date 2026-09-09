@@ -43,13 +43,13 @@ export class DashboardController {
   }
 
   /**
-   * List visible workflows whose latest provider run failed.
+   * List the 15 newest visible workflow contexts whose latest terminal run failed.
    *
    * @param request - Authenticated request user.
-   * @returns Current failed workflow runs, one per repository and workflow name.
+   * @returns Current terminal failures ordered newest first.
    */
   @Get('failures')
-  @ApiOperation({ summary: 'List workflows whose latest provider run failed' })
+  @ApiOperation({ summary: 'List the 15 newest workflow contexts whose latest terminal run failed' })
   @ApiOkResponse({ description: 'Visible latest failed workflow runs.', type: DashboardWorkflowRunDto, isArray: true })
   async getLatestFailures(@Req() request: AuthenticatedRequest): Promise<DashboardWorkflowRunDto[]> {
     const failures = await this.dashboard.getLatestFailures(request.user);

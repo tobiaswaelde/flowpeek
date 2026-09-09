@@ -48,11 +48,18 @@
 
 <script setup lang="ts">
 import type { NavigationMenuItem } from '#ui/types';
+import { onMounted, ref } from 'vue';
 
+import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useModuleApi } from '~/composables/api/module-api';
 import { useAuthStore } from '~/store/auth';
 
 const { t } = useI18n();
 const auth = useAuthStore();
+const api = useFlowpeekApi();
+const needsAttentionApi = useModuleApi('workflow-runs/needs-attention');
+const awaitingApprovalCount = ref<number | null>(null);
+const needsAttentionCount = ref<number | null>(null);
 
 const navigationItems = computed<NavigationMenuItem[]>(() => {
   const items: NavigationMenuItem[] = [
@@ -62,9 +69,31 @@ const navigationItems = computed<NavigationMenuItem[]>(() => {
       to: '/',
     },
     {
+      children: [
+        { icon: 'i-lucide-list-tree', label: t('workflowRuns.allRuns'), to: '/workflow-runs' },
+        {
+          badge:
+            awaitingApprovalCount.value === null
+              ? undefined
+              : { color: 'warning', label: awaitingApprovalCount.value, variant: 'soft' },
+          icon: 'i-lucide-shield-alert',
+          label: t('awaitingApproval.title'),
+          to: '/workflows/awaiting-approval',
+        },
+        {
+          badge:
+            needsAttentionCount.value === null
+              ? undefined
+              : { color: 'error', label: needsAttentionCount.value, variant: 'soft' },
+          icon: 'i-lucide-triangle-alert',
+          label: t('needsAttention.title'),
+          to: '/workflow-runs/needs-attention',
+        },
+      ],
+      defaultOpen: true,
       icon: 'i-lucide-list-tree',
       label: t('layout.workflowRuns'),
-      to: '/workflow-runs',
+      type: 'trigger',
     },
     {
       icon: 'i-lucide-bell',
@@ -90,4 +119,19 @@ const navigationItems = computed<NavigationMenuItem[]>(() => {
 
   return items;
 });
+
+/** Load permission-scoped workflow attention counters without blocking the application shell. */
+async function loadAttentionCounts(): Promise<void> {
+  const [awaitingApprovalResult, needsAttentionResult] = await Promise.allSettled([
+    api.dashboard.getAwaitingApproval(),
+    needsAttentionApi.query({ fields: 'id', page: 1, perPage: 1 }),
+  ]);
+
+  awaitingApprovalCount.value =
+    awaitingApprovalResult.status === 'fulfilled' ? awaitingApprovalResult.value.data.length : null;
+  needsAttentionCount.value =
+    needsAttentionResult.status === 'fulfilled' ? needsAttentionResult.value.data.meta.itemCount : null;
+}
+
+onMounted(() => void loadAttentionCounts());
 </script>

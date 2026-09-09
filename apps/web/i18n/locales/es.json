@@ -80,6 +80,7 @@
     "trendChartLabel": "Tendencia con {successes} ejecuciones correctas y {errors} fallidas.",
     "trendDescription": "Las correctas usan la escala izquierda; las fallidas, la derecha.",
     "viewAwaitingApproval": "Ver flujos de trabajo",
+    "viewNeedsAttention": "Ver todos",
     "workflow": "Flujo de trabajo"
   },
   "layout": {
@@ -106,6 +107,12 @@
     "themeSystem": "Sistema",
     "users": "Usuarios",
     "workflowRuns": "Ejecuciones de flujo"
+  },
+  "needsAttention": {
+    "description": "Consulta todos los contextos cuyo último flujo completado falló. Los resultados respetan tu acceso a repositorios.",
+    "empty": "Ningún flujo de trabajo requiere atención actualmente.",
+    "loadError": "No se pudieron cargar los flujos que requieren atención.",
+    "title": "Requiere atención"
   },
   "pageIntro": {
     "dismiss": "Ocultar la introducción de {title}",
@@ -254,6 +261,7 @@
     "UNKNOWN": "Desconocida"
   },
   "workflowRuns": {
+    "allRuns": "Todas las ejecuciones",
     "description": "Busca e inspecciona ejecuciones en los repositorios a los que tienes acceso.",
     "title": "Ejecuciones de workflows",
     "columns": {
@@ -268,7 +276,9 @@
     "durationValue": "{minutes} min {seconds} s",
     "empty": "No hay ejecuciones de flujo disponibles.",
     "loadError": "No se pudieron cargar las ejecuciones de flujo.",
-    "notAvailable": "—"
+    "notAvailable": "—",
+    "search": "Buscar ejecuciones de flujo",
+    "searchPlaceholder": "Buscar flujos o repositorios"
   },
   "notifications": {
     "loadError": "No se pudieron cargar los datos de notificaciones.",
