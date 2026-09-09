@@ -9,7 +9,7 @@
     "e2e": "playwright test",
     "e2e:providers": "playwright test tests/e2e/providers.spec.ts",
     "lint": "eslint app nuxt.config.ts --max-warnings=0",
-    "test": "vitest run",
+    "test": "nuxt prepare && vitest run",
     "typecheck": "nuxt typecheck"
   },
   "devDependencies": {
