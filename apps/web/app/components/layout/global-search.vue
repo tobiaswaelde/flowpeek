@@ -74,18 +74,12 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 import { useModuleApi } from '~/composables/api/module-api';
-import { useAuthStore } from '~/store/auth';
+import { useNavigationItems } from '~/composables/app/navigation-items';
 import type { WorkflowRun } from '~/types/api/resources';
 
-interface NavigationSearchItem {
-  icon: string;
-  label: string;
-  to: string;
-}
-
 const { t } = useI18n();
-const auth = useAuthStore();
 const workflowRunsApi = useModuleApi('workflow-runs');
+const { navigationSearchItems } = useNavigationItems();
 const searchInput = ref<HTMLInputElement>();
 const query = ref('');
 const workflowRuns = ref<WorkflowRun[]>([]);
@@ -94,33 +88,9 @@ const isSearching = ref(false);
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 let requestId = 0;
 
-const navigationItems = computed<NavigationSearchItem[]>(() => {
-  const items: NavigationSearchItem[] = [
-    { icon: 'i-tabler-layout-dashboard', label: t('layout.dashboard'), to: '/' },
-    { icon: 'i-tabler-list-details', label: t('layout.workflowRuns'), to: '/workflow-runs' },
-    {
-      icon: 'i-lucide-triangle-alert',
-      label: t('needsAttention.title'),
-      to: '/workflow-runs/needs-attention',
-    },
-    { icon: 'i-tabler-bell', label: t('layout.notifications'), to: '/notifications' },
-  ];
-
-  if (auth.user?.role === 'SYSTEM_ADMIN') {
-    items.push(
-      { icon: 'i-tabler-plug-connected', label: t('layout.providers'), to: '/admin/providers' },
-      { icon: 'i-tabler-git-fork', label: t('layout.repositories'), to: '/admin/repositories' },
-      { icon: 'i-tabler-settings', label: t('layout.settings'), to: '/admin/settings' },
-      { icon: 'i-tabler-users', label: t('layout.users'), to: '/admin/users' },
-    );
-  }
-
-  return items;
-});
-
 const navigationResults = computed(() => {
   const searchTerm = query.value.trim().toLocaleLowerCase();
-  return navigationItems.value.filter((item) => item.label.toLocaleLowerCase().includes(searchTerm));
+  return navigationSearchItems.value.filter((item) => item.label.toLocaleLowerCase().includes(searchTerm));
 });
 
 const hasResults = computed(() => navigationResults.value.length > 0 || workflowRuns.value.length > 0);

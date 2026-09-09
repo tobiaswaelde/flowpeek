@@ -7,7 +7,7 @@
       { icon: 'i-lucide-git-branch', label: $t('layout.repositories'), to: '/admin/repositories' },
       { label: pageTitle },
     ]"
-    :description="$t('repositoryDetails.generalDescription')"
+    :description="isAdmin ? $t('repositoryDetails.generalDescription') : $t('repositories.description')"
     :title="pageTitle"
   >
     <template v-if="repository" #actions>
@@ -31,9 +31,13 @@
     />
 
     <div v-else-if="repository" class="grid gap-6 lg:grid-cols-2">
-      <ModulesRepositoriesDetailsGeneralCard :repository="repository" @updated="repository = $event" />
-      <ModulesRepositoriesDetailsWorkflowFiltersCard :repository-id="repository.id" />
-      <ModulesRepositoriesDetailsMembersCard :repository-id="repository.id" />
+      <ModulesRepositoriesDetailsGeneralCard
+        :editable="isAdmin"
+        :repository="repository"
+        @updated="repository = $event"
+      />
+      <ModulesRepositoriesDetailsWorkflowFiltersCard v-if="isAdmin" :repository-id="repository.id" />
+      <ModulesRepositoriesDetailsMembersCard v-if="isAdmin" :repository-id="repository.id" />
     </div>
   </LayoutPage>
 </template>
@@ -42,13 +46,16 @@
 import { computed, onMounted, ref } from 'vue';
 
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useAuthStore } from '~/store/auth';
 import type { Repository } from '~/types/api/resources';
 
 definePageMeta({ fullWidth: true });
 
 const route = useRoute();
 const api = useFlowpeekApi();
+const auth = useAuthStore();
 const { t } = useI18n();
+const isAdmin = computed(() => auth.user?.role === 'SYSTEM_ADMIN');
 const repositoryId = computed(() => String(route.params.id));
 const repository = ref<Repository>();
 const loadError = ref(false);

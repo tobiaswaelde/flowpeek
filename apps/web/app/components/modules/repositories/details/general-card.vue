@@ -3,9 +3,36 @@
     <template #header>
       <div>
         <h2 class="font-semibold">{{ repository.owner }}/{{ repository.name }}</h2>
-        <p class="text-sm text-muted">{{ $t('repositoryDetails.generalDescription') }}</p>
+        <p class="text-sm text-muted">
+          {{ editable ? $t('repositoryDetails.generalDescription') : $t('repositories.description') }}
+        </p>
       </div>
     </template>
+
+    <dl v-if="!editable" class="grid gap-4 sm:grid-cols-3">
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-muted">{{ $t('repositories.columns.status') }}</dt>
+        <dd class="mt-1">
+          <UBadge variant="subtle" :color="repository.enabled ? 'success' : 'neutral'">
+            {{ repository.enabled ? $t('repositories.enabled') : $t('repositories.disabled') }}
+          </UBadge>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-muted">
+          {{ $t('repositories.columns.retention') }}
+        </dt>
+        <dd class="mt-1 text-sm">
+          {{ repository.workflowRunRetentionDays ?? $t('repositories.default') }}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-muted">
+          {{ $t('repositories.columns.lastSync') }}
+        </dt>
+        <dd class="mt-1 text-sm">{{ formatLastSync(repository.lastSyncAt) }}</dd>
+      </div>
+    </dl>
 
     <UAlert
       v-if="saveError"
@@ -14,7 +41,7 @@
       variant="subtle"
       :title="$t('repositoryDetails.saveError')"
     />
-    <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+    <div v-if="editable" class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
       <UFormField :help="$t('repositoryDetails.retentionHelp')" :label="$t('repositoryDetails.retention')">
         <UInput v-model="retentionDays" min="1" type="number" :disabled="saving" />
       </UFormField>
@@ -29,16 +56,20 @@
 import { ref, watch } from 'vue';
 
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useDateTime } from '~/composables/use-date-time';
 import type { Repository } from '~/types/api/resources';
 
 const props = defineProps<{
+  editable: boolean;
   repository: Repository;
 }>();
 const emit = defineEmits<{
   updated: [repository: Repository];
 }>();
 
+const { t } = useI18n();
 const api = useFlowpeekApi();
+const { formatDateTime } = useDateTime();
 const retentionDays = ref('');
 const saving = ref(false);
 const saveError = ref(false);
@@ -50,6 +81,11 @@ watch(
   },
   { immediate: true },
 );
+
+/** Format the last successful synchronization using the active interface locale. */
+function formatLastSync(lastSyncAt: string | null): string {
+  return lastSyncAt ? formatDateTime(lastSyncAt) : t('repositories.neverSynced');
+}
 
 /** Persist a valid explicit retention override or restore the provider default. */
 async function saveRetention(): Promise<void> {

@@ -352,7 +352,7 @@
     "mode": "Tryb",
     "noMembers": "Żaden użytkownik nie ma jawnego dostępu do tego repozytorium.",
     "noWorkflowFilters": "Nie skonfigurowano filtrów workflow.",
-    "open": "Otwórz ustawienia repozytorium",
+    "open": "Otwórz repozytorium",
     "pattern": "Wzorzec workflow",
     "removeMember": "Usuń członka",
     "retention": "Przechowywanie wykonań workflow (dni)",

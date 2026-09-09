@@ -97,12 +97,20 @@ test('browses, searches, sorts, filters, refreshes, and paginates the complete n
   const awaitingApprovalLink = workflowRunNavigation.getByRole('link', { name: 'Awaiting approval' });
   const needsAttentionLink = workflowRunNavigation.getByRole('link', { name: 'Needs attention' });
   await expect(awaitingApprovalLink).toHaveAttribute('href', '/workflows/awaiting-approval');
+  await expect(awaitingApprovalLink).not.toHaveAttribute('aria-current', 'page');
   await expect(awaitingApprovalLink.locator('[data-slot="linkTrailingBadge"]')).toHaveText('7');
   await expect(awaitingApprovalLink.locator('[data-slot="linkTrailingBadge"]')).toHaveClass(/text-warning/);
   await expect(needsAttentionLink).toHaveAttribute('href', '/workflow-runs/needs-attention');
+  await expect(needsAttentionLink).toHaveAttribute('aria-current', 'page');
   await expect(needsAttentionLink.locator('[data-slot="linkTrailingBadge"]')).toHaveText('26');
   await expect(needsAttentionLink.locator('[data-slot="linkTrailingBadge"]')).toHaveClass(/text-error/);
-  await expect(page.getByRole('heading', { name: 'Needs attention' })).toBeVisible();
+  await page.getByPlaceholder('Search Flowpeek').fill('approval');
+  await expect(page.getByRole('link', { name: 'Awaiting approval' }).last()).toHaveAttribute(
+    'href',
+    '/workflows/awaiting-approval',
+  );
+  await page.keyboard.press('Escape');
+  await page.getByRole('heading', { name: 'Needs attention' }).click();
   await expect(page.getByRole('button', { name: 'Refresh' })).toBeDisabled();
   await page.screenshot({ path: testInfo.outputPath('needs-attention-loading.png'), fullPage: true });
   releaseInitialRequest?.();

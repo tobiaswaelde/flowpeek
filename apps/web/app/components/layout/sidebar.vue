@@ -47,77 +47,20 @@
 </template>
 
 <script setup lang="ts">
-import type { NavigationMenuItem } from '#ui/types';
 import { onMounted, ref } from 'vue';
 
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
 import { useModuleApi } from '~/composables/api/module-api';
-import { useAuthStore } from '~/store/auth';
+import { useNavigationItems } from '~/composables/app/navigation-items';
 
 const { t } = useI18n();
-const auth = useAuthStore();
 const api = useFlowpeekApi();
 const needsAttentionApi = useModuleApi('workflow-runs/needs-attention');
 const awaitingApprovalCount = ref<number | null>(null);
 const needsAttentionCount = ref<number | null>(null);
-
-const navigationItems = computed<NavigationMenuItem[]>(() => {
-  const items: NavigationMenuItem[] = [
-    {
-      icon: 'i-lucide-layout-dashboard',
-      label: t('layout.dashboard'),
-      to: '/',
-    },
-    {
-      children: [
-        { icon: 'i-lucide-list-tree', label: t('workflowRuns.allRuns'), to: '/workflow-runs' },
-        {
-          badge:
-            awaitingApprovalCount.value === null
-              ? undefined
-              : { color: 'warning', label: awaitingApprovalCount.value, variant: 'soft' },
-          icon: 'i-lucide-shield-alert',
-          label: t('awaitingApproval.title'),
-          to: '/workflows/awaiting-approval',
-        },
-        {
-          badge:
-            needsAttentionCount.value === null
-              ? undefined
-              : { color: 'error', label: needsAttentionCount.value, variant: 'soft' },
-          icon: 'i-lucide-triangle-alert',
-          label: t('needsAttention.title'),
-          to: '/workflow-runs/needs-attention',
-        },
-      ],
-      defaultOpen: true,
-      icon: 'i-lucide-list-tree',
-      label: t('layout.workflowRuns'),
-      type: 'trigger',
-    },
-    {
-      icon: 'i-lucide-bell',
-      label: t('layout.notifications'),
-      to: '/notifications',
-    },
-  ];
-
-  if (auth.user?.role === 'SYSTEM_ADMIN') {
-    items.push({
-      children: [
-        { icon: 'i-lucide-plug-zap', label: t('layout.providers'), to: '/admin/providers' },
-        { icon: 'i-lucide-git-fork', label: t('layout.repositories'), to: '/admin/repositories' },
-        { icon: 'i-lucide-settings', label: t('layout.settings'), to: '/admin/settings' },
-        { icon: 'i-lucide-users', label: t('layout.users'), to: '/admin/users' },
-      ],
-      defaultOpen: true,
-      icon: 'i-lucide-settings-2',
-      label: t('layout.administration'),
-      type: 'trigger',
-    });
-  }
-
-  return items;
+const { navigationItems } = useNavigationItems({
+  awaitingApproval: awaitingApprovalCount,
+  needsAttention: needsAttentionCount,
 });
 
 /** Load permission-scoped workflow attention counters without blocking the application shell. */

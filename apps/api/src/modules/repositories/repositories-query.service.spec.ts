@@ -1,26 +1,36 @@
-import { ForbiddenException } from '@nestjs/common';
-
 import { RepositoriesQueryService } from './repositories-query.service.js';
 
 describe('RepositoriesQueryService', () => {
   const ability = {};
   const abilityFactory = { createForUser: jest.fn(() => ability) };
-  const prisma = { repository: {} };
+  const prisma = { repository: {}, repositoryMembership: { findMany: jest.fn() } };
   const service = new RepositoriesQueryService(prisma as never, abilityFactory as never);
 
   beforeEach(() => jest.clearAllMocks());
 
-  it('gives system administrators an unrestricted repository ability', () => {
-    expect(service.getReadAbility({ id: 'admin', role: 'SYSTEM_ADMIN', username: 'admin' })).toBe(ability);
+  it('gives system administrators an unrestricted repository ability', async () => {
+    await expect(service.getReadAbility({ id: 'admin', role: 'SYSTEM_ADMIN', username: 'admin' })).resolves.toBe(
+      ability,
+    );
     expect(abilityFactory.createForUser).toHaveBeenCalledWith(
       { id: 'admin', role: 'SYSTEM_ADMIN', username: 'admin' },
       [],
     );
+    expect(prisma.repositoryMembership.findMany).not.toHaveBeenCalled();
   });
 
-  it('rejects non-administrators before building a repository query', () => {
-    expect(() => service.getReadAbility({ id: 'viewer', role: 'VIEWER', username: 'viewer' })).toThrow(
-      ForbiddenException,
+  it('builds a repository-scoped ability for non-administrators', async () => {
+    const memberships = [{ repositoryId: 'repository-1', role: 'VIEWER' as const }];
+    prisma.repositoryMembership.findMany.mockResolvedValue(memberships);
+
+    await expect(service.getReadAbility({ id: 'viewer', role: 'VIEWER', username: 'viewer' })).resolves.toBe(ability);
+    expect(prisma.repositoryMembership.findMany).toHaveBeenCalledWith({
+      where: { userId: 'viewer' },
+      select: { repositoryId: true, role: true },
+    });
+    expect(abilityFactory.createForUser).toHaveBeenCalledWith(
+      { id: 'viewer', role: 'VIEWER', username: 'viewer' },
+      memberships,
     );
   });
 

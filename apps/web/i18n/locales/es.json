@@ -356,7 +356,7 @@
     "mode": "Modo",
     "noMembers": "Ningún usuario tiene acceso explícito a este repositorio.",
     "noWorkflowFilters": "No hay filtros de flujo configurados.",
-    "open": "Abrir ajustes del repositorio",
+    "open": "Abrir repositorio",
     "pattern": "Patrón de flujo",
     "removeMember": "Eliminar miembro",
     "retention": "Retención de ejecuciones de flujo (días)",

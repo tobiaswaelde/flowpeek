@@ -352,7 +352,7 @@
     "mode": "Modalità",
     "noMembers": "Nessun utente ha accesso esplicito a questo repository.",
     "noWorkflowFilters": "Non sono configurati filtri workflow.",
-    "open": "Apri impostazioni repository",
+    "open": "Apri repository",
     "pattern": "Modello workflow",
     "removeMember": "Rimuovi membro",
     "retention": "Conservazione esecuzioni workflow (giorni)",

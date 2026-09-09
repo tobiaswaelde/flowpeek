@@ -27,7 +27,7 @@ describe('RepositoriesController', () => {
       perPage: 10,
     } as RepositoryQueryDto;
     const repositories = {
-      getReadAbility: jest.fn().mockReturnValue(undefined),
+      getReadAbility: jest.fn().mockResolvedValue(undefined),
       query: jest.fn().mockResolvedValue({
         items: [repository],
         pageMeta: { hasNextPage: false, hasPrevPage: false, itemCount: 1, page: 1, pageCount: 1, perPage: 10 },
@@ -47,5 +47,37 @@ describe('RepositoriesController', () => {
       undefined,
     );
     expect(response.items).toEqual([{ id: 'repository-1', name: 'flowpeek', workflowRunCount: 12 }]);
+  });
+
+  it('loads a repository detail through the permission-aware query service', async () => {
+    const ability = undefined;
+    const repository = {
+      enabled: true,
+      id: 'repository-1',
+      lastSyncAt: null,
+      name: 'flowpeek',
+      owner: 'twaelde',
+      providerAccountId: 'provider-1',
+      providerRepositoryId: '42',
+      url: 'https://github.com/tobiaswaelde/flowpeek',
+      workflowRunRetentionDays: null,
+    } as RepositoryResourceModel;
+    const repositories = {
+      findById: jest.fn().mockResolvedValue(repository),
+      getReadAbility: jest.fn().mockResolvedValue(ability),
+    };
+    const controller = new RepositoriesController(
+      {} as PrismaService,
+      {} as RepositoryConfigurationService,
+      repositories as unknown as RepositoriesQueryService,
+    );
+    const viewer = { id: 'viewer', role: 'VIEWER' as const, username: 'viewer' };
+
+    await expect(controller.findById({ user: viewer }, repository.id)).resolves.toMatchObject({
+      id: repository.id,
+      name: repository.name,
+    });
+    expect(repositories.getReadAbility).toHaveBeenCalledWith(viewer);
+    expect(repositories.findById).toHaveBeenCalledWith(repository.id, {}, ability);
   });
 });

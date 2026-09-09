@@ -20,7 +20,7 @@
         :columns="columnDefinition"
         shortcuts
       />
-      <UButton icon="i-lucide-plus" :aria-label="$t('repositories.add')" @click="openAddDialog">
+      <UButton v-if="isAdmin" icon="i-lucide-plus" :aria-label="$t('repositories.add')" @click="openAddDialog">
         <span class="hidden sm:inline">{{ $t('repositories.add') }}</span>
       </UButton>
     </template>
@@ -87,6 +87,7 @@
             :to="`/admin/repositories/${row.original.id}`"
           />
           <UButton
+            v-if="isAdmin"
             color="neutral"
             variant="ghost"
             :aria-label="row.original.enabled ? $t('repositories.disable') : $t('repositories.enable')"
@@ -105,7 +106,7 @@
       :total-items="totalItems"
       shortcuts
     />
-    <ModulesRepositoriesAddDialog v-model:open="dialogOpen" @created="handleRepositoryCreated" />
+    <ModulesRepositoriesAddDialog v-if="isAdmin" v-model:open="dialogOpen" @created="handleRepositoryCreated" />
   </LayoutPage>
 </template>
 
@@ -117,6 +118,7 @@ import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
 import { useTable } from '~/composables/api/table';
 import { useDateTime } from '~/composables/use-date-time';
 import { usePendingActions } from '~/composables/use-pending-actions';
+import { useAuthStore } from '~/store/auth';
 import type { Repository } from '~/types/api/resources';
 import type { ColumnDefinition } from '~/types/table';
 
@@ -128,6 +130,8 @@ definePageMeta({ fullWidth: true });
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
 const api = useFlowpeekApi();
+const auth = useAuthStore();
+const isAdmin = computed(() => auth.user?.role === 'SYSTEM_ADMIN');
 const dialogOpen = ref(false);
 const { isPending, run: runPendingAction } = usePendingActions();
 const columnDefinition = computed<RepositoryTableColumn[]>(() => [
@@ -194,7 +198,9 @@ function openAddDialog(): void {
 }
 
 defineShortcuts({
-  shift_n: () => void openAddDialog(),
+  shift_n: () => {
+    if (isAdmin.value) openAddDialog();
+  },
 });
 
 /** Refresh the list from its first page after the dialog adds a repository. */

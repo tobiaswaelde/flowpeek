@@ -354,7 +354,7 @@
     "mode": "Mode",
     "noMembers": "Aucun utilisateur n’a d’accès explicite à ce dépôt.",
     "noWorkflowFilters": "Aucun filtre de flux n’est configuré.",
-    "open": "Ouvrir les paramètres du dépôt",
+    "open": "Ouvrir le dépôt",
     "pattern": "Motif de flux",
     "removeMember": "Retirer le membre",
     "retention": "Rétention des exécutions de flux (jours)",

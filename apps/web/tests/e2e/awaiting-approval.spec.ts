@@ -51,6 +51,10 @@ test('lists approval-gated workflows with provider and pull-request actions', as
     'href',
     '/workflows/awaiting-approval',
   );
+  await expect(workflowRunNavigation.getByRole('link', { name: 'Awaiting approval' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
   await expect(workflowRunNavigation.getByRole('link', { name: 'Needs attention' })).toHaveAttribute(
     'href',
     '/workflow-runs/needs-attention',

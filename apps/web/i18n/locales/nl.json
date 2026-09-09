@@ -352,7 +352,7 @@
     "mode": "Modus",
     "noMembers": "Geen gebruiker heeft expliciete toegang tot deze repository.",
     "noWorkflowFilters": "Er zijn geen workflowfilters geconfigureerd.",
-    "open": "Repository-instellingen openen",
+    "open": "Repository openen",
     "pattern": "Workflowpatroon",
     "removeMember": "Lid verwijderen",
     "retention": "Bewaartermijn workflowuitvoeringen (dagen)",

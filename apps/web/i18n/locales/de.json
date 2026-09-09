@@ -362,7 +362,7 @@
     "mode": "Modus",
     "noMembers": "Kein Benutzer hat expliziten Zugriff auf dieses Repository.",
     "noWorkflowFilters": "Es sind keine Workflow-Filter konfiguriert.",
-    "open": "Repository-Einstellungen öffnen",
+    "open": "Repository öffnen",
     "pattern": "Workflow-Muster",
     "removeMember": "Mitglied entfernen",
     "retention": "Aufbewahrung von Workflow-Ausführungen (Tage)",

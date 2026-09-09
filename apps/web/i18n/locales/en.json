@@ -362,7 +362,7 @@
     "mode": "Mode",
     "noMembers": "No users have explicit access to this repository.",
     "noWorkflowFilters": "No workflow filters are configured.",
-    "open": "Open repository settings",
+    "open": "Open repository",
     "pattern": "Workflow pattern",
     "removeMember": "Remove member",
     "retention": "Workflow-run retention (days)",

@@ -63,6 +63,13 @@ test('repository and user administration render full-page Query Kit tables', asy
 
   await page.goto('/admin/repositories');
 
+  const primaryNavigation = page.getByRole('navigation', { name: 'Primary navigation' });
+  const repositoryNavigation = primaryNavigation.getByRole('link', { name: 'Repositories' });
+  await expect(repositoryNavigation).toHaveAttribute('href', '/admin/repositories');
+  await expect(repositoryNavigation).toHaveAttribute('aria-current', 'page');
+  await expect(
+    primaryNavigation.getByRole('region', { name: 'Administration' }).getByRole('link', { name: 'Repositories' }),
+  ).toHaveCount(0);
   const repositoryBreadcrumb = page.getByRole('navigation', { name: 'breadcrumb' });
   await expect(repositoryBreadcrumb.getByRole('link', { name: 'Dashboard' })).toHaveAttribute('href', '/');
   await expect(repositoryBreadcrumb).toContainText('Repositories');
@@ -77,7 +84,7 @@ test('repository and user administration render full-page Query Kit tables', asy
   await expect(repositoryActionsHeader).toHaveCSS('position', 'sticky');
   await expect(repositoryActionsHeader.getByText('Actions', { exact: true })).toHaveClass(/justify-end/);
   await expect(page.locator('tbody td').first()).toHaveCSS('padding-top', '8px');
-  await expect(page.getByRole('link', { name: 'Open repository settings' })).toHaveClass(/text-sm/);
+  await expect(page.getByRole('link', { name: 'Open repository' })).toHaveClass(/text-sm/);
   const toggleRepositoryButton = page.getByRole('button', { name: 'Disable' });
   await toggleRepositoryButton.click();
   await expect(toggleRepositoryButton).toBeDisabled();
@@ -295,6 +302,9 @@ test('repository settings load retention, filters, and members', async ({ page }
 
   await page.goto('/admin/repositories/repository-1');
 
+  await expect(
+    page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Repositories' }),
+  ).toHaveAttribute('aria-current', 'page');
   await expect(page.getByRole('heading', { level: 1, name: 'twaelde/flowpeek' })).toBeVisible();
   await expect(page.locator('input[type=number]')).toHaveValue('30');
   await expect(page.getByText('draft-*', { exact: true })).toBeVisible();
@@ -353,6 +363,9 @@ test('workflow runs render in a filterable and sortable full-page table', async 
   await expect(
     navigation.getByRole('region', { name: 'Workflow runs' }).getByRole('link', { name: 'All runs' }),
   ).toHaveAttribute('href', '/workflow-runs');
+  await expect(
+    navigation.getByRole('region', { name: 'Workflow runs' }).getByRole('link', { name: 'All runs' }),
+  ).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('tbody').getByRole('link', { name: 'Build', exact: true })).toHaveCount(0);
   await expect(page.getByText('twaelde/flowpeek', { exact: true })).toBeVisible();
   await expect(page.getByText('GitHub', { exact: true })).toBeVisible();

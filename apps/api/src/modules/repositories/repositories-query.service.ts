@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   QueryService,
   createCaslAccessibleWhere,
@@ -43,7 +43,7 @@ export class RepositoriesQueryService extends QueryService<
   CaslSubject.Repository
 > {
   constructor(
-    prisma: PrismaService,
+    private readonly prisma: PrismaService,
     private readonly abilityFactory: CaslAbilityFactory,
   ) {
     super(prisma.repository, {
@@ -54,10 +54,16 @@ export class RepositoriesQueryService extends QueryService<
     });
   }
 
-  /** Resolve the full repository read ability for a system administrator. */
-  getReadAbility(user: AuthenticatedUser): AppAbility {
-    if (user.role !== 'SYSTEM_ADMIN') throw new ForbiddenException('System administrator access is required.');
-    return this.abilityFactory.createForUser(user, []);
+  /** Resolve a repository read ability from the current user's persisted memberships. */
+  async getReadAbility(user: AuthenticatedUser): Promise<AppAbility> {
+    const memberships =
+      user.role === 'SYSTEM_ADMIN'
+        ? []
+        : await this.prisma.repositoryMembership.findMany({
+            where: { userId: user.id },
+            select: { repositoryId: true, role: true },
+          });
+    return this.abilityFactory.createForUser(user, memberships);
   }
 
   /** Apply a stable default order when the table has no selected sort. */

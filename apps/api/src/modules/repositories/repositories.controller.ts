@@ -48,7 +48,7 @@ class UpsertRepositoryMembershipDto {
   @IsEnum(['VIEWER', 'MANAGER']) role!: 'VIEWER' | 'MANAGER';
 }
 
-/** Provides system-administrator tracking settings for persisted repositories. */
+/** Provides permission-scoped repository reads and administrator-only configuration. */
 @Authenticated()
 @Controller('repositories')
 export class RepositoriesController {
@@ -64,7 +64,7 @@ export class RepositoriesController {
   @ApiPaginatedResponse({ description: 'Tracked repositories.', model: RepositoryDto })
   @ApiErrorResponses({ badRequestDescription: 'Invalid repository query.' })
   async query(@Req() request: { user: AuthenticatedUser }, @Query(new QueryTransformPipe()) query: RepositoryQueryDto) {
-    const ability = this.repositories.getReadAbility(request.user);
+    const ability = await this.repositories.getReadAbility(request.user);
     return ResourceQuery.query({
       ability,
       include: { _count: { select: { workflowRuns: true } } },
@@ -75,10 +75,11 @@ export class RepositoriesController {
     });
   }
 
-  /** Get the selected repository's settings context. */
+  /** Get one repository when it is visible to the authenticated user. */
   @Get(':id')
   async findById(@Req() request: { user: AuthenticatedUser }, @Param('id') id: string): Promise<RepositoryDto> {
-    return RepositoryDto.fromModel(await this.configuration.getRepository(request.user, id));
+    const ability = await this.repositories.getReadAbility(request.user);
+    return RepositoryDto.fromModel(await this.repositories.findById<RepositoryResourceModel>(id, {}, ability), ability);
   }
 
   /** List all workflow filters configured for one repository. */
