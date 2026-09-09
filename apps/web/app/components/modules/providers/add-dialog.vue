@@ -2,7 +2,7 @@
   <UModal
     v-model:open="open"
     :description="$t('providers.connectDescription')"
-    :dismissible="!submitting"
+    :dismissible="!busy"
     :title="$t('providers.addDialogTitle')"
   >
     <template #body>
@@ -55,9 +55,9 @@
         <div class="flex justify-end border-t border-default pt-4">
           <UButton
             type="submit"
-            :disabled="submitting"
+            :disabled="busy"
             :label="usePat ? $t('providers.addAndVerify') : $t('providers.connect')"
-            :loading="submitting"
+            :loading="busy"
           />
         </div>
       </UForm>
@@ -82,6 +82,7 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const api = useFlowpeekApi();
 const submitting = ref(false);
+const loadingAuthenticationOptions = ref(false);
 const connectionError = ref(false);
 const oauthProviderTypes = ref<ProviderType[]>([]);
 const authenticationMethod = ref<AuthenticationMethod>('PAT');
@@ -91,6 +92,7 @@ const oauthAvailable = computed(() => oauthProviderTypes.value.includes(form.pro
 const usePat = computed(() => !oauthAvailable.value || authenticationMethod.value === 'PAT');
 const requiresBaseUrl = computed(() => form.providerType === 'GITEA');
 const providerFormSchema = computed(() => (usePat.value ? providerPatFormSchema : providerOAuthFormSchema));
+const busy = computed(() => submitting.value || loadingAuthenticationOptions.value);
 const authenticationOptions = computed(() => [
   { icon: 'i-tabler-key', label: t('providers.authenticationOAuth'), value: 'OAUTH' },
   { icon: 'i-tabler-password', label: t('providers.authenticationPat'), value: 'PAT' },
@@ -102,6 +104,7 @@ watch(open, async (isOpen) => {
   Object.assign(form, { accessToken: '', baseUrl: '', displayName: '', providerType: 'GITHUB' });
   connectionError.value = false;
   resetDirtyState();
+  loadingAuthenticationOptions.value = true;
 
   try {
     const { data } = await api.providerAccounts.authenticationOptions();
@@ -110,6 +113,8 @@ watch(open, async (isOpen) => {
   } catch {
     oauthProviderTypes.value = [];
     authenticationMethod.value = 'PAT';
+  } finally {
+    loadingAuthenticationOptions.value = false;
   }
 });
 

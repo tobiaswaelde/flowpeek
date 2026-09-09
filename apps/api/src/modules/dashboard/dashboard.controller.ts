@@ -25,13 +25,31 @@ export class DashboardController {
   constructor(private readonly dashboard: DashboardService) {}
 
   /**
-   * List visible workflows whose latest terminal run failed.
+   * List visible runs that are blocked on provider approval.
+   *
+   * @param request - Authenticated request user.
+   * @returns Approval-gated workflow runs ordered newest first.
+   */
+  @Get('awaiting-approval')
+  @ApiOperation({ summary: 'List workflow runs awaiting provider approval' })
+  @ApiOkResponse({
+    description: 'Visible workflow runs awaiting approval.',
+    type: DashboardWorkflowRunDto,
+    isArray: true,
+  })
+  async getAwaitingApproval(@Req() request: AuthenticatedRequest): Promise<DashboardWorkflowRunDto[]> {
+    const workflowRuns = await this.dashboard.getAwaitingApproval(request.user);
+    return workflowRuns.map(DashboardWorkflowRunDto.fromModel);
+  }
+
+  /**
+   * List visible workflows whose latest provider run failed.
    *
    * @param request - Authenticated request user.
    * @returns Current failed workflow runs, one per repository and workflow name.
    */
   @Get('failures')
-  @ApiOperation({ summary: 'List workflows whose latest terminal run failed' })
+  @ApiOperation({ summary: 'List workflows whose latest provider run failed' })
   @ApiOkResponse({ description: 'Visible latest failed workflow runs.', type: DashboardWorkflowRunDto, isArray: true })
   async getLatestFailures(@Req() request: AuthenticatedRequest): Promise<DashboardWorkflowRunDto[]> {
     const failures = await this.dashboard.getLatestFailures(request.user);

@@ -13,7 +13,7 @@ import type {
   VerifiedWebhook,
 } from '../provider-adapter.js';
 import { PROVIDER_FETCH } from '../provider-adapter.js';
-import { normalizeWorkflowRunStatus } from '../workflow-status.js';
+import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
@@ -33,6 +33,7 @@ interface GitHubWorkflowRunResponse {
   updated_at: string;
   status: string;
   conclusion: string | null;
+  pull_requests?: { number: number }[];
 }
 
 /** GitHub Actions adapter that only reads repositories, runs, and webhook metadata. */
@@ -68,7 +69,7 @@ export class GitHubActionsAdapter implements ProviderAdapter {
       context,
       `/repos/${repository.owner}/${repository.name}/actions/runs?${query}`,
     );
-    return response.workflow_runs.map((run) => this.toWorkflowRun(run));
+    return response.workflow_runs.map((run) => this.toWorkflowRun(run, repository));
   }
 
   async getWorkflowRun(
@@ -82,7 +83,7 @@ export class GitHubActionsAdapter implements ProviderAdapter {
     );
     if (response.status === 404) return null;
     if (!response.ok) throw new Error(`GitHub API request failed with status ${response.status}.`);
-    return this.toWorkflowRun((await response.json()) as GitHubWorkflowRunResponse);
+    return this.toWorkflowRun((await response.json()) as GitHubWorkflowRunResponse, repository);
   }
 
   async verifyWebhook(request: ProviderWebhookRequest): Promise<VerifiedWebhook | null> {
@@ -112,10 +113,11 @@ export class GitHubActionsAdapter implements ProviderAdapter {
   private url(context: ProviderAccountContext, path: string): string {
     return `${(context.baseUrl ?? 'https://api.github.com').replace(/\/$/, '')}${path}`;
   }
-  private toWorkflowRun(run: GitHubWorkflowRunResponse): ProviderWorkflowRun {
+  private toWorkflowRun(run: GitHubWorkflowRunResponse, repository: ProviderRepositoryReference): ProviderWorkflowRun {
     const startedAt = run.run_started_at ? new Date(run.run_started_at) : null;
     const completedAt = run.status === 'completed' ? new Date(run.updated_at) : null;
     return {
+      awaitingApproval: isWorkflowRunAwaitingApproval('GITHUB', run.status, run.conclusion),
       providerRunId: String(run.id),
       workflowName: run.name,
       url: run.html_url,
@@ -125,6 +127,13 @@ export class GitHubActionsAdapter implements ProviderAdapter {
       durationMs: startedAt && completedAt ? completedAt.getTime() - startedAt.getTime() : null,
       status: normalizeWorkflowRunStatus('GITHUB', run.status, run.conclusion),
       rawStatus: run.conclusion ?? run.status,
+      reviewUrl: this.githubPullRequestUrl(run, repository),
     };
+  }
+
+  private githubPullRequestUrl(run: GitHubWorkflowRunResponse, repository: ProviderRepositoryReference): string | null {
+    const pullRequestNumber = run.pull_requests?.[0]?.number;
+    if (!pullRequestNumber) return null;
+    return `${new URL(run.html_url).origin}/${repository.owner}/${repository.name}/pull/${pullRequestNumber}`;
   }
 }

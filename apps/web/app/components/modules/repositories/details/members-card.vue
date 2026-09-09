@@ -45,6 +45,8 @@
         <USelect
           class="w-44"
           :items="membershipRoleOptions"
+          :disabled="isMembershipPending(row.original.userId)"
+          :loading="isPending(memberActionKey('role', row.original.userId))"
           :model-value="row.original.role"
           @update:model-value="updateMemberRole(row.original, $event as RepositoryRole)"
         />
@@ -59,6 +61,8 @@
             icon="i-lucide-user-minus"
             variant="ghost"
             :aria-label="$t('repositoryDetails.removeMember')"
+            :disabled="isMembershipPending(row.original.userId)"
+            :loading="isPending(memberActionKey('remove', row.original.userId))"
             @click="removeMember(row.original.userId)"
           />
         </div>
@@ -71,6 +75,7 @@
 import { computed, onMounted, reactive, ref } from 'vue';
 
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { usePendingActions } from '~/composables/use-pending-actions';
 import type { RepositoryMembership, RepositoryRole, User } from '~/types/api/resources';
 
 const props = defineProps<{
@@ -79,6 +84,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const api = useFlowpeekApi();
+const { isPending, run: runPendingAction } = usePendingActions();
 const memberships = ref<RepositoryMembership[]>([]);
 const users = ref<User[]>([]);
 const loading = ref(true);
@@ -100,6 +106,16 @@ const columns = computed(() => [
   { accessorKey: 'role', header: t('repositoryDetails.role') },
   { id: 'actions', header: t('repositoryDetails.actions') },
 ]);
+
+/** Build a unique pending-state key for one membership action. */
+function memberActionKey(action: 'remove' | 'role', userId: string): string {
+  return `${action}:${userId}`;
+}
+
+/** Return whether a membership mutation is active for a user row. */
+function isMembershipPending(userId: string): boolean {
+  return isPending(memberActionKey('remove', userId)) || isPending(memberActionKey('role', userId));
+}
 
 /** Load the user pool and explicit access records required by the member table. */
 async function load(): Promise<void> {
@@ -141,24 +157,28 @@ async function addMember(): Promise<void> {
 
 /** Change a repository member's explicit access role. */
 async function updateMemberRole(membership: RepositoryMembership, role: RepositoryRole): Promise<void> {
-  error.value = false;
-  try {
-    const { data } = await api.repositories.upsertMembership(props.repositoryId, membership.userId, { role });
-    memberships.value = memberships.value.map((current) => (current.id === membership.id ? data : current));
-  } catch {
-    error.value = true;
-  }
+  await runPendingAction(memberActionKey('role', membership.userId), async () => {
+    error.value = false;
+    try {
+      const { data } = await api.repositories.upsertMembership(props.repositoryId, membership.userId, { role });
+      memberships.value = memberships.value.map((current) => (current.id === membership.id ? data : current));
+    } catch {
+      error.value = true;
+    }
+  });
 }
 
 /** Revoke explicit repository access from one user. */
 async function removeMember(userId: string): Promise<void> {
-  error.value = false;
-  try {
-    await api.repositories.deleteMembership(props.repositoryId, userId);
-    memberships.value = memberships.value.filter((membership) => membership.userId !== userId);
-  } catch {
-    error.value = true;
-  }
+  await runPendingAction(memberActionKey('remove', userId), async () => {
+    error.value = false;
+    try {
+      await api.repositories.deleteMembership(props.repositoryId, userId);
+      memberships.value = memberships.value.filter((membership) => membership.userId !== userId);
+    } catch {
+      error.value = true;
+    }
+  });
 }
 
 onMounted(() => void load());

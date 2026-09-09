@@ -58,7 +58,8 @@
               icon="i-lucide-trash-2"
               variant="ghost"
               :aria-label="$t('users.delete')"
-              :disabled="row.original.id === auth.user?.id"
+              :disabled="row.original.id === auth.user?.id || isPending(row.original.id)"
+              :loading="isPending(row.original.id)"
               @click="remove(row.original.id)"
             />
           </div>
@@ -81,6 +82,8 @@ import { computed, onMounted } from 'vue';
 import { FilterFieldType, type FilterField, type SortingField } from '@querry-kit/nuxt-ui/types';
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
 import { useTable } from '~/composables/api/table';
+import { useDateTime } from '~/composables/use-date-time';
+import { usePendingActions } from '~/composables/use-pending-actions';
 import { useAuthStore } from '~/store/auth';
 import type { User } from '~/types/api/resources';
 import type { ColumnDefinition } from '~/types/table';
@@ -92,8 +95,10 @@ type UserTableColumn = ColumnDefinition<UserRow> & { header: string; id: string 
 definePageMeta({ fullWidth: true });
 
 const { t } = useI18n();
+const { formatDateTime } = useDateTime();
 const api = useFlowpeekApi();
 const auth = useAuthStore();
+const { isPending, run: runPendingAction } = usePendingActions();
 const userRoleOptions = computed<Array<{ label: string; value: UserRole }>>(() =>
   (['SYSTEM_ADMIN', 'MANAGER', 'VIEWER'] as UserRole[]).map((role) => ({ label: t(`roles.${role}`), value: role })),
 );
@@ -147,13 +152,15 @@ const columnPinning = computed({
 
 /** Format an account timestamp in the active interface locale. */
 function formatTimestamp(timestamp: string): string {
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(timestamp));
+  return formatDateTime(timestamp);
 }
 
 /** Delete a system user and refresh the current Query Kit page. */
 async function remove(id: string): Promise<void> {
-  await api.users.delete(id);
-  await userTable.refresh();
+  await runPendingAction(id, async () => {
+    await api.users.delete(id);
+    await userTable.refresh();
+  });
 }
 
 onMounted(() => void userTable.initialize());

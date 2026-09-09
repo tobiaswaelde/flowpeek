@@ -78,6 +78,7 @@ const navigationItems = computed<NavigationMenuItem[]>(() => {
       children: [
         { icon: 'i-lucide-plug-zap', label: t('layout.providers'), to: '/admin/providers' },
         { icon: 'i-lucide-git-fork', label: t('layout.repositories'), to: '/admin/repositories' },
+        { icon: 'i-lucide-settings', label: t('layout.settings'), to: '/admin/settings' },
         { icon: 'i-lucide-users', label: t('layout.users'), to: '/admin/users' },
       ],
       defaultOpen: true,

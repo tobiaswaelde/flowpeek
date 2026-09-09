@@ -4,6 +4,7 @@
     :description="$t('repositories.addDescription')"
     :dismissible="!addingRepository"
     :title="$t('repositories.addDialogTitle')"
+    :ui="{ content: 'sm:max-w-3xl' }"
   >
     <template #body>
       <UAlert
@@ -54,24 +55,18 @@
               variant="subtle"
               :title="$t('repositories.repositoryLoadError')"
             />
-            <UFormField :label="$t('repositories.repository')" required>
-              <USelectMenu
-                v-model="selectedProviderRepositoryId"
-                class="w-full"
-                value-key="value"
-                :disabled="!selectedProviderAccountId"
-                :items="providerRepositoryOptions"
-                :loading="repositoriesLoading"
-                :placeholder="$t('repositories.repositoryPlaceholder')"
-                searchable
-              />
-            </UFormField>
+            <ModulesRepositoriesRepositorySelectionTable
+              :key="selectedProviderAccountId"
+              v-model:selected-repository-ids="selectedProviderRepositoryIds"
+              :loading="repositoriesLoading"
+              :repositories="availableRepositories"
+            />
             <UAlert
               v-if="
                 !repositoriesLoading &&
                 !repositoriesError &&
                 selectedProviderAccountId &&
-                providerRepositoryOptions.length === 0
+                selectableRepositories.length === 0
               "
               color="info"
               :title="$t('repositories.noAvailableRepositories')"
@@ -94,16 +89,17 @@
           color="neutral"
           trailing-icon="i-lucide-arrow-right"
           variant="soft"
-          :disabled="!selectedProviderAccountId || repositoriesLoading"
+          :disabled="!selectedProviderAccountId || providerAccountsLoading || repositoriesLoading"
           :label="$t('repositories.next')"
+          :loading="providerAccountsLoading || repositoriesLoading"
           @click="stepper?.next()"
         />
         <UButton
           v-else
-          :disabled="!selectedProviderRepositoryId || addingRepository"
-          :label="$t('repositories.add')"
+          :disabled="selectedProviderRepositoryIds.length === 0 || addingRepository"
+          :label="$t('repositories.addSelected', { count: selectedProviderRepositoryIds.length })"
           :loading="addingRepository"
-          @click="addRepository"
+          @click="addRepositories"
         />
       </div>
     </template>
@@ -134,7 +130,7 @@ const repositoriesError = ref(false);
 const addingRepository = ref(false);
 const addingRepositoryError = ref(false);
 const selectedProviderAccountId = ref<string>();
-const selectedProviderRepositoryId = ref<string>();
+const selectedProviderRepositoryIds = ref<string[]>([]);
 const stepper = useTemplateRef('stepper');
 const stepperItems = computed(() => [
   { icon: 'i-lucide-plug-zap', slot: 'provider', title: t('repositories.addSteps.provider') },
@@ -146,23 +142,14 @@ const providerOptions = computed(() =>
     value: account.id,
   })),
 );
-const providerRepositoryOptions = computed(() =>
-  availableRepositories.value.map((repository) => ({
-    description: repository.url,
-    disabled: repository.tracked,
-    label: repository.tracked
-      ? `${repository.owner}/${repository.name} (${t('repositories.alreadyTracked')})`
-      : `${repository.owner}/${repository.name}`,
-    value: repository.providerRepositoryId,
-  })),
-);
+const selectableRepositories = computed(() => availableRepositories.value.filter((repository) => !repository.tracked));
 
 watch(open, (isOpen) => {
   if (isOpen) void initialize();
 });
 
 watch(selectedProviderAccountId, (providerAccountId) => {
-  selectedProviderRepositoryId.value = undefined;
+  selectedProviderRepositoryIds.value = [];
   availableRepositories.value = [];
   repositoriesError.value = false;
   if (providerAccountId) void loadAvailableRepositories(providerAccountId);
@@ -175,7 +162,7 @@ async function initialize(): Promise<void> {
   providerAccountsError.value = false;
   repositoriesError.value = false;
   selectedProviderAccountId.value = undefined;
-  selectedProviderRepositoryId.value = undefined;
+  selectedProviderRepositoryIds.value = [];
   providerAccountsLoading.value = true;
 
   try {
@@ -203,18 +190,36 @@ async function loadAvailableRepositories(providerAccountId: string): Promise<voi
   }
 }
 
-/** Add the selected provider repository and notify the route to refresh its table. */
-async function addRepository(): Promise<void> {
-  if (!selectedProviderAccountId.value || !selectedProviderRepositoryId.value) return;
+/** Add all selected provider repositories and retain any failed selections for retry. */
+async function addRepositories(): Promise<void> {
+  const providerAccountId = selectedProviderAccountId.value;
+  const repositoryIds = [...selectedProviderRepositoryIds.value];
+  if (!providerAccountId || repositoryIds.length === 0) return;
 
   addingRepository.value = true;
   addingRepositoryError.value = false;
   try {
-    await api.providerAccounts.addRepository(selectedProviderAccountId.value, selectedProviderRepositoryId.value);
+    const results = await Promise.allSettled(
+      repositoryIds.map((providerRepositoryId) =>
+        api.providerAccounts.addRepository(providerAccountId, providerRepositoryId),
+      ),
+    );
+    const successfulIds = new Set(repositoryIds.filter((_, index) => results[index]?.status === 'fulfilled'));
+    const failedIds = repositoryIds.filter((_, index) => results[index]?.status === 'rejected');
+
+    if (successfulIds.size > 0) {
+      availableRepositories.value = availableRepositories.value.map((repository) =>
+        successfulIds.has(repository.providerRepositoryId) ? { ...repository, tracked: true } : repository,
+      );
+      emit('created');
+    }
+    if (failedIds.length > 0) {
+      selectedProviderRepositoryIds.value = failedIds;
+      addingRepositoryError.value = true;
+      return;
+    }
+
     open.value = false;
-    emit('created');
-  } catch {
-    addingRepositoryError.value = true;
   } finally {
     addingRepository.value = false;
   }

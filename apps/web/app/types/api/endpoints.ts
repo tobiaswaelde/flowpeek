@@ -22,6 +22,7 @@ export const apiEndpoints = {
     signOut: '/auth/signout',
   },
   dashboard: {
+    awaitingApproval: '/dashboard/awaiting-approval',
     failures: '/dashboard/failures',
     latestRuns: '/dashboard/latest-runs',
     repositories: '/dashboard/repositories',
@@ -38,6 +39,7 @@ export const apiEndpoints = {
     base: '/provider-accounts',
   },
   repositories: '/repositories',
+  settings: '/settings',
   users: '/users',
   workflowRuns: 'workflow-runs',
 } as const;

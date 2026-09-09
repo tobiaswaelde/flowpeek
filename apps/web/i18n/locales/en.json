@@ -10,12 +10,27 @@
     "usernamePlaceholder": "Enter your username",
     "validationError": "Enter your username and password to continue."
   },
+  "awaitingApproval": {
+    "approveInProvider": "Approve in provider",
+    "count": "{count} workflows awaiting approval",
+    "description": "Review workflows that require a manual approval before they can continue.",
+    "empty": "No workflows are currently awaiting approval.",
+    "loadError": "Workflows awaiting approval could not be loaded.",
+    "openReview": "Open pull request",
+    "providerApprovalDescription": "Flowpeek keeps provider connections read-only. Use the provider action to approve the workflow, or open its pull request for more context.",
+    "providerApprovalTitle": "Approval remains with the provider",
+    "searchPlaceholder": "Search workflows or repositories",
+    "title": "Awaiting approval",
+    "waitingSince": "Waiting since"
+  },
   "forms": {
     "unsavedChanges": "You have unsaved changes. Leave this page anyway?"
   },
   "dashboard": {
     "activeRuns": "Active runs",
     "activeRunsContext": "{running} running · {queued} queued",
+    "awaitingApproval": "Awaiting approval",
+    "awaitingApprovalContext": "Manual action is required",
     "chartScaleHint": "Separate scales keep rare failures visible.",
     "completedDurationContext": "Across completed runs",
     "completedRuns": "{count} completed runs",
@@ -66,6 +81,7 @@
     "trendBucketLabel": "{date}: {successes} successful, {errors} failed",
     "trendChartLabel": "Workflow trend with {successes} successful and {errors} failed runs.",
     "trendDescription": "Successful runs use the left scale; failed runs use the right scale.",
+    "viewAwaitingApproval": "View workflows",
     "workflow": "Workflow"
   },
   "layout": {
@@ -78,6 +94,7 @@
     "providers": "Provider accounts",
     "readOnlyStatus": "Read-only workflow status monitoring",
     "repositories": "Repositories",
+    "settings": "Settings",
     "search": "Search",
     "searchNavigation": "Navigation",
     "searchNoResults": "No matching pages or workflow runs found.",
@@ -91,6 +108,28 @@
     "themeSystem": "System",
     "users": "Users",
     "workflowRuns": "Workflow runs"
+  },
+  "settings": {
+    "dateTimeFormat": "Default date and time format",
+    "dateTimeFormatHelp": "Controls how timestamps are displayed throughout Flowpeek. All options use a 24-hour clock.",
+    "dateTimeFormats": {
+      "ISO": "ISO style",
+      "LOCALE_MEDIUM": "Localized, medium",
+      "LOCALE_SHORT": "Localized, short"
+    },
+    "days": "days",
+    "description": "Configure defaults that apply throughout Flowpeek.",
+    "general": "Global defaults",
+    "generalDescription": "These settings apply to every user and repository without an override.",
+    "loadError": "Global settings could not be loaded.",
+    "preview": "Preview",
+    "retention": "Workflow run retention",
+    "retentionHelp": "Completed workflow runs are deleted after this many days unless a repository has its own retention period.",
+    "retry": "Retry",
+    "save": "Save settings",
+    "saveError": "Global settings could not be saved.",
+    "saved": "Global settings saved.",
+    "title": "Settings"
   },
   "roles": {
     "MANAGER": "Repository manager",
@@ -139,12 +178,7 @@
     "tableDescription": "Configured read-only provider connections",
     "type": "Provider type",
     "typePlaceholder": "Select a provider",
-    "types": {
-      "FORGEJO": "Forgejo",
-      "GITEA": "Gitea",
-      "GITHUB": "GitHub",
-      "GITLAB": "GitLab"
-    }
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
   },
   "querrykit": {
     "table": {
@@ -164,12 +198,8 @@
         "title": "Table options",
         "visibility": "Toggle column visibility"
       },
-      "pagination": {
-        "summary": "Showing {start}–{end} of {total}"
-      },
-      "search": {
-        "placeholder": "Search"
-      },
+      "pagination": { "summary": "Showing {start}–{end} of {total}" },
+      "search": { "placeholder": "Search" },
       "sorting": {
         "add": "Add sort",
         "clear": "Clear sorting",
@@ -179,6 +209,18 @@
         "toggle": "Toggle sort direction"
       }
     }
+  },
+  "systemStatus": {
+    "activity": {
+      "FETCHING_WORKFLOWS": "Fetching workflows from provider",
+      "IDLE": "API idle",
+      "LOADING_REPOSITORIES": "Loading repositories",
+      "PROCESSING_WORKFLOWS": "Processing workflows"
+    },
+    "connection": { "CONNECTED": "Live", "CONNECTING": "Connecting", "DISCONNECTED": "Offline" },
+    "label": "API status",
+    "progress": "{current}/{total}",
+    "runningWorkflows": "Running: {count}"
   },
   "users": {
     "columns": {
@@ -236,14 +278,13 @@
   },
   "repositories": {
     "add": "Add repository",
-    "addDescription": "Choose an enabled provider account and one repository to track.",
-    "addDialogTitle": "Add repository",
-    "addError": "The repository could not be added. Refresh the provider list and try again.",
-    "addSteps": {
-      "provider": "Provider",
-      "repository": "Repository"
-    },
+    "addDescription": "Choose an enabled provider account and one or more repositories to track.",
+    "addDialogTitle": "Add repositories",
+    "addError": "One or more repositories could not be added. Review the remaining selection and try again.",
+    "addSelected": "Add selected ({count})",
+    "addSteps": { "provider": "Provider", "repository": "Repository" },
     "alreadyTracked": "Already tracked",
+    "available": "Available",
     "back": "Back",
     "default": "default",
     "description": "Tracked repository workflow settings.",
@@ -255,7 +296,8 @@
       "name": "Repository",
       "owner": "Owner",
       "retention": "Retention",
-      "status": "Status"
+      "status": "Status",
+      "workflowRuns": "Workflow runs"
     },
     "empty": "No repositories are tracked.",
     "enabled": "Enabled",
@@ -263,17 +305,22 @@
     "loadError": "Repositories could not be loaded.",
     "neverSynced": "Never",
     "next": "Next",
-    "noAvailableRepositories": "Every repository from this provider is already tracked.",
+    "noAvailableRepositories": "No repositories from this provider are available to add.",
     "noEnabledProviders": "Add and enable a provider account before adding a repository.",
+    "noMatchingRepositories": "No matching repositories found.",
     "provider": "Provider account",
     "providerDescription": "Select the provider account whose repositories you want to track.",
     "providerLoadError": "Provider accounts could not be loaded.",
     "providerPlaceholder": "Select a provider account",
     "repository": "Repository",
-    "repositoryDescription": "Choose a repository from the provider's current read-only repository list.",
+    "repositoryDescription": "Search and select one or more repositories from the provider's current read-only repository list.",
     "repositoryLoadError": "Repositories from this provider could not be loaded.",
     "repositoryPlaceholder": "Select a repository",
+    "repositorySearchPlaceholder": "Search repositories",
     "retention": "Retention",
+    "selectAllRepositories": "Select all visible repositories",
+    "selectRepository": "Select {repository}",
+    "selectedCount": "Selected: {count}",
     "title": "Repositories"
   },
   "repositoryDetails": {

@@ -47,9 +47,11 @@
 </template>
 
 <script setup lang="ts">
+import { useDateTime } from '~/composables/use-date-time';
 import type { DashboardWorkflowRun } from '~/types/api/resources';
 
 const { locale, t } = useI18n();
+const { formatDateTime } = useDateTime();
 
 defineProps<{
   loading: boolean;
@@ -72,10 +74,6 @@ function formatDuration(durationMs: number | null): string {
 /** Format an API timestamp in the user's browser locale. */
 function formatTimestamp(timestamp: string | null): string {
   if (!timestamp) return t('workflowRuns.notAvailable');
-  return new Intl.DateTimeFormat(locale.value, {
-    dateStyle: 'medium',
-    hourCycle: 'h23',
-    timeStyle: 'short',
-  }).format(new Date(timestamp));
+  return formatDateTime(timestamp);
 }
 </script>

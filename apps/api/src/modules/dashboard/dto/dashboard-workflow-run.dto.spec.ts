@@ -4,6 +4,7 @@ import { DashboardWorkflowRunDto } from './dashboard-workflow-run.dto.js';
 describe('DashboardWorkflowRunDto', () => {
   it('includes workflow, repository, and provider display context without credentials', () => {
     const dto = DashboardWorkflowRunDto.fromModel({
+      awaitingApproval: true,
       completedAt: new Date('2026-08-26T10:01:00.000Z'),
       createdAt: new Date('2026-08-26T10:00:00.000Z'),
       durationMs: 60_000,
@@ -11,6 +12,7 @@ describe('DashboardWorkflowRunDto', () => {
       providerCreatedAt: new Date('2026-08-26T10:00:00.000Z'),
       providerRunId: 'provider-run-id',
       rawStatus: 'failure',
+      reviewUrl: 'https://github.com/flowpeek/flowpeek/pull/12',
       repository: {
         id: 'repository-id',
         name: 'flowpeek',
@@ -33,12 +35,14 @@ describe('DashboardWorkflowRunDto', () => {
     } as WorkflowRun & { repository: Repository & { providerAccount: ProviderAccount } });
 
     expect(dto).toEqual({
+      awaitingApproval: true,
       completedAt: new Date('2026-08-26T10:01:00.000Z'),
       durationMs: 60_000,
       id: 'run-id',
       provider: { displayName: 'Flowpeek GitHub', id: 'provider-id', providerType: 'GITHUB' },
       providerCreatedAt: new Date('2026-08-26T10:00:00.000Z'),
       providerRunId: 'provider-run-id',
+      reviewUrl: 'https://github.com/flowpeek/flowpeek/pull/12',
       repository: {
         id: 'repository-id',
         name: 'flowpeek',

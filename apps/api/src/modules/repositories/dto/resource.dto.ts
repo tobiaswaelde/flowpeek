@@ -66,9 +66,11 @@ export class RepositoryDto {
   workflowRunRetentionDays!: number | null;
   @ApiProperty({ format: 'uuid' })
   providerAccountId!: string;
+  @ApiPropertyOptional({ minimum: 0 })
+  workflowRunCount?: number;
 
   /** Convert a tracked repository to a permission-filtered API response. */
-  static fromModel(model: Repository, ability?: AppAbility): RepositoryDto {
+  static fromModel(model: RepositoryResourceModel, ability?: AppAbility): RepositoryDto {
     return filterCaslFields(
       {
         id: model.id,
@@ -80,6 +82,7 @@ export class RepositoryDto {
         lastSyncAt: model.lastSyncAt,
         workflowRunRetentionDays: model.workflowRunRetentionDays,
         providerAccountId: model.providerAccountId,
+        ...(model._count ? { workflowRunCount: model._count.workflowRuns } : {}),
       },
       CaslSubject.Repository,
       ability,
@@ -87,6 +90,11 @@ export class RepositoryDto {
     );
   }
 }
+
+/** Repository model with an optional workflow-run aggregate used by list endpoints. */
+export type RepositoryResourceModel = Repository & {
+  _count?: { workflowRuns: number };
+};
 
 /** Public workflow-run representation used by dashboard and history endpoints. */
 export class WorkflowRunDto {
@@ -110,9 +118,15 @@ export class WorkflowRunDto {
   status!: WorkflowRun['status'];
   @ApiProperty({ format: 'uuid' })
   repositoryId!: string;
+  @ApiProperty()
+  repositoryName!: string;
+  @ApiProperty()
+  repositoryOwner!: string;
+  @ApiProperty({ enum: ['GITHUB', 'GITLAB', 'FORGEJO', 'GITEA'] })
+  providerType!: ProviderAccount['providerType'];
 
   /** Convert a normalized provider run to a permission-filtered API response. */
-  static fromModel(model: WorkflowRun, ability?: AppAbility): WorkflowRunDto {
+  static fromModel(model: WorkflowRunResourceModel, ability?: AppAbility): WorkflowRunDto {
     return filterCaslFields(
       {
         id: model.id,
@@ -125,6 +139,9 @@ export class WorkflowRunDto {
         durationMs: model.durationMs,
         status: model.status,
         repositoryId: model.repositoryId,
+        repositoryName: model.repository.name,
+        repositoryOwner: model.repository.owner,
+        providerType: model.repository.providerAccount.providerType,
       },
       CaslSubject.WorkflowRun,
       ability,
@@ -132,6 +149,13 @@ export class WorkflowRunDto {
     );
   }
 }
+
+/** Workflow run with the minimal repository and provider context exposed by the resource endpoint. */
+export type WorkflowRunResourceModel = WorkflowRun & {
+  repository: Pick<Repository, 'name' | 'owner'> & {
+    providerAccount: Pick<ProviderAccount, 'providerType'>;
+  };
+};
 
 /** Public workflow filter representation. */
 export class WorkflowFilterDto {

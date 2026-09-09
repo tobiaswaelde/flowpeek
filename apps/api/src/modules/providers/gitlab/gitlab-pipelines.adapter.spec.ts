@@ -54,4 +54,37 @@ describe('GitLabPipelinesAdapter', () => {
       }),
     ).resolves.toEqual({ event: 'Pipeline Hook', providerRepositoryId: '42' });
   });
+
+  it('maps manual merge-request pipelines without issuing a provider write', async () => {
+    const fetchFn = jest.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify([
+          {
+            created_at: '2026-09-09T08:00:00Z',
+            duration: null,
+            finished_at: null,
+            id: 8,
+            merge_request: { iid: 12 },
+            ref: 'feature/approval',
+            started_at: null,
+            status: 'manual',
+            updated_at: '2026-09-09T08:00:00Z',
+            web_url: 'https://gitlab.example.test/group/flowpeek/-/pipelines/8',
+          },
+        ]),
+      ),
+    );
+    const adapter = new GitLabPipelinesAdapter(fetchFn);
+
+    await expect(
+      adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'group', name: 'flowpeek' }),
+    ).resolves.toMatchObject([
+      {
+        awaitingApproval: true,
+        reviewUrl: 'https://gitlab.example.test/group/flowpeek/-/merge_requests/12',
+        status: 'QUEUED',
+      },
+    ]);
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+  });
 });

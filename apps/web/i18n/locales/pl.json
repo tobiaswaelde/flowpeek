@@ -10,12 +10,25 @@
     "usernamePlaceholder": "Wpisz nazwę użytkownika",
     "validationError": "Wpisz nazwę użytkownika i hasło, aby kontynuować."
   },
-  "forms": {
-    "unsavedChanges": "Masz niezapisane zmiany. Czy mimo to chcesz opuścić tę stronę?"
+  "awaitingApproval": {
+    "approveInProvider": "Zatwierdź u dostawcy",
+    "count": "Przepływy oczekujące na zatwierdzenie: {count}",
+    "description": "Sprawdź przepływy pracy, które wymagają ręcznego zatwierdzenia, aby kontynuować.",
+    "empty": "Żaden przepływ pracy nie oczekuje obecnie na zatwierdzenie.",
+    "loadError": "Nie udało się wczytać przepływów oczekujących na zatwierdzenie.",
+    "openReview": "Otwórz pull request",
+    "providerApprovalDescription": "Połączenia Flowpeek z dostawcami są tylko do odczytu. Zatwierdź przepływ u dostawcy lub otwórz pull request, aby zobaczyć więcej informacji.",
+    "providerApprovalTitle": "Zatwierdzanie odbywa się u dostawcy",
+    "searchPlaceholder": "Szukaj przepływów lub repozytoriów",
+    "title": "Oczekuje na zatwierdzenie",
+    "waitingSince": "Oczekuje od"
   },
+  "forms": { "unsavedChanges": "Masz niezapisane zmiany. Czy mimo to chcesz opuścić tę stronę?" },
   "dashboard": {
     "activeRuns": "Aktywne uruchomienia",
     "activeRunsContext": "{running} w toku · {queued} w kolejce",
+    "awaitingApproval": "Oczekuje na zatwierdzenie",
+    "awaitingApprovalContext": "Wymagane jest działanie ręczne",
     "chartScaleHint": "Oddzielne skale pokazują nawet rzadkie błędy.",
     "completedDurationContext": "Dla ukończonych uruchomień",
     "completedRuns": "Ukończone uruchomienia: {count}",
@@ -66,6 +79,7 @@
     "trendBucketLabel": "{date}: {successes} udanych, {errors} nieudanych",
     "trendChartLabel": "Trend z {successes} udanymi i {errors} nieudanymi uruchomieniami.",
     "trendDescription": "Udane uruchomienia korzystają z lewej skali, błędy z prawej.",
+    "viewAwaitingApproval": "Pokaż przepływy",
     "workflow": "Przepływ pracy"
   },
   "layout": {
@@ -78,6 +92,7 @@
     "providers": "Konta dostawców",
     "readOnlyStatus": "Monitorowanie stanu przepływów pracy tylko do odczytu",
     "repositories": "Repozytoria",
+    "settings": "Ustawienia",
     "search": "Szukaj",
     "searchNavigation": "Nawigacja",
     "searchNoResults": "Nie znaleziono pasujących stron ani uruchomień przepływów pracy.",
@@ -92,11 +107,29 @@
     "users": "Użytkownicy",
     "workflowRuns": "Wykonania workflow"
   },
-  "roles": {
-    "MANAGER": "Menedżer repozytoriów",
-    "SYSTEM_ADMIN": "Administrator systemu",
-    "VIEWER": "Obserwator"
+  "settings": {
+    "dateTimeFormat": "Domyślny format daty i czasu",
+    "dateTimeFormatHelp": "Określa sposób wyświetlania znaczników czasu w Flowpeek. Wszystkie opcje używają zegara 24-godzinnego.",
+    "dateTimeFormats": {
+      "ISO": "Styl ISO",
+      "LOCALE_MEDIUM": "Lokalny, średni",
+      "LOCALE_SHORT": "Lokalny, krótki"
+    },
+    "days": "dni",
+    "description": "Skonfiguruj wartości domyślne obowiązujące w całym Flowpeek.",
+    "general": "Globalne wartości domyślne",
+    "generalDescription": "Te ustawienia dotyczą wszystkich użytkowników i repozytoriów bez własnego nadpisania.",
+    "loadError": "Nie udało się wczytać ustawień globalnych.",
+    "preview": "Podgląd",
+    "retention": "Przechowywanie uruchomień workflow",
+    "retentionHelp": "Ukończone uruchomienia są usuwane po tej liczbie dni, chyba że repozytorium ma własny okres.",
+    "retry": "Spróbuj ponownie",
+    "save": "Zapisz ustawienia",
+    "saveError": "Nie udało się zapisać ustawień globalnych.",
+    "saved": "Zapisano ustawienia globalne.",
+    "title": "Ustawienia"
   },
+  "roles": { "MANAGER": "Menedżer repozytoriów", "SYSTEM_ADMIN": "Administrator systemu", "VIEWER": "Obserwator" },
   "providers": {
     "accessToken": "Osobisty token dostępu",
     "accessTokenPlaceholder": "Wklej token tylko do odczytu",
@@ -139,12 +172,7 @@
     "tableDescription": "Skonfigurowane połączenia dostawców tylko do odczytu",
     "type": "Typ dostawcy",
     "typePlaceholder": "Wybierz dostawcę",
-    "types": {
-      "FORGEJO": "Forgejo",
-      "GITEA": "Gitea",
-      "GITHUB": "GitHub",
-      "GITLAB": "GitLab"
-    }
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
   },
   "querrykit": {
     "table": {
@@ -164,12 +192,8 @@
         "title": "Opcje tabeli",
         "visibility": "Przełącz widoczność kolumny"
       },
-      "pagination": {
-        "summary": "Wyświetlanie {start}–{end} z {total}"
-      },
-      "search": {
-        "placeholder": "Szukaj"
-      },
+      "pagination": { "summary": "Wyświetlanie {start}–{end} z {total}" },
+      "search": { "placeholder": "Szukaj" },
       "sorting": {
         "add": "Dodaj sortowanie",
         "clear": "Wyczyść sortowania",
@@ -179,6 +203,18 @@
         "toggle": "Przełącz kierunek sortowania"
       }
     }
+  },
+  "systemStatus": {
+    "activity": {
+      "FETCHING_WORKFLOWS": "Pobieranie przepływów pracy od dostawcy",
+      "IDLE": "API bezczynne",
+      "LOADING_REPOSITORIES": "Ładowanie repozytoriów",
+      "PROCESSING_WORKFLOWS": "Przetwarzanie przepływów pracy"
+    },
+    "connection": { "CONNECTED": "Na żywo", "CONNECTING": "Łączenie", "DISCONNECTED": "Offline" },
+    "label": "Stan API",
+    "progress": "{current}/{total}",
+    "runningWorkflows": "Uruchomione: {count}"
   },
   "users": {
     "columns": {
@@ -229,21 +265,16 @@
     "rules": "Reguły",
     "title": "Powiadomienia"
   },
-  "notificationDeliveryStatus": {
-    "DELIVERED": "Dostarczono",
-    "FAILED": "Nieudane",
-    "PENDING": "Oczekujące"
-  },
+  "notificationDeliveryStatus": { "DELIVERED": "Dostarczono", "FAILED": "Nieudane", "PENDING": "Oczekujące" },
   "repositories": {
     "add": "Dodaj repozytorium",
-    "addDescription": "Wybierz włączone konto dostawcy i repozytorium do monitorowania.",
-    "addDialogTitle": "Dodaj repozytorium",
-    "addError": "Nie udało się dodać repozytorium. Odśwież listę dostawcy i spróbuj ponownie.",
-    "addSteps": {
-      "provider": "Dostawca",
-      "repository": "Repozytorium"
-    },
+    "addDescription": "Wybierz włączone konto dostawcy oraz jedno lub więcej repozytoriów do monitorowania.",
+    "addDialogTitle": "Dodaj repozytoria",
+    "addError": "Nie udało się dodać co najmniej jednego repozytorium. Sprawdź pozostały wybór i spróbuj ponownie.",
+    "addSelected": "Dodaj wybrane ({count})",
+    "addSteps": { "provider": "Dostawca", "repository": "Repozytorium" },
     "alreadyTracked": "Już monitorowane",
+    "available": "Dostępne",
     "back": "Wstecz",
     "default": "domyślne",
     "description": "Ustawienia przepływów pracy śledzonych repozytoriów.",
@@ -255,7 +286,8 @@
       "name": "Repozytorium",
       "owner": "Właściciel",
       "retention": "Przechowywanie",
-      "status": "Stan"
+      "status": "Stan",
+      "workflowRuns": "Przepływy pracy"
     },
     "empty": "Nie są śledzone żadne repozytoria.",
     "enabled": "Włączone",
@@ -263,17 +295,22 @@
     "loadError": "Nie można było wczytać repozytoriów.",
     "neverSynced": "Nigdy",
     "next": "Dalej",
-    "noAvailableRepositories": "Wszystkie repozytoria tego dostawcy są już monitorowane.",
+    "noAvailableRepositories": "Brak repozytoriów tego dostawcy dostępnych do dodania.",
     "noEnabledProviders": "Dodaj i włącz konto dostawcy przed dodaniem repozytorium.",
+    "noMatchingRepositories": "Nie znaleziono pasujących repozytoriów.",
     "provider": "Konto dostawcy",
     "providerDescription": "Wybierz konto dostawcy, którego repozytoria chcesz monitorować.",
     "providerLoadError": "Nie udało się załadować kont dostawców.",
     "providerPlaceholder": "Wybierz konto dostawcy",
     "repository": "Repozytorium",
-    "repositoryDescription": "Wybierz repozytorium z aktualnej listy dostawcy tylko do odczytu.",
+    "repositoryDescription": "Wyszukaj i wybierz jedno lub więcej repozytoriów z aktualnej listy dostawcy tylko do odczytu.",
     "repositoryLoadError": "Nie udało się załadować repozytoriów tego dostawcy.",
     "repositoryPlaceholder": "Wybierz repozytorium",
+    "repositorySearchPlaceholder": "Szukaj repozytoriów",
     "retention": "Przechowywanie",
+    "selectAllRepositories": "Wybierz wszystkie widoczne repozytoria",
+    "selectRepository": "Wybierz {repository}",
+    "selectedCount": "Wybrano: {count}",
     "title": "Repozytoria"
   },
   "repositoryDetails": {

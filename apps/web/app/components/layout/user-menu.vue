@@ -1,6 +1,13 @@
 <template>
   <UDropdownMenu v-if="auth.user" :items="items" :ui="{ content: 'w-48' }">
-    <UButton class="gap-2" color="neutral" icon="i-tabler-user-circle" variant="ghost">
+    <UButton
+      class="gap-2"
+      color="neutral"
+      icon="i-tabler-user-circle"
+      variant="ghost"
+      :disabled="signingOut"
+      :loading="signingOut"
+    >
       <span class="hidden text-sm sm:inline">{{ auth.user.username }}</span>
     </UButton>
   </UDropdownMenu>
@@ -14,6 +21,7 @@ import { useThemes } from '~/composables/app/themes';
 import { useAuthStore } from '~/store/auth';
 
 const auth = useAuthStore();
+const signingOut = ref(false);
 
 const { t } = useI18n();
 const { dropdownMenuItems: localeItems } = useLocales();
@@ -43,8 +51,15 @@ const items = computed<DropdownMenuItem[]>(() => [
 
 /** End the browser session before returning to the public sign-in route. */
 async function signOut(): Promise<void> {
-  await auth.signOut();
-  await navigateTo('/auth/signin');
+  if (signingOut.value) return;
+
+  signingOut.value = true;
+  try {
+    await auth.signOut();
+    await navigateTo('/auth/signin');
+  } finally {
+    signingOut.value = false;
+  }
 }
 </script>
 

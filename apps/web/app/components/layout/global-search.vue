@@ -105,6 +105,7 @@ const navigationItems = computed<NavigationSearchItem[]>(() => {
     items.push(
       { icon: 'i-tabler-plug-connected', label: t('layout.providers'), to: '/admin/providers' },
       { icon: 'i-tabler-git-fork', label: t('layout.repositories'), to: '/admin/repositories' },
+      { icon: 'i-tabler-settings', label: t('layout.settings'), to: '/admin/settings' },
       { icon: 'i-tabler-users', label: t('layout.users'), to: '/admin/users' },
     );
   }

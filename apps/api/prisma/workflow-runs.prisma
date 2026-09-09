@@ -22,6 +22,8 @@ model WorkflowRun {
   durationMs        Int?
   status            WorkflowRunStatus
   rawStatus         String?           @db.VarChar(255)
+  awaitingApproval  Boolean           @default(false)
+  reviewUrl         String?           @db.VarChar(2048)
 
   repositoryId String     @db.Uuid
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
@@ -30,6 +32,7 @@ model WorkflowRun {
   @@unique([repositoryId, providerRunId])
   @@index([repositoryId, providerCreatedAt])
   @@index([repositoryId, status, completedAt])
+  @@index([awaitingApproval, providerCreatedAt])
   @@index([completedAt])
   @@map("workflow_runs")
 }

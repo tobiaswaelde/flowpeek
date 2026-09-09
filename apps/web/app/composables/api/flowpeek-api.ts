@@ -2,6 +2,7 @@ import type { AxiosResponse } from 'axios';
 
 import { apiEndpoints } from '~/types/api/endpoints';
 import type {
+  ApplicationSettings,
   CreateNotificationChannel,
   CreateNotificationRule,
   CreateProviderAccount,
@@ -21,6 +22,7 @@ import type {
   RepositoryHealth,
   RepositoryMembership,
   StartProviderOAuth,
+  UpdateApplicationSettings,
   UpdateNotificationChannel,
   UpdateNotificationRule,
   UpdateProviderAccount,
@@ -37,6 +39,8 @@ export function useFlowpeekApi() {
 
   return {
     dashboard: {
+      getAwaitingApproval: (): Promise<AxiosResponse<DashboardWorkflowRun[]>> =>
+        api.get(apiEndpoints.dashboard.awaitingApproval),
       getFailures: (): Promise<AxiosResponse<DashboardWorkflowRun[]>> => api.get(apiEndpoints.dashboard.failures),
       getLatestRuns: (): Promise<AxiosResponse<DashboardWorkflowRun[]>> => api.get(apiEndpoints.dashboard.latestRuns),
       getRepositoryHealth: (query: DashboardPeriodQuery): Promise<AxiosResponse<RepositoryHealth[]>> =>
@@ -113,6 +117,11 @@ export function useFlowpeekApi() {
         input: Pick<RepositoryMembership, 'role'>,
       ): Promise<AxiosResponse<RepositoryMembership>> =>
         api.put(`${apiEndpoints.repositories}/${id}/memberships/${userId}`, input),
+    },
+    settings: {
+      get: (): Promise<AxiosResponse<ApplicationSettings>> => api.get(apiEndpoints.settings),
+      update: (input: UpdateApplicationSettings): Promise<AxiosResponse<ApplicationSettings>> =>
+        api.patch(apiEndpoints.settings, input),
     },
     users: {
       delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.users}/${id}`),

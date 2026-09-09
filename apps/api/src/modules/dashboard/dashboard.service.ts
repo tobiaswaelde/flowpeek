@@ -13,7 +13,6 @@ import type {
   WorkflowRunTrendQueryDto,
 } from './dto/workflow-run-trend.dto.js';
 
-const terminalStatuses = ['SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED'] as const;
 const dashboardRunInclude = {
   repository: {
     select: {
@@ -26,6 +25,7 @@ const dashboardRunInclude = {
   },
 } satisfies Prisma.WorkflowRunInclude;
 const dashboardSummarySelect = {
+  awaitingApproval: true,
   durationMs: true,
   status: true,
 } satisfies Prisma.WorkflowRunSelect;
@@ -53,20 +53,30 @@ export class DashboardService {
   constructor(private readonly workflowRuns: WorkflowRunsQueryService) {}
 
   /**
-   * Return each visible workflow whose newest terminal run failed.
+   * Return each visible workflow whose newest provider run failed.
    *
    * @param user - Authenticated user requesting the dashboard.
    * @returns The latest failed run for every currently failing repository workflow.
    */
   async getLatestFailures(user: AuthenticatedUser): Promise<DashboardWorkflowRunModel[]> {
-    const terminalRuns = await this.findVisibleRuns(user, {
-      orderBy: [{ completedAt: 'desc' }, { providerCreatedAt: 'desc' }, { id: 'desc' }],
-      where: {
-        completedAt: { not: null },
-        status: { in: [...terminalStatuses] },
-      },
+    const runs = await this.findVisibleRuns(user, {
+      distinct: ['repositoryId', 'workflowName'],
+      orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
     });
-    return this.selectLatestFailures(terminalRuns);
+    return this.selectLatestFailures(runs);
+  }
+
+  /**
+   * Return every visible workflow run that currently requires provider approval.
+   *
+   * @param user - Authenticated user requesting the approval queue.
+   * @returns Approval-gated workflow runs ordered newest first.
+   */
+  async getAwaitingApproval(user: AuthenticatedUser): Promise<DashboardWorkflowRunModel[]> {
+    return this.findVisibleRuns(user, {
+      orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+      where: { awaitingApproval: true },
+    });
   }
 
   /**
@@ -114,6 +124,7 @@ export class DashboardService {
     const decidedCount = statuses.success + statuses.failed;
 
     return {
+      awaitingApprovalCount: activeRuns.filter((run) => run.awaitingApproval).length,
       completedCount: completedRuns.length,
       medianDurationMs: this.median(completedRuns.flatMap((run) => (run.durationMs === null ? [] : [run.durationMs]))),
       queuedCount: activeRuns.filter((run) => run.status === 'QUEUED').length,
@@ -227,7 +238,7 @@ export class DashboardService {
     return this.workflowRuns.findMany<DashboardWorkflowRunModel>({ ...options, include: dashboardRunInclude }, ability);
   }
 
-  private countStatuses(runs: DashboardSummaryRun[]): DashboardStatusDistributionDto {
+  private countStatuses(runs: Pick<DashboardSummaryRun, 'status'>[]): DashboardStatusDistributionDto {
     return {
       cancelled: runs.filter((run) => run.status === 'CANCELLED').length,
       failed: runs.filter((run) => run.status === 'FAILED').length,
@@ -257,9 +268,9 @@ export class DashboardService {
     return Math.round(value * 10) / 10;
   }
 
-  private selectLatestFailures(terminalRuns: DashboardWorkflowRunModel[]): DashboardWorkflowRunModel[] {
+  private selectLatestFailures(runs: DashboardWorkflowRunModel[]): DashboardWorkflowRunModel[] {
     const latestByWorkflow = new Map<string, DashboardWorkflowRunModel>();
-    for (const run of terminalRuns) {
+    for (const run of runs) {
       const key = `${run.repositoryId}\u0000${run.workflowName}`;
       if (!latestByWorkflow.has(key)) latestByWorkflow.set(key, run);
     }

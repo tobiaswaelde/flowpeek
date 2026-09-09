@@ -32,6 +32,9 @@ export class DashboardRepositoryDto {
 /** Dashboard representation of a workflow run with repository and provider context. */
 export class DashboardWorkflowRunDto {
   @ApiProperty()
+  awaitingApproval!: boolean;
+
+  @ApiProperty()
   id!: string;
 
   @ApiProperty()
@@ -55,6 +58,9 @@ export class DashboardWorkflowRunDto {
   @ApiProperty({ nullable: true })
   durationMs!: number | null;
 
+  @ApiProperty({ nullable: true })
+  reviewUrl!: string | null;
+
   @ApiProperty({ enum: ['QUEUED', 'RUNNING', 'SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED', 'UNKNOWN'] })
   status!: WorkflowRun['status'];
 
@@ -67,6 +73,7 @@ export class DashboardWorkflowRunDto {
   /** Map a loaded dashboard workflow run to its explicit safe public representation. */
   static fromModel(model: DashboardWorkflowRunModel): DashboardWorkflowRunDto {
     return {
+      awaitingApproval: model.awaitingApproval,
       id: model.id,
       providerRunId: model.providerRunId,
       workflowName: model.workflowName,
@@ -75,6 +82,7 @@ export class DashboardWorkflowRunDto {
       startedAt: model.startedAt,
       completedAt: model.completedAt,
       durationMs: model.durationMs,
+      reviewUrl: model.reviewUrl,
       status: model.status,
       repository: {
         id: model.repository.id,

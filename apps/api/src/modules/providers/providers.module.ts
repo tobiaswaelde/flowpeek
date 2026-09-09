@@ -5,6 +5,7 @@ import { JobsModule } from '../../jobs/jobs.module.js';
 import { SecurityModule } from '../../security/security.module.js';
 import { NotificationsModule } from '../notifications/notifications.module.js';
 import { RepositoriesModule } from '../repositories/repositories.module.js';
+import { SystemStatusModule } from '../system-status/system-status.module.js';
 import { ForgejoActionsAdapter } from './forgejo/forgejo-actions.adapter.js';
 import { GiteaActionsAdapter } from './gitea/gitea-actions.adapter.js';
 import { GitHubActionsAdapter } from './github/github-actions.adapter.js';
@@ -21,7 +22,7 @@ import { ProviderOAuthService } from './provider-oauth.service.js';
 import { ProviderSyncService } from './sync.service.js';
 
 @Module({
-  imports: [CaslModule, JobsModule, NotificationsModule, RepositoriesModule, SecurityModule],
+  imports: [CaslModule, JobsModule, NotificationsModule, RepositoriesModule, SecurityModule, SystemStatusModule],
   controllers: [ProviderAccountsController, ProviderOAuthController],
   providers: [
     {

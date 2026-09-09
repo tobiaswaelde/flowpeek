@@ -10,12 +10,27 @@
     "usernamePlaceholder": "Benutzernamen eingeben",
     "validationError": "Gib Benutzername und Passwort ein, um fortzufahren."
   },
+  "awaitingApproval": {
+    "approveInProvider": "Beim Anbieter freigeben",
+    "count": "{count} Workflows warten auf Freigabe",
+    "description": "Prüfe Workflows, die erst nach einer manuellen Freigabe fortgesetzt werden können.",
+    "empty": "Derzeit warten keine Workflows auf eine Freigabe.",
+    "loadError": "Die auf Freigabe wartenden Workflows konnten nicht geladen werden.",
+    "openReview": "Pull Request öffnen",
+    "providerApprovalDescription": "Flowpeek greift nur lesend auf Anbieter zu. Gib den Workflow beim Anbieter frei oder öffne den Pull Request für weitere Informationen.",
+    "providerApprovalTitle": "Die Freigabe erfolgt beim Anbieter",
+    "searchPlaceholder": "Workflows oder Repositories durchsuchen",
+    "title": "Wartet auf Freigabe",
+    "waitingSince": "Wartet seit"
+  },
   "forms": {
     "unsavedChanges": "Es gibt ungespeicherte Änderungen. Seite trotzdem verlassen?"
   },
   "dashboard": {
     "activeRuns": "Aktive Ausführungen",
     "activeRunsContext": "{running} laufend · {queued} wartend",
+    "awaitingApproval": "Wartet auf Freigabe",
+    "awaitingApprovalContext": "Manuelle Aktion erforderlich",
     "chartScaleHint": "Getrennte Skalen machen seltene Fehler sichtbar.",
     "completedDurationContext": "Über abgeschlossene Ausführungen",
     "completedRuns": "{count} abgeschlossene Ausführungen",
@@ -66,6 +81,7 @@
     "trendBucketLabel": "{date}: {successes} erfolgreich, {errors} fehlgeschlagen",
     "trendChartLabel": "Workflow-Trend mit {successes} erfolgreichen und {errors} fehlgeschlagenen Ausführungen.",
     "trendDescription": "Erfolge verwenden die linke Skala, Fehler die rechte Skala.",
+    "viewAwaitingApproval": "Workflows anzeigen",
     "workflow": "Workflow"
   },
   "layout": {
@@ -78,6 +94,7 @@
     "providers": "Anbieter-Konten",
     "readOnlyStatus": "Schreibgeschützte Überwachung von Workflow-Status",
     "repositories": "Repositories",
+    "settings": "Einstellungen",
     "search": "Suche",
     "searchNavigation": "Navigation",
     "searchNoResults": "Keine passenden Seiten oder Workflow-Ausführungen gefunden.",
@@ -91,6 +108,28 @@
     "themeSystem": "System",
     "users": "Benutzer",
     "workflowRuns": "Workflow-Ausführungen"
+  },
+  "settings": {
+    "dateTimeFormat": "Standardformat für Datum und Uhrzeit",
+    "dateTimeFormatHelp": "Legt fest, wie Zeitstempel in Flowpeek angezeigt werden. Alle Optionen verwenden das 24-Stunden-Format.",
+    "dateTimeFormats": {
+      "ISO": "ISO-Format",
+      "LOCALE_MEDIUM": "Lokalisiert, mittel",
+      "LOCALE_SHORT": "Lokalisiert, kurz"
+    },
+    "days": "Tage",
+    "description": "Konfiguriere Standards, die in Flowpeek global gelten.",
+    "general": "Globale Standards",
+    "generalDescription": "Diese Einstellungen gelten für alle Benutzer und Repositories ohne eigene Abweichung.",
+    "loadError": "Die globalen Einstellungen konnten nicht geladen werden.",
+    "preview": "Vorschau",
+    "retention": "Aufbewahrung von Workflow-Ausführungen",
+    "retentionHelp": "Abgeschlossene Workflow-Ausführungen werden nach dieser Anzahl an Tagen gelöscht, sofern ein Repository keine eigene Aufbewahrungsdauer hat.",
+    "retry": "Erneut versuchen",
+    "save": "Einstellungen speichern",
+    "saveError": "Die globalen Einstellungen konnten nicht gespeichert werden.",
+    "saved": "Globale Einstellungen gespeichert.",
+    "title": "Einstellungen"
   },
   "roles": {
     "MANAGER": "Repository-Verwaltung",
@@ -139,12 +178,7 @@
     "tableDescription": "Konfigurierte schreibgeschützte Anbieter-Verbindungen",
     "type": "Anbieter-Typ",
     "typePlaceholder": "Anbieter auswählen",
-    "types": {
-      "FORGEJO": "Forgejo",
-      "GITEA": "Gitea",
-      "GITHUB": "GitHub",
-      "GITLAB": "GitLab"
-    }
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
   },
   "querrykit": {
     "table": {
@@ -164,12 +198,8 @@
         "title": "Tabellenoptionen",
         "visibility": "Spaltensichtbarkeit umschalten"
       },
-      "pagination": {
-        "summary": "Zeige {start}–{end} von {total}"
-      },
-      "search": {
-        "placeholder": "Suchen"
-      },
+      "pagination": { "summary": "Zeige {start}–{end} von {total}" },
+      "search": { "placeholder": "Suchen" },
       "sorting": {
         "add": "Sortierung hinzufügen",
         "clear": "Sortierungen löschen",
@@ -179,6 +209,18 @@
         "toggle": "Sortierrichtung wechseln"
       }
     }
+  },
+  "systemStatus": {
+    "activity": {
+      "FETCHING_WORKFLOWS": "Workflows beim Anbieter abrufen",
+      "IDLE": "API bereit",
+      "LOADING_REPOSITORIES": "Repositories laden",
+      "PROCESSING_WORKFLOWS": "Workflows verarbeiten"
+    },
+    "connection": { "CONNECTED": "Live", "CONNECTING": "Verbinden", "DISCONNECTED": "Offline" },
+    "label": "API-Status",
+    "progress": "{current}/{total}",
+    "runningWorkflows": "Laufend: {count}"
   },
   "users": {
     "columns": {
@@ -236,14 +278,13 @@
   },
   "repositories": {
     "add": "Repository hinzufügen",
-    "addDescription": "Wähle ein aktiviertes Anbieter-Konto und ein zu überwachendes Repository aus.",
-    "addDialogTitle": "Repository hinzufügen",
-    "addError": "Das Repository konnte nicht hinzugefügt werden. Aktualisiere die Anbieter-Liste und versuche es erneut.",
-    "addSteps": {
-      "provider": "Anbieter",
-      "repository": "Repository"
-    },
+    "addDescription": "Wähle ein aktiviertes Anbieter-Konto und ein oder mehrere zu überwachende Repositories aus.",
+    "addDialogTitle": "Repositories hinzufügen",
+    "addError": "Ein oder mehrere Repositories konnten nicht hinzugefügt werden. Prüfe die verbleibende Auswahl und versuche es erneut.",
+    "addSelected": "Ausgewählte hinzufügen ({count})",
+    "addSteps": { "provider": "Anbieter", "repository": "Repository" },
     "alreadyTracked": "Bereits getrackt",
+    "available": "Verfügbar",
     "back": "Zurück",
     "default": "Standard",
     "description": "Workflow-Einstellungen getrackter Repositories.",
@@ -255,7 +296,8 @@
       "name": "Repository",
       "owner": "Besitzer",
       "retention": "Aufbewahrung",
-      "status": "Status"
+      "status": "Status",
+      "workflowRuns": "Workflow-Runs"
     },
     "empty": "Es werden keine Repositories getrackt.",
     "enabled": "Aktiviert",
@@ -263,17 +305,22 @@
     "loadError": "Repositories konnten nicht geladen werden.",
     "neverSynced": "Nie",
     "next": "Weiter",
-    "noAvailableRepositories": "Alle Repositories dieses Anbieters werden bereits getrackt.",
+    "noAvailableRepositories": "Für diesen Anbieter sind keine Repositories zum Hinzufügen verfügbar.",
     "noEnabledProviders": "Füge ein Anbieter-Konto hinzu und aktiviere es, bevor du ein Repository hinzufügst.",
+    "noMatchingRepositories": "Keine passenden Repositories gefunden.",
     "provider": "Anbieter-Konto",
     "providerDescription": "Wähle das Anbieter-Konto aus, dessen Repositories du überwachen möchtest.",
     "providerLoadError": "Anbieter-Konten konnten nicht geladen werden.",
     "providerPlaceholder": "Anbieter-Konto auswählen",
     "repository": "Repository",
-    "repositoryDescription": "Wähle ein Repository aus der aktuellen schreibgeschützten Anbieter-Liste aus.",
+    "repositoryDescription": "Suche und wähle ein oder mehrere Repositories aus der aktuellen schreibgeschützten Anbieter-Liste aus.",
     "repositoryLoadError": "Die Repositories dieses Anbieters konnten nicht geladen werden.",
     "repositoryPlaceholder": "Repository auswählen",
+    "repositorySearchPlaceholder": "Repositories durchsuchen",
     "retention": "Aufbewahrung",
+    "selectAllRepositories": "Alle sichtbaren Repositories auswählen",
+    "selectRepository": "{repository} auswählen",
+    "selectedCount": "Ausgewählt: {count}",
     "title": "Repositories"
   },
   "repositoryDetails": {

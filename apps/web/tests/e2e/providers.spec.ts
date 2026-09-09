@@ -2,6 +2,10 @@ import { expect, test } from '@playwright/test';
 
 /** Verify the Query Kit provider table and its credential-validated add dialog. */
 test('provider account table opens an add dialog with structured native controls', async ({ page }, testInfo) => {
+  let releaseAuthenticationOptions: (() => void) | undefined;
+  const authenticationOptionsResponse = new Promise<void>((resolve) => {
+    releaseAuthenticationOptions = resolve;
+  });
   await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
   await page.route(/\/api\/v1\/provider-accounts(?:\?.*)?$/, async (route) => {
     expect(route.request().url()).toContain('fields=');
@@ -23,6 +27,7 @@ test('provider account table opens an add dialog with structured native controls
     });
   });
   await page.route('**/api/v1/provider-accounts/authentication-options', async (route) => {
+    await authenticationOptionsResponse;
     await route.fulfill({ contentType: 'application/json', json: { oauthProviderTypes: [] } });
   });
   await page.route('**/api/v1/auth/me', async (route) => {
@@ -61,6 +66,11 @@ test('provider account table opens an add dialog with structured native controls
   await page.keyboard.press('Shift+N');
 
   await expect(page.getByRole('heading', { name: /add provider account|anbieter-konto hinzufügen/i })).toBeVisible();
+  const submitButton = page.getByRole('button', { name: 'Verify and add provider' });
+  await expect(submitButton).toBeDisabled();
+  await expect(submitButton.locator('[data-slot="leadingIcon"]')).toBeVisible();
+  releaseAuthenticationOptions?.();
+  await expect(submitButton).toBeEnabled();
   await expect(page.getByPlaceholder(/production github|produktion github/i)).toBeVisible();
   await expect(page.getByRole('combobox').first()).toBeVisible();
   await expect(page.getByPlaceholder(/read-only token|schreibgeschützten token/i)).toBeVisible();

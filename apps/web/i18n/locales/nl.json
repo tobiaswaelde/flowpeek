@@ -10,12 +10,25 @@
     "usernamePlaceholder": "Voer je gebruikersnaam in",
     "validationError": "Voer je gebruikersnaam en wachtwoord in om door te gaan."
   },
-  "forms": {
-    "unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze pagina toch verlaten?"
+  "awaitingApproval": {
+    "approveInProvider": "Goedkeuren bij provider",
+    "count": "{count} workflows wachten op goedkeuring",
+    "description": "Bekijk workflows die handmatige goedkeuring nodig hebben voordat ze verdergaan.",
+    "empty": "Er wachten momenteel geen workflows op goedkeuring.",
+    "loadError": "Workflows die op goedkeuring wachten konden niet worden geladen.",
+    "openReview": "Pull request openen",
+    "providerApprovalDescription": "Flowpeek houdt providerverbindingen alleen-lezen. Gebruik de provideractie om de workflow goed te keuren of open de pull request voor meer context.",
+    "providerApprovalTitle": "Goedkeuring blijft bij de provider",
+    "searchPlaceholder": "Workflows of repositories zoeken",
+    "title": "Wacht op goedkeuring",
+    "waitingSince": "Wacht sinds"
   },
+  "forms": { "unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze pagina toch verlaten?" },
   "dashboard": {
     "activeRuns": "Actieve uitvoeringen",
     "activeRunsContext": "{running} actief · {queued} in wachtrij",
+    "awaitingApproval": "Wacht op goedkeuring",
+    "awaitingApprovalContext": "Handmatige actie is vereist",
     "chartScaleHint": "Afzonderlijke schalen houden zeldzame fouten zichtbaar.",
     "completedDurationContext": "Over voltooide uitvoeringen",
     "completedRuns": "{count} voltooide uitvoeringen",
@@ -66,6 +79,7 @@
     "trendBucketLabel": "{date}: {successes} geslaagd, {errors} mislukt",
     "trendChartLabel": "Workflowtrend met {successes} geslaagde en {errors} mislukte uitvoeringen.",
     "trendDescription": "Geslaagde uitvoeringen gebruiken de linkerschaal; fouten de rechterschaal.",
+    "viewAwaitingApproval": "Workflows bekijken",
     "workflow": "Workflow"
   },
   "layout": {
@@ -78,6 +92,7 @@
     "providers": "Provideraccounts",
     "readOnlyStatus": "Alleen-lezenbewaking van workflowstatus",
     "repositories": "Repositories",
+    "settings": "Instellingen",
     "search": "Zoeken",
     "searchNavigation": "Navigatie",
     "searchNoResults": "Geen overeenkomende pagina’s of workflowuitvoeringen gevonden.",
@@ -92,11 +107,29 @@
     "users": "Gebruikers",
     "workflowRuns": "Workflowuitvoeringen"
   },
-  "roles": {
-    "MANAGER": "Repositorybeheerder",
-    "SYSTEM_ADMIN": "Systeembeheerder",
-    "VIEWER": "Lezer"
+  "settings": {
+    "dateTimeFormat": "Standaard datum- en tijdnotatie",
+    "dateTimeFormatHelp": "Bepaalt hoe tijdstempels in Flowpeek worden weergegeven. Alle opties gebruiken een 24-uursklok.",
+    "dateTimeFormats": {
+      "ISO": "ISO-stijl",
+      "LOCALE_MEDIUM": "Gelokaliseerd, gemiddeld",
+      "LOCALE_SHORT": "Gelokaliseerd, kort"
+    },
+    "days": "dagen",
+    "description": "Configureer standaardwaarden die in heel Flowpeek gelden.",
+    "general": "Globale standaardwaarden",
+    "generalDescription": "Deze instellingen gelden voor alle gebruikers en repositories zonder eigen afwijking.",
+    "loadError": "De globale instellingen konden niet worden geladen.",
+    "preview": "Voorbeeld",
+    "retention": "Bewaartermijn van workflow-runs",
+    "retentionHelp": "Voltooide workflow-runs worden na dit aantal dagen verwijderd, tenzij een repository een eigen termijn heeft.",
+    "retry": "Opnieuw proberen",
+    "save": "Instellingen opslaan",
+    "saveError": "De globale instellingen konden niet worden opgeslagen.",
+    "saved": "Globale instellingen opgeslagen.",
+    "title": "Instellingen"
   },
+  "roles": { "MANAGER": "Repositorybeheerder", "SYSTEM_ADMIN": "Systeembeheerder", "VIEWER": "Lezer" },
   "providers": {
     "accessToken": "Persoonlijk toegangstoken",
     "accessTokenPlaceholder": "Plak een alleen-lezentoken",
@@ -139,12 +172,7 @@
     "tableDescription": "Geconfigureerde alleen-lezenproviderverbindingen",
     "type": "Providertype",
     "typePlaceholder": "Selecteer een provider",
-    "types": {
-      "FORGEJO": "Forgejo",
-      "GITEA": "Gitea",
-      "GITHUB": "GitHub",
-      "GITLAB": "GitLab"
-    }
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
   },
   "querrykit": {
     "table": {
@@ -164,12 +192,8 @@
         "title": "Tabelopties",
         "visibility": "Kolomzichtbaarheid wisselen"
       },
-      "pagination": {
-        "summary": "Toont {start}–{end} van {total}"
-      },
-      "search": {
-        "placeholder": "Zoeken"
-      },
+      "pagination": { "summary": "Toont {start}–{end} van {total}" },
+      "search": { "placeholder": "Zoeken" },
       "sorting": {
         "add": "Sortering toevoegen",
         "clear": "Sorteringen wissen",
@@ -179,6 +203,18 @@
         "toggle": "Sorteerrichting wisselen"
       }
     }
+  },
+  "systemStatus": {
+    "activity": {
+      "FETCHING_WORKFLOWS": "Workflows ophalen bij provider",
+      "IDLE": "API inactief",
+      "LOADING_REPOSITORIES": "Repositories laden",
+      "PROCESSING_WORKFLOWS": "Workflows verwerken"
+    },
+    "connection": { "CONNECTED": "Live", "CONNECTING": "Verbinden", "DISCONNECTED": "Offline" },
+    "label": "API-status",
+    "progress": "{current}/{total}",
+    "runningWorkflows": "Actief: {count}"
   },
   "users": {
     "columns": {
@@ -229,21 +265,16 @@
     "rules": "Regels",
     "title": "Meldingen"
   },
-  "notificationDeliveryStatus": {
-    "DELIVERED": "Bezorgd",
-    "FAILED": "Mislukt",
-    "PENDING": "In behandeling"
-  },
+  "notificationDeliveryStatus": { "DELIVERED": "Bezorgd", "FAILED": "Mislukt", "PENDING": "In behandeling" },
   "repositories": {
     "add": "Repository toevoegen",
-    "addDescription": "Kies een ingeschakeld provideraccount en een repository om te volgen.",
-    "addDialogTitle": "Repository toevoegen",
-    "addError": "De repository kon niet worden toegevoegd. Vernieuw de providerlijst en probeer het opnieuw.",
-    "addSteps": {
-      "provider": "Provider",
-      "repository": "Repository"
-    },
+    "addDescription": "Kies een ingeschakeld provideraccount en een of meer repositories om te volgen.",
+    "addDialogTitle": "Repositories toevoegen",
+    "addError": "Een of meer repositories konden niet worden toegevoegd. Controleer de resterende selectie en probeer het opnieuw.",
+    "addSelected": "Selectie toevoegen ({count})",
+    "addSteps": { "provider": "Provider", "repository": "Repository" },
     "alreadyTracked": "Al gevolgd",
+    "available": "Beschikbaar",
     "back": "Terug",
     "default": "standaard",
     "description": "Workflowinstellingen voor gevolgde repositories.",
@@ -255,7 +286,8 @@
       "name": "Repository",
       "owner": "Eigenaar",
       "retention": "Bewaartermijn",
-      "status": "Status"
+      "status": "Status",
+      "workflowRuns": "Workflows"
     },
     "empty": "Er worden geen repositories gevolgd.",
     "enabled": "Ingeschakeld",
@@ -263,17 +295,22 @@
     "loadError": "Repositories konden niet worden geladen.",
     "neverSynced": "Nooit",
     "next": "Volgende",
-    "noAvailableRepositories": "Alle repositories van deze provider worden al gevolgd.",
+    "noAvailableRepositories": "Er zijn geen repositories van deze provider beschikbaar om toe te voegen.",
     "noEnabledProviders": "Voeg een provideraccount toe en schakel het in voordat je een repository toevoegt.",
+    "noMatchingRepositories": "Geen overeenkomende repositories gevonden.",
     "provider": "Provideraccount",
     "providerDescription": "Selecteer het provideraccount waarvan je repositories wilt volgen.",
     "providerLoadError": "Provideraccounts konden niet worden geladen.",
     "providerPlaceholder": "Selecteer een provideraccount",
     "repository": "Repository",
-    "repositoryDescription": "Kies een repository uit de huidige alleen-lezenlijst van de provider.",
+    "repositoryDescription": "Zoek en selecteer een of meer repositories uit de huidige alleen-lezenlijst van de provider.",
     "repositoryLoadError": "Repositories van deze provider konden niet worden geladen.",
     "repositoryPlaceholder": "Selecteer een repository",
+    "repositorySearchPlaceholder": "Repositories zoeken",
     "retention": "Bewaartermijn",
+    "selectAllRepositories": "Alle zichtbare repositories selecteren",
+    "selectRepository": "{repository} selecteren",
+    "selectedCount": "Selectie: {count}",
     "title": "Repositories"
   },
   "repositoryDetails": {

@@ -3,6 +3,27 @@ import { z } from 'zod';
 /** ISO-8601 timestamp returned by the Flowpeek HTTP API. */
 export type ApiTimestamp = string;
 
+/** Application-wide date and time presentation supported by the API. */
+export const defaultDateTimeFormats = ['LOCALE_SHORT', 'LOCALE_MEDIUM', 'ISO'] as const;
+
+/** Application-wide date and time presentation supported by the API. */
+export type DefaultDateTimeFormat = (typeof defaultDateTimeFormats)[number];
+
+/** Global application settings shared by every authenticated client. */
+export interface ApplicationSettings {
+  dateTimeFormat: DefaultDateTimeFormat;
+  workflowRunRetentionDays: number;
+}
+
+/** Complete mutable global settings payload accepted from a system administrator. */
+export type UpdateApplicationSettings = ApplicationSettings;
+
+/** Validate global settings before sending an administrative update. */
+export const applicationSettingsSchema = z.object({
+  dateTimeFormat: z.enum(defaultDateTimeFormats),
+  workflowRunRetentionDays: z.number().int().min(1).max(3650),
+});
+
 /** Source forge type for a configured provider account. */
 export const providerTypes = ['GITHUB', 'GITLAB', 'FORGEJO', 'GITEA'] as const;
 
@@ -106,6 +127,7 @@ export interface Repository {
   owner: string;
   providerAccountId: string;
   url: string;
+  workflowRunCount?: number;
   workflowRunRetentionDays: number | null;
 }
 
@@ -158,12 +180,14 @@ export interface DashboardRepository {
 
 /** Workflow run with dashboard-specific repository and provider context. */
 export interface DashboardWorkflowRun {
+  awaitingApproval: boolean;
   completedAt: ApiTimestamp | null;
   durationMs: number | null;
   id: string;
   provider: DashboardProvider;
   providerCreatedAt: ApiTimestamp;
   providerRunId: string;
+  reviewUrl: string | null;
   repository: DashboardRepository;
   startedAt: ApiTimestamp | null;
   status: WorkflowRunStatus;
@@ -182,6 +206,7 @@ export interface DashboardStatusDistribution {
 
 /** Permission-aware workflow health summary for one requested period. */
 export interface DashboardSummary {
+  awaitingApprovalCount: number;
   completedCount: number;
   medianDurationMs: number | null;
   queuedCount: number;
@@ -227,7 +252,10 @@ export interface WorkflowRun {
   id: string;
   providerCreatedAt: ApiTimestamp;
   providerRunId: string;
+  providerType: ProviderType;
   repositoryId: string;
+  repositoryName: string;
+  repositoryOwner: string;
   startedAt: ApiTimestamp | null;
   status: WorkflowRunStatus;
   url: string;

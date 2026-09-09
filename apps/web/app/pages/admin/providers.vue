@@ -75,7 +75,9 @@
               color="neutral"
               variant="ghost"
               :aria-label="row.original.enabled ? $t('providers.disable') : $t('providers.enable')"
+              :disabled="isProviderPending(row.original.id)"
               :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
+              :loading="isPending(providerActionKey('toggle', row.original.id))"
               @click="toggle(row.original)"
             />
             <UButton
@@ -83,6 +85,8 @@
               icon="i-lucide-trash-2"
               variant="ghost"
               :aria-label="$t('providers.delete')"
+              :disabled="isProviderPending(row.original.id)"
+              :loading="isPending(providerActionKey('delete', row.original.id))"
               @click="remove(row.original.id)"
             />
           </div>
@@ -109,6 +113,8 @@ import { FilterFieldType, type FilterField, type SortingField } from '@querry-ki
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
 import { useTable } from '~/composables/api/table';
 import { useProviderType } from '~/composables/enums/provider-type';
+import { useDateTime } from '~/composables/use-date-time';
+import { usePendingActions } from '~/composables/use-pending-actions';
 import { providerTypes, type ProviderAccount } from '~/types/api/resources';
 import type { ColumnDefinition } from '~/types/table';
 
@@ -118,9 +124,11 @@ type ProviderTableColumn = ColumnDefinition<ProviderAccountRow> & { header: stri
 definePageMeta({ fullWidth: true });
 
 const { t } = useI18n();
+const { formatDateTime } = useDateTime();
 const api = useFlowpeekApi();
 const route = useRoute();
 const dialogOpen = ref(false);
+const { isPending, run: runPendingAction } = usePendingActions();
 const oauthStatus = computed(() => route.query.oauth);
 const { getLabel: getProviderTypeLabel } = useProviderType();
 const providerTypeOptions = computed(() =>
@@ -179,11 +187,21 @@ const columnPinning = computed({
 /** Format a provider's last successful synchronization in the active interface locale. */
 function formatLastSync(lastSyncAt: string | null): string {
   if (!lastSyncAt) return t('providers.neverSynced');
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(lastSyncAt));
+  return formatDateTime(lastSyncAt);
 }
 
 function openAddDialog(): void {
   dialogOpen.value = true;
+}
+
+/** Build a unique pending-state key for one provider action. */
+function providerActionKey(action: 'delete' | 'toggle', providerId: string): string {
+  return `${action}:${providerId}`;
+}
+
+/** Return whether any mutation is active for a provider row. */
+function isProviderPending(providerId: string): boolean {
+  return isPending(providerActionKey('delete', providerId)) || isPending(providerActionKey('toggle', providerId));
 }
 
 defineShortcuts({
@@ -198,14 +216,18 @@ async function handleProviderCreated(): Promise<void> {
 
 /** Remove a provider account and refresh the current Query Kit page. */
 async function remove(id: string): Promise<void> {
-  await api.providerAccounts.delete(id);
-  await providerTable.refresh();
+  await runPendingAction(providerActionKey('delete', id), async () => {
+    await api.providerAccounts.delete(id);
+    await providerTable.refresh();
+  });
 }
 
 /** Enable or disable a provider account without changing its stored credentials. */
 async function toggle(provider: ProviderAccount): Promise<void> {
-  await api.providerAccounts.update(provider.id, { enabled: !provider.enabled });
-  await providerTable.refresh();
+  await runPendingAction(providerActionKey('toggle', provider.id), async () => {
+    await api.providerAccounts.update(provider.id, { enabled: !provider.enabled });
+    await providerTable.refresh();
+  });
 }
 
 onMounted(() => void providerTable.initialize());

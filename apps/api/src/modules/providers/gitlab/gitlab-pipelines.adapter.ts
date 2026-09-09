@@ -13,7 +13,7 @@ import type {
   VerifiedWebhook,
 } from '../provider-adapter.js';
 import { PROVIDER_FETCH } from '../provider-adapter.js';
-import { normalizeWorkflowRunStatus } from '../workflow-status.js';
+import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 interface GitLabProject {
@@ -33,6 +33,7 @@ interface GitLabPipeline {
   duration: number | null;
   name?: string;
   ref?: string;
+  merge_request?: { iid: number };
 }
 
 /** GitLab adapter that only reads projects and pipelines. */
@@ -140,6 +141,7 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
     const startedAt = pipeline.started_at ? new Date(pipeline.started_at) : null;
     const completedAt = pipeline.finished_at ? new Date(pipeline.finished_at) : null;
     return {
+      awaitingApproval: isWorkflowRunAwaitingApproval('GITLAB', pipeline.status),
       providerRunId: String(pipeline.id),
       workflowName: pipeline.name ?? pipeline.ref ?? 'Pipeline',
       url: pipeline.web_url,
@@ -154,6 +156,14 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
           : pipeline.duration * 1000,
       status: normalizeWorkflowRunStatus('GITLAB', pipeline.status),
       rawStatus: pipeline.status,
+      reviewUrl: this.gitLabMergeRequestUrl(pipeline),
     };
+  }
+
+  private gitLabMergeRequestUrl(pipeline: GitLabPipeline): string | null {
+    const refMatch = pipeline.ref?.match(/^refs\/merge-requests\/(\d+)\/head$/);
+    const mergeRequestIid = pipeline.merge_request?.iid ?? (refMatch ? Number(refMatch[1]) : null);
+    if (!mergeRequestIid) return null;
+    return pipeline.web_url.replace(/\/-\/pipelines\/\d+(?:\/)?$/, `/-/merge_requests/${mergeRequestIid}`);
   }
 }

@@ -8,16 +8,26 @@ import {
   ResourceQuery,
 } from '@querry-kit/nest';
 
-import type { WorkflowRun } from '../../generated/prisma/client.js';
+import type { Prisma } from '../../generated/prisma/client.js';
 import { Authenticated } from '../auth/authenticated.decorator.js';
 import type { AuthenticatedUser } from '../auth/types.js';
-import { WorkflowRunDto } from '../repositories/dto/resource.dto.js';
+import { WorkflowRunDto, type WorkflowRunResourceModel } from '../repositories/dto/resource.dto.js';
 import { WorkflowRunQueryDto } from './dto/workflow-run-query.dto.js';
 import { WorkflowRunsQueryService } from './workflow-runs-query.service.js';
 
 interface AuthenticatedRequest {
   user: AuthenticatedUser;
 }
+
+const workflowRunContextInclude = {
+  repository: {
+    select: {
+      name: true,
+      owner: true,
+      providerAccount: { select: { providerType: true } },
+    },
+  },
+} satisfies Prisma.WorkflowRunInclude;
 
 /** Provides paginated workflow-run history for repositories visible to the caller. */
 @ApiTags('workflow-runs')
@@ -42,7 +52,9 @@ export class WorkflowRunsController {
     const ability = await this.workflowRuns.getReadAbility(request.user);
     return ResourceQuery.query({
       ability,
-      map: (workflowRun: WorkflowRun, currentAbility) => WorkflowRunDto.fromModel(workflowRun, currentAbility),
+      include: workflowRunContextInclude,
+      map: (workflowRun: WorkflowRunResourceModel, currentAbility) =>
+        WorkflowRunDto.fromModel(workflowRun, currentAbility),
       query: this.workflowRuns.toQueryOptions(query),
       schema: WorkflowRunDto,
       service: this.workflowRuns,

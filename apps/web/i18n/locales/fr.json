@@ -10,12 +10,27 @@
     "usernamePlaceholder": "Saisissez votre nom d’utilisateur",
     "validationError": "Saisissez votre nom d’utilisateur et votre mot de passe pour continuer."
   },
+  "awaitingApproval": {
+    "approveInProvider": "Approuver chez le fournisseur",
+    "count": "{count} workflows en attente d’approbation",
+    "description": "Consultez les workflows qui nécessitent une approbation manuelle pour continuer.",
+    "empty": "Aucun workflow n’attend actuellement d’approbation.",
+    "loadError": "Les workflows en attente d’approbation n’ont pas pu être chargés.",
+    "openReview": "Ouvrir la pull request",
+    "providerApprovalDescription": "Flowpeek conserve des connexions en lecture seule. Utilisez l’action du fournisseur pour approuver le workflow ou ouvrez sa pull request pour plus de contexte.",
+    "providerApprovalTitle": "L’approbation reste chez le fournisseur",
+    "searchPlaceholder": "Rechercher des workflows ou dépôts",
+    "title": "En attente d’approbation",
+    "waitingSince": "En attente depuis"
+  },
   "forms": {
     "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous quand même quitter cette page ?"
   },
   "dashboard": {
     "activeRuns": "Exécutions actives",
     "activeRunsContext": "{running} en cours · {queued} en attente",
+    "awaitingApproval": "En attente d’approbation",
+    "awaitingApprovalContext": "Une action manuelle est requise",
     "chartScaleHint": "Des échelles séparées gardent les échecs rares visibles.",
     "completedDurationContext": "Parmi les exécutions terminées",
     "completedRuns": "{count} exécutions terminées",
@@ -66,6 +81,7 @@
     "trendBucketLabel": "{date} : {successes} réussies, {errors} échouées",
     "trendChartLabel": "Tendance avec {successes} exécutions réussies et {errors} échouées.",
     "trendDescription": "Les réussites utilisent l’échelle gauche, les échecs l’échelle droite.",
+    "viewAwaitingApproval": "Voir les workflows",
     "workflow": "Flux de travail"
   },
   "layout": {
@@ -78,6 +94,7 @@
     "providers": "Comptes fournisseurs",
     "readOnlyStatus": "Surveillance en lecture seule des flux de travail",
     "repositories": "Dépôts",
+    "settings": "Paramètres",
     "search": "Rechercher",
     "searchNavigation": "Navigation",
     "searchNoResults": "Aucune page ni exécution de flux de travail correspondante n’a été trouvée.",
@@ -92,11 +109,29 @@
     "users": "Utilisateurs",
     "workflowRuns": "Exécutions de flux"
   },
-  "roles": {
-    "MANAGER": "Gestionnaire de dépôts",
-    "SYSTEM_ADMIN": "Administrateur système",
-    "VIEWER": "Lecteur"
+  "settings": {
+    "dateTimeFormat": "Format de date et d'heure par défaut",
+    "dateTimeFormatHelp": "Contrôle l'affichage des horodatages dans Flowpeek. Toutes les options utilisent le format 24 heures.",
+    "dateTimeFormats": {
+      "ISO": "Style ISO",
+      "LOCALE_MEDIUM": "Localisé, moyen",
+      "LOCALE_SHORT": "Localisé, court"
+    },
+    "days": "jours",
+    "description": "Configurez les valeurs par défaut appliquées dans Flowpeek.",
+    "general": "Valeurs globales par défaut",
+    "generalDescription": "Ces paramètres s'appliquent à tous les utilisateurs et dépôts sans remplacement spécifique.",
+    "loadError": "Les paramètres globaux n'ont pas pu être chargés.",
+    "preview": "Aperçu",
+    "retention": "Conservation des exécutions",
+    "retentionHelp": "Les exécutions terminées sont supprimées après ce nombre de jours, sauf si le dépôt dispose de sa propre durée.",
+    "retry": "Réessayer",
+    "save": "Enregistrer les paramètres",
+    "saveError": "Les paramètres globaux n'ont pas pu être enregistrés.",
+    "saved": "Paramètres globaux enregistrés.",
+    "title": "Paramètres"
   },
+  "roles": { "MANAGER": "Gestionnaire de dépôts", "SYSTEM_ADMIN": "Administrateur système", "VIEWER": "Lecteur" },
   "providers": {
     "accessToken": "Jeton d’accès personnel",
     "accessTokenPlaceholder": "Collez un jeton en lecture seule",
@@ -139,12 +174,7 @@
     "tableDescription": "Connexions fournisseurs en lecture seule configurées",
     "type": "Type de fournisseur",
     "typePlaceholder": "Sélectionnez un fournisseur",
-    "types": {
-      "FORGEJO": "Forgejo",
-      "GITEA": "Gitea",
-      "GITHUB": "GitHub",
-      "GITLAB": "GitLab"
-    }
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
   },
   "querrykit": {
     "table": {
@@ -164,12 +194,8 @@
         "title": "Options du tableau",
         "visibility": "Basculer la visibilité de la colonne"
       },
-      "pagination": {
-        "summary": "Affichage de {start}–{end} sur {total}"
-      },
-      "search": {
-        "placeholder": "Rechercher"
-      },
+      "pagination": { "summary": "Affichage de {start}–{end} sur {total}" },
+      "search": { "placeholder": "Rechercher" },
       "sorting": {
         "add": "Ajouter un tri",
         "clear": "Effacer les tris",
@@ -179,6 +205,18 @@
         "toggle": "Basculer le sens du tri"
       }
     }
+  },
+  "systemStatus": {
+    "activity": {
+      "FETCHING_WORKFLOWS": "Récupération des workflows auprès du fournisseur",
+      "IDLE": "API inactive",
+      "LOADING_REPOSITORIES": "Chargement des dépôts",
+      "PROCESSING_WORKFLOWS": "Traitement des workflows"
+    },
+    "connection": { "CONNECTED": "En direct", "CONNECTING": "Connexion", "DISCONNECTED": "Hors ligne" },
+    "label": "État de l’API",
+    "progress": "{current}/{total}",
+    "runningWorkflows": "En cours : {count}"
   },
   "users": {
     "columns": {
@@ -229,21 +267,16 @@
     "rules": "Règles",
     "title": "Notifications"
   },
-  "notificationDeliveryStatus": {
-    "DELIVERED": "Livrée",
-    "FAILED": "Échouée",
-    "PENDING": "En attente"
-  },
+  "notificationDeliveryStatus": { "DELIVERED": "Livrée", "FAILED": "Échouée", "PENDING": "En attente" },
   "repositories": {
     "add": "Ajouter un dépôt",
-    "addDescription": "Choisissez un compte fournisseur activé et un dépôt à surveiller.",
-    "addDialogTitle": "Ajouter un dépôt",
-    "addError": "Impossible d'ajouter le dépôt. Actualisez la liste du fournisseur et réessayez.",
-    "addSteps": {
-      "provider": "Fournisseur",
-      "repository": "Dépôt"
-    },
+    "addDescription": "Choisissez un compte fournisseur activé et un ou plusieurs dépôts à surveiller.",
+    "addDialogTitle": "Ajouter des dépôts",
+    "addError": "Un ou plusieurs dépôts n'ont pas pu être ajoutés. Vérifiez la sélection restante et réessayez.",
+    "addSelected": "Ajouter la sélection ({count})",
+    "addSteps": { "provider": "Fournisseur", "repository": "Dépôt" },
     "alreadyTracked": "Déjà suivi",
+    "available": "Disponible",
     "back": "Retour",
     "default": "par défaut",
     "description": "Paramètres des flux de travail des dépôts suivis.",
@@ -255,7 +288,8 @@
       "name": "Dépôt",
       "owner": "Propriétaire",
       "retention": "Rétention",
-      "status": "État"
+      "status": "État",
+      "workflowRuns": "Workflows"
     },
     "empty": "Aucun dépôt n’est suivi.",
     "enabled": "Activé",
@@ -263,17 +297,22 @@
     "loadError": "Les dépôts n’ont pas pu être chargés.",
     "neverSynced": "Jamais",
     "next": "Suivant",
-    "noAvailableRepositories": "Tous les dépôts de ce fournisseur sont déjà suivis.",
+    "noAvailableRepositories": "Aucun dépôt de ce fournisseur n'est disponible à l'ajout.",
     "noEnabledProviders": "Ajoutez et activez un compte fournisseur avant d'ajouter un dépôt.",
+    "noMatchingRepositories": "Aucun dépôt correspondant trouvé.",
     "provider": "Compte fournisseur",
     "providerDescription": "Sélectionnez le compte fournisseur dont vous souhaitez surveiller les dépôts.",
     "providerLoadError": "Impossible de charger les comptes fournisseurs.",
     "providerPlaceholder": "Sélectionnez un compte fournisseur",
     "repository": "Dépôt",
-    "repositoryDescription": "Choisissez un dépôt dans la liste actuelle en lecture seule du fournisseur.",
+    "repositoryDescription": "Recherchez et sélectionnez un ou plusieurs dépôts dans la liste actuelle en lecture seule du fournisseur.",
     "repositoryLoadError": "Impossible de charger les dépôts de ce fournisseur.",
     "repositoryPlaceholder": "Sélectionnez un dépôt",
+    "repositorySearchPlaceholder": "Rechercher des dépôts",
     "retention": "Rétention",
+    "selectAllRepositories": "Sélectionner tous les dépôts visibles",
+    "selectRepository": "Sélectionner {repository}",
+    "selectedCount": "Sélection : {count}",
     "title": "Dépôts"
   },
   "repositoryDetails": {

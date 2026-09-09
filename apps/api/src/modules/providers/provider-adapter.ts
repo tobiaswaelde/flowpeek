@@ -27,11 +27,13 @@ export interface ProviderRepositoryReference {
 
 /** Provider workflow run normalized before persistence in Flowpeek. */
 export interface ProviderWorkflowRun {
+  awaitingApproval: boolean;
   completedAt: Date | null;
   durationMs: number | null;
   providerCreatedAt: Date;
   providerRunId: string;
   rawStatus: string | null;
+  reviewUrl: string | null;
   startedAt: Date | null;
   status: WorkflowRunStatus;
   url: string;

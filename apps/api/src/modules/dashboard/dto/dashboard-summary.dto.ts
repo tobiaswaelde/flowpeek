@@ -20,6 +20,9 @@ export class DashboardStatusDistributionDto {
 
 /** Permission-aware workflow health summary for one requested period. */
 export class DashboardSummaryDto {
+  @ApiProperty({ description: 'Number of visible runs currently awaiting provider approval.' })
+  awaitingApprovalCount!: number;
+
   @ApiProperty({ description: 'Number of completed runs in the requested period.' })
   completedCount!: number;
 

@@ -10,12 +10,25 @@
     "usernamePlaceholder": "Introduza o seu nome de utilizador",
     "validationError": "Introduza o seu nome de utilizador e palavra-passe para continuar."
   },
-  "forms": {
-    "unsavedChanges": "Tem alterações não guardadas. Pretende sair desta página mesmo assim?"
+  "awaitingApproval": {
+    "approveInProvider": "Aprovar no fornecedor",
+    "count": "{count} fluxos de trabalho aguardam aprovação",
+    "description": "Analise os fluxos de trabalho que precisam de aprovação manual para continuar.",
+    "empty": "Nenhum fluxo de trabalho aguarda aprovação.",
+    "loadError": "Não foi possível carregar os fluxos de trabalho que aguardam aprovação.",
+    "openReview": "Abrir pull request",
+    "providerApprovalDescription": "O Flowpeek mantém ligações apenas de leitura. Use a ação do fornecedor para aprovar o fluxo ou abra o pull request para obter mais contexto.",
+    "providerApprovalTitle": "A aprovação permanece no fornecedor",
+    "searchPlaceholder": "Pesquisar fluxos ou repositórios",
+    "title": "A aguardar aprovação",
+    "waitingSince": "A aguardar desde"
   },
+  "forms": { "unsavedChanges": "Tem alterações não guardadas. Pretende sair desta página mesmo assim?" },
   "dashboard": {
     "activeRuns": "Execuções ativas",
     "activeRunsContext": "{running} em execução · {queued} em fila",
+    "awaitingApproval": "A aguardar aprovação",
+    "awaitingApprovalContext": "É necessária uma ação manual",
     "chartScaleHint": "Escalas separadas mantêm visíveis as falhas raras.",
     "completedDurationContext": "Entre as execuções concluídas",
     "completedRuns": "{count} execuções concluídas",
@@ -66,6 +79,7 @@
     "trendBucketLabel": "{date}: {successes} com sucesso, {errors} com falha",
     "trendChartLabel": "Tendência com {successes} execuções com sucesso e {errors} com falha.",
     "trendDescription": "As execuções com sucesso usam a escala esquerda; as falhas, a direita.",
+    "viewAwaitingApproval": "Ver fluxos de trabalho",
     "workflow": "Fluxo de trabalho"
   },
   "layout": {
@@ -78,6 +92,7 @@
     "providers": "Contas de fornecedores",
     "readOnlyStatus": "Monitorização apenas de leitura do estado dos fluxos de trabalho",
     "repositories": "Repositórios",
+    "settings": "Definições",
     "search": "Pesquisar",
     "searchNavigation": "Navegação",
     "searchNoResults": "Não foram encontradas páginas nem execuções de fluxos de trabalho correspondentes.",
@@ -92,11 +107,29 @@
     "users": "Utilizadores",
     "workflowRuns": "Execuções de workflow"
   },
-  "roles": {
-    "MANAGER": "Gestor de repositórios",
-    "SYSTEM_ADMIN": "Administrador do sistema",
-    "VIEWER": "Leitor"
+  "settings": {
+    "dateTimeFormat": "Formato predefinido de data e hora",
+    "dateTimeFormatHelp": "Controla como os carimbos de data/hora são apresentados no Flowpeek. Todas as opções usam o formato de 24 horas.",
+    "dateTimeFormats": {
+      "ISO": "Estilo ISO",
+      "LOCALE_MEDIUM": "Localizado, médio",
+      "LOCALE_SHORT": "Localizado, curto"
+    },
+    "days": "dias",
+    "description": "Configure os valores predefinidos aplicados em todo o Flowpeek.",
+    "general": "Predefinições globais",
+    "generalDescription": "Estas definições aplicam-se a todos os utilizadores e repositórios sem uma substituição própria.",
+    "loadError": "Não foi possível carregar as definições globais.",
+    "preview": "Pré-visualização",
+    "retention": "Retenção das execuções",
+    "retentionHelp": "As execuções concluídas são eliminadas após estes dias, salvo se o repositório tiver um período próprio.",
+    "retry": "Tentar novamente",
+    "save": "Guardar definições",
+    "saveError": "Não foi possível guardar as definições globais.",
+    "saved": "Definições globais guardadas.",
+    "title": "Definições"
   },
+  "roles": { "MANAGER": "Gestor de repositórios", "SYSTEM_ADMIN": "Administrador do sistema", "VIEWER": "Leitor" },
   "providers": {
     "accessToken": "Token de acesso pessoal",
     "accessTokenPlaceholder": "Cole um token apenas de leitura",
@@ -139,12 +172,7 @@
     "tableDescription": "Ligações de fornecedores apenas de leitura configuradas",
     "type": "Tipo de fornecedor",
     "typePlaceholder": "Selecione um fornecedor",
-    "types": {
-      "FORGEJO": "Forgejo",
-      "GITEA": "Gitea",
-      "GITHUB": "GitHub",
-      "GITLAB": "GitLab"
-    }
+    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
   },
   "querrykit": {
     "table": {
@@ -164,12 +192,8 @@
         "title": "Opções da tabela",
         "visibility": "Alternar visibilidade da coluna"
       },
-      "pagination": {
-        "summary": "A mostrar {start}–{end} de {total}"
-      },
-      "search": {
-        "placeholder": "Pesquisar"
-      },
+      "pagination": { "summary": "A mostrar {start}–{end} de {total}" },
+      "search": { "placeholder": "Pesquisar" },
       "sorting": {
         "add": "Adicionar ordenação",
         "clear": "Limpar ordenações",
@@ -179,6 +203,18 @@
         "toggle": "Alternar direção de ordenação"
       }
     }
+  },
+  "systemStatus": {
+    "activity": {
+      "FETCHING_WORKFLOWS": "Obtendo workflows do provedor",
+      "IDLE": "API inativa",
+      "LOADING_REPOSITORIES": "Carregando repositórios",
+      "PROCESSING_WORKFLOWS": "Processando workflows"
+    },
+    "connection": { "CONNECTED": "Ao vivo", "CONNECTING": "Conectando", "DISCONNECTED": "Offline" },
+    "label": "Status da API",
+    "progress": "{current}/{total}",
+    "runningWorkflows": "Em execução: {count}"
   },
   "users": {
     "columns": {
@@ -229,21 +265,16 @@
     "rules": "Regras",
     "title": "Notificações"
   },
-  "notificationDeliveryStatus": {
-    "DELIVERED": "Entregue",
-    "FAILED": "Com falha",
-    "PENDING": "Pendente"
-  },
+  "notificationDeliveryStatus": { "DELIVERED": "Entregue", "FAILED": "Com falha", "PENDING": "Pendente" },
   "repositories": {
     "add": "Adicionar repositório",
-    "addDescription": "Escolha uma conta de fornecedor ativada e um repositório para monitorizar.",
-    "addDialogTitle": "Adicionar repositório",
-    "addError": "Não foi possível adicionar o repositório. Atualize a lista do fornecedor e tente novamente.",
-    "addSteps": {
-      "provider": "Fornecedor",
-      "repository": "Repositório"
-    },
+    "addDescription": "Escolha uma conta de fornecedor ativada e um ou mais repositórios para monitorizar.",
+    "addDialogTitle": "Adicionar repositórios",
+    "addError": "Não foi possível adicionar um ou mais repositórios. Reveja a seleção restante e tente novamente.",
+    "addSelected": "Adicionar selecionados ({count})",
+    "addSteps": { "provider": "Fornecedor", "repository": "Repositório" },
     "alreadyTracked": "Já monitorizado",
+    "available": "Disponível",
     "back": "Voltar",
     "default": "predefinido",
     "description": "Definições de fluxos de trabalho dos repositórios monitorizados.",
@@ -255,7 +286,8 @@
       "name": "Repositório",
       "owner": "Proprietário",
       "retention": "Retenção",
-      "status": "Estado"
+      "status": "Estado",
+      "workflowRuns": "Workflows"
     },
     "empty": "Não são monitorizados repositórios.",
     "enabled": "Ativado",
@@ -263,17 +295,22 @@
     "loadError": "Não foi possível carregar os repositórios.",
     "neverSynced": "Nunca",
     "next": "Seguinte",
-    "noAvailableRepositories": "Todos os repositórios deste fornecedor já são monitorizados.",
+    "noAvailableRepositories": "Não há repositórios deste fornecedor disponíveis para adicionar.",
     "noEnabledProviders": "Adicione e ative uma conta de fornecedor antes de adicionar um repositório.",
+    "noMatchingRepositories": "Não foram encontrados repositórios correspondentes.",
     "provider": "Conta de fornecedor",
     "providerDescription": "Selecione a conta de fornecedor cujos repositórios pretende monitorizar.",
     "providerLoadError": "Não foi possível carregar as contas de fornecedor.",
     "providerPlaceholder": "Selecione uma conta de fornecedor",
     "repository": "Repositório",
-    "repositoryDescription": "Escolha um repositório da lista atual de apenas leitura do fornecedor.",
+    "repositoryDescription": "Pesquise e selecione um ou mais repositórios da lista atual de apenas leitura do fornecedor.",
     "repositoryLoadError": "Não foi possível carregar os repositórios deste fornecedor.",
     "repositoryPlaceholder": "Selecione um repositório",
+    "repositorySearchPlaceholder": "Pesquisar repositórios",
     "retention": "Retenção",
+    "selectAllRepositories": "Selecionar todos os repositórios visíveis",
+    "selectRepository": "Selecionar {repository}",
+    "selectedCount": "Seleção: {count}",
     "title": "Repositórios"
   },
   "repositoryDetails": {

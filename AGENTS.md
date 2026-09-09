@@ -88,6 +88,7 @@
 - Keep API DTO types synchronized with the Nest API. Do not infer a complete
   client model from untyped responses.
 - Implement all user-visible text in English and German locale files.
+- Keep the initiating or gating button in its loading state for the full lifetime of every API request it awaits.
 - Verify visual changes in a browser or screenshot-based test; linting and
   typechecking alone do not prove visual correctness.
 

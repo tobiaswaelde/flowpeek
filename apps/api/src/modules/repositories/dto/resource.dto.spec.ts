@@ -1,6 +1,6 @@
 import { Fields, buildFieldSchemaFromDto } from '@querry-kit/nest';
-import type { ProviderAccount, Repository, WorkflowRun } from '../../../generated/prisma/client.js';
-import { ProviderAccountDto, RepositoryDto, WorkflowRunDto } from './resource.dto.js';
+import type { ProviderAccount, Repository } from '../../../generated/prisma/client.js';
+import { ProviderAccountDto, RepositoryDto, WorkflowRunDto, type WorkflowRunResourceModel } from './resource.dto.js';
 
 describe('resource DTO mappings', () => {
   it('never serializes encrypted provider access tokens', () => {
@@ -44,13 +44,16 @@ describe('resource DTO mappings', () => {
   it('allows Query Kit to project every repository-table field', () => {
     const schema = buildFieldSchemaFromDto(RepositoryDto);
 
-    expect(Fields.parseAndValidate('id,name,owner,enabled,url,workflowRunRetentionDays,lastSyncAt', schema)).toEqual({
+    expect(
+      Fields.parseAndValidate('id,name,owner,enabled,url,workflowRunCount,workflowRunRetentionDays,lastSyncAt', schema),
+    ).toEqual({
       enabled: true,
       id: true,
       lastSyncAt: true,
       name: true,
       owner: true,
       url: true,
+      workflowRunCount: true,
       workflowRunRetentionDays: true,
     });
   });
@@ -68,6 +71,7 @@ describe('resource DTO mappings', () => {
       providerAccountId: 'account',
       createdAt: new Date(),
       updatedAt: new Date(),
+      _count: { workflowRuns: 12 },
     } as Repository);
 
     expect(dto).toEqual({
@@ -80,6 +84,7 @@ describe('resource DTO mappings', () => {
       lastSyncAt: null,
       workflowRunRetentionDays: 30,
       providerAccountId: 'account',
+      workflowRunCount: 12,
     });
   });
 
@@ -88,16 +93,16 @@ describe('resource DTO mappings', () => {
 
     expect(
       Fields.parseAndValidate(
-        'id,url,workflowName,status,providerCreatedAt,startedAt,completedAt,durationMs,providerRunId',
+        'id,url,workflowName,status,completedAt,durationMs,repositoryName,repositoryOwner,providerType',
         schema,
       ),
     ).toEqual({
       completedAt: true,
       durationMs: true,
       id: true,
-      providerCreatedAt: true,
-      providerRunId: true,
-      startedAt: true,
+      providerType: true,
+      repositoryName: true,
+      repositoryOwner: true,
       status: true,
       url: true,
       workflowName: true,
@@ -117,11 +122,21 @@ describe('resource DTO mappings', () => {
       status: 'RUNNING',
       rawStatus: 'in_progress',
       repositoryId: 'repo',
+      repository: {
+        name: 'flowpeek',
+        owner: 'twaelde',
+        providerAccount: { providerType: 'GITHUB' },
+      },
       createdAt: new Date(),
       updatedAt: new Date(),
-    } as WorkflowRun);
+    } as WorkflowRunResourceModel);
 
     expect(dto).not.toHaveProperty('rawStatus');
     expect(dto.status).toBe('RUNNING');
+    expect(dto).toMatchObject({
+      providerType: 'GITHUB',
+      repositoryName: 'flowpeek',
+      repositoryOwner: 'twaelde',
+    });
   });
 });

@@ -48,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDateTime } from '~/composables/use-date-time';
 import type { DashboardWorkflowRun } from '~/types/api/resources';
 
 defineProps<{
@@ -55,15 +56,12 @@ defineProps<{
   runs: DashboardWorkflowRun[];
 }>();
 
-const { locale, t } = useI18n();
+const { t } = useI18n();
+const { formatDateTime } = useDateTime();
 
 /** Format the last failed completion time in the active interface locale. */
 function formatTimestamp(timestamp: string | null): string {
   if (!timestamp) return t('workflowRuns.notAvailable');
-  return new Intl.DateTimeFormat(locale.value, {
-    dateStyle: 'medium',
-    hourCycle: 'h23',
-    timeStyle: 'short',
-  }).format(new Date(timestamp));
+  return formatDateTime(timestamp);
 }
 </script>

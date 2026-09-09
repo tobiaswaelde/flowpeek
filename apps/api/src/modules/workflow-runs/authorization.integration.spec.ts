@@ -123,6 +123,7 @@ describe('workflow-run authorization integration', () => {
           to: '2026-08-26T23:59:59.999Z',
         }),
       ).resolves.toMatchObject({
+        awaitingApprovalCount: 0,
         completedCount: failures + successes,
         queuedCount: 0,
         runningCount: 0,
@@ -143,6 +144,29 @@ describe('workflow-run authorization integration', () => {
           to: '2026-08-26T23:59:59.999Z',
         }),
       ).resolves.toHaveLength(failures + successes);
+    },
+  );
+
+  it.each(['RUNNING', 'SUCCESS'] as const)(
+    'does not report an earlier failure after a newer %s run of the same repository workflow',
+    async (status) => {
+      const previousFailure = await prisma.workflowRun.findUniqueOrThrow({ where: { id: visibleRunId } });
+      const laterTimestamp = new Date('2026-08-26T11:00:00.000Z');
+      await prisma.workflowRun.create({
+        data: {
+          completedAt: status === 'SUCCESS' ? laterTimestamp : null,
+          providerCreatedAt: laterTimestamp,
+          providerRunId: `later-${status.toLowerCase()}`,
+          rawStatus: status.toLowerCase(),
+          repositoryId: previousFailure.repositoryId,
+          startedAt: laterTimestamp,
+          status,
+          url: `https://github.com/flowpeek/visible/actions/runs/later-${status.toLowerCase()}`,
+          workflowName: previousFailure.workflowName,
+        },
+      });
+
+      await expect(dashboard.getLatestFailures(users.viewer)).resolves.toEqual([]);
     },
   );
 });

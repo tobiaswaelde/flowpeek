@@ -2,12 +2,14 @@ import { expect, test, type Page } from '@playwright/test';
 
 const accessToken = 'playwright-access-token';
 const dashboardRun = {
+  awaitingApproval: false,
   completedAt: '2026-08-27T10:02:00.000Z',
   durationMs: 120_000,
   id: 'run-1',
   provider: { displayName: 'GitHub', id: 'provider-1', providerType: 'GITHUB' },
   providerCreatedAt: '2026-08-27T10:00:00.000Z',
   providerRunId: '101',
+  reviewUrl: null,
   repository: { id: 'repository-1', name: 'flowpeek', owner: 'flowpeek', url: 'https://github.com/flowpeek/flowpeek' },
   startedAt: '2026-08-27T10:00:00.000Z',
   status: 'FAILED',
@@ -15,6 +17,7 @@ const dashboardRun = {
   workflowName: 'CI',
 };
 const dashboardSummary = {
+  awaitingApprovalCount: 2,
   completedCount: 2,
   medianDurationMs: 90_000,
   queuedCount: 1,
@@ -55,6 +58,7 @@ test('hides system administration navigation from viewers', async ({ page }) => 
   await page.route('**/api/v1/dashboard/summary**', (route) =>
     route.fulfill({
       json: {
+        awaitingApprovalCount: 0,
         completedCount: 0,
         medianDurationMs: null,
         queuedCount: 0,
@@ -113,6 +117,11 @@ test('renders dashboard values, reloads for range filters, and presents request 
   await expect(page.getByText('Failed', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('2m 0s', { exact: true })).toBeVisible();
   await expect(page.getByText('Success rate')).toBeVisible();
+  await expect(page.getByText('Awaiting approval', { exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'View workflows' })).toHaveAttribute(
+    'href',
+    '/workflows/awaiting-approval',
+  );
   await expect(page.getByRole('region', { name: 'Workflow health summary' }).getByText('50 %')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Status distribution' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Repository health' })).toBeVisible();

@@ -49,6 +49,8 @@
             icon="i-lucide-trash-2"
             variant="ghost"
             :aria-label="$t('repositoryDetails.delete')"
+            :disabled="isPending(row.original.id)"
+            :loading="isPending(row.original.id)"
             @click="removeWorkflowFilter(row.original.id)"
           />
         </div>
@@ -61,6 +63,7 @@
 import { computed, onMounted, reactive, ref } from 'vue';
 
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { usePendingActions } from '~/composables/use-pending-actions';
 import type { WorkflowFilter } from '~/types/api/resources';
 
 const props = defineProps<{
@@ -69,6 +72,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const api = useFlowpeekApi();
+const { isPending, run: runPendingAction } = usePendingActions();
 const filters = ref<WorkflowFilter[]>([]);
 const loading = ref(true);
 const adding = ref(false);
@@ -120,13 +124,15 @@ async function addWorkflowFilter(): Promise<void> {
 
 /** Delete a workflow filter without reloading the unchanged table rows. */
 async function removeWorkflowFilter(filterId: string): Promise<void> {
-  error.value = false;
-  try {
-    await api.repositories.deleteWorkflowFilter(props.repositoryId, filterId);
-    filters.value = filters.value.filter((filter) => filter.id !== filterId);
-  } catch {
-    error.value = true;
-  }
+  await runPendingAction(filterId, async () => {
+    error.value = false;
+    try {
+      await api.repositories.deleteWorkflowFilter(props.repositoryId, filterId);
+      filters.value = filters.value.filter((filter) => filter.id !== filterId);
+    } catch {
+      error.value = true;
+    }
+  });
 }
 
 onMounted(() => void load());

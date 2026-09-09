@@ -7,33 +7,40 @@ import { WorkflowRunsQueryService } from '../workflow-runs/workflow-runs-query.s
 import { DashboardService } from './dashboard.service.js';
 
 describe('DashboardService', () => {
-  it('returns failures only when they are the latest terminal run for a visible workflow', async () => {
+  it('returns failures only when they are the latest provider run for a visible repository workflow', async () => {
     const ability = {};
     const workflowRuns = {
       findMany: jest.fn().mockResolvedValue([
         run({
-          completedAt: '2026-08-26T11:00:00.000Z',
+          completedAt: '2026-08-26T13:00:00.000Z',
           repositoryId: 'repository-a',
           status: 'FAILED',
           workflowName: 'Test',
         }),
         run({
-          completedAt: '2026-08-26T10:00:00.000Z',
+          completedAt: null,
+          providerCreatedAt: '2026-08-26T12:00:00.000Z',
           repositoryId: 'repository-a',
-          status: 'SUCCESS',
+          status: 'RUNNING',
           workflowName: 'Build',
         }),
         run({
-          completedAt: '2026-08-26T09:00:00.000Z',
+          completedAt: '2026-08-26T11:00:00.000Z',
           repositoryId: 'repository-a',
           status: 'FAILED',
           workflowName: 'Build',
         }),
         run({
-          completedAt: '2026-08-26T08:00:00.000Z',
+          completedAt: '2026-08-26T10:00:00.000Z',
           repositoryId: 'repository-b',
-          status: 'CANCELLED',
-          workflowName: 'Deploy',
+          status: 'SUCCESS',
+          workflowName: 'Build',
+        }),
+        run({
+          completedAt: '2026-08-26T09:00:00.000Z',
+          repositoryId: 'repository-b',
+          status: 'FAILED',
+          workflowName: 'Build',
         }),
       ]),
       getReadAbility: jest.fn().mockResolvedValue(ability),
@@ -45,11 +52,8 @@ describe('DashboardService', () => {
     ]);
     expect(workflowRuns.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        orderBy: [{ completedAt: 'desc' }, { providerCreatedAt: 'desc' }, { id: 'desc' }],
-        where: {
-          completedAt: { not: null },
-          status: { in: ['SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED'] },
-        },
+        distinct: ['repositoryId', 'workflowName'],
+        orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
       }),
       ability,
     );
@@ -75,6 +79,33 @@ describe('DashboardService', () => {
       expect.objectContaining({
         orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
         take: 10,
+      }),
+      ability,
+    );
+  });
+
+  it('returns visible approval-gated runs ordered by provider creation time', async () => {
+    const ability = {};
+    const workflowRuns = {
+      findMany: jest.fn().mockResolvedValue([
+        run({
+          completedAt: null,
+          providerCreatedAt: '2026-08-26T11:00:00.000Z',
+          repositoryId: 'repository-a',
+          status: 'QUEUED',
+          workflowName: 'Deploy',
+        }),
+      ]),
+      getReadAbility: jest.fn().mockResolvedValue(ability),
+    } as unknown as WorkflowRunsQueryService;
+
+    await expect(
+      new DashboardService(workflowRuns).getAwaitingApproval({ id: 'viewer', role: 'VIEWER', username: 'viewer' }),
+    ).resolves.toHaveLength(1);
+    expect(workflowRuns.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+        where: { awaitingApproval: true },
       }),
       ability,
     );
@@ -131,13 +162,13 @@ describe('DashboardService', () => {
       findMany: jest
         .fn()
         .mockResolvedValueOnce([
-          { durationMs: 100_000, status: 'SUCCESS' },
-          { durationMs: 300_000, status: 'FAILED' },
-          { durationMs: null, status: 'SKIPPED' },
+          { awaitingApproval: false, durationMs: 100_000, status: 'SUCCESS' },
+          { awaitingApproval: false, durationMs: 300_000, status: 'FAILED' },
+          { awaitingApproval: false, durationMs: null, status: 'SKIPPED' },
         ])
         .mockResolvedValueOnce([
-          { durationMs: null, status: 'QUEUED' },
-          { durationMs: null, status: 'RUNNING' },
+          { awaitingApproval: true, durationMs: null, status: 'QUEUED' },
+          { awaitingApproval: false, durationMs: null, status: 'RUNNING' },
         ]),
       getReadAbility: jest.fn().mockResolvedValue(ability),
     } as unknown as WorkflowRunsQueryService;
@@ -148,6 +179,7 @@ describe('DashboardService', () => {
         { from: '2026-08-01T00:00:00.000Z', to: '2026-08-31T23:59:59.999Z' },
       ),
     ).resolves.toEqual({
+      awaitingApprovalCount: 1,
       completedCount: 3,
       medianDurationMs: 200_000,
       queuedCount: 1,
@@ -268,23 +300,27 @@ describe('DashboardService', () => {
 });
 
 function run(input: {
-  completedAt: string;
+  completedAt: string | null;
+  providerCreatedAt?: string;
   repositoryId: string;
   status: WorkflowRun['status'];
   workflowName: string;
 }): WorkflowRun {
+  const providerCreatedAt = input.providerCreatedAt ?? input.completedAt!;
   return {
-    completedAt: new Date(input.completedAt),
-    createdAt: new Date(input.completedAt),
+    awaitingApproval: false,
+    completedAt: input.completedAt ? new Date(input.completedAt) : null,
+    createdAt: new Date(providerCreatedAt),
     durationMs: 60_000,
-    id: `${input.repositoryId}-${input.workflowName}-${input.completedAt}`,
-    providerCreatedAt: new Date(input.completedAt),
-    providerRunId: input.completedAt,
+    id: `${input.repositoryId}-${input.workflowName}-${providerCreatedAt}`,
+    providerCreatedAt: new Date(providerCreatedAt),
+    providerRunId: providerCreatedAt,
     rawStatus: input.status.toLowerCase(),
+    reviewUrl: null,
     repositoryId: input.repositoryId,
-    startedAt: new Date(input.completedAt),
+    startedAt: new Date(providerCreatedAt),
     status: input.status,
-    updatedAt: new Date(input.completedAt),
+    updatedAt: new Date(providerCreatedAt),
     url: 'https://example.test/run',
     workflowName: input.workflowName,
   };

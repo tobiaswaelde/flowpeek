@@ -2,9 +2,14 @@ import { expect, test } from '@playwright/test';
 
 /** Verify that repository and user administration share the full Query Kit table layout. */
 test('repository and user administration render full-page Query Kit tables', async ({ page }, testInfo) => {
+  let releaseRepositoryUpdate: (() => void) | undefined;
+  const repositoryUpdateResponse = new Promise<void>((resolve) => {
+    releaseRepositoryUpdate = resolve;
+  });
   await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
   await page.route(/\/api\/v1\/repositories(?:\?.*)?$/, async (route) => {
     expect(route.request().url()).toContain('fields=');
+    expect(route.request().url()).toContain('workflowRunCount');
     await route.fulfill({
       contentType: 'application/json',
       json: {
@@ -18,12 +23,18 @@ test('repository and user administration render full-page Query Kit tables', asy
             providerAccountId: 'provider-1',
             providerRepositoryId: 'repository-1',
             url: 'https://github.com/tobiaswaelde/flowpeek',
+            workflowRunCount: 12,
             workflowRunRetentionDays: 30,
           },
         ],
         meta: { itemCount: 1, pageCount: 1 },
       },
     });
+  });
+  await page.route('**/api/v1/repositories/repository-1', async (route) => {
+    expect(route.request().method()).toBe('PATCH');
+    await repositoryUpdateResponse;
+    await route.fulfill({ contentType: 'application/json', json: {} });
   });
   await page.route(/\/api\/v1\/users(?:\?.*)?$/, async (route) => {
     expect(route.request().url()).toContain('fields=');
@@ -55,7 +66,10 @@ test('repository and user administration render full-page Query Kit tables', asy
   const repositoryBreadcrumb = page.getByRole('navigation', { name: 'breadcrumb' });
   await expect(repositoryBreadcrumb.getByRole('link', { name: 'Dashboard' })).toHaveAttribute('href', '/');
   await expect(repositoryBreadcrumb).toContainText('Repositories');
-  await expect(page.getByRole('link', { name: 'flowpeek', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('columnheader', { name: 'Workflow runs' })).toBeVisible();
+  await expect(page.locator('tbody')).toContainText('12');
+  await expect(page.locator('tbody').getByRole('link', { name: 'flowpeek', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Open in provider' })).toHaveAttribute(
     'href',
     'https://github.com/tobiaswaelde/flowpeek',
   );
@@ -64,6 +78,13 @@ test('repository and user administration render full-page Query Kit tables', asy
   await expect(repositoryActionsHeader.getByText('Actions', { exact: true })).toHaveClass(/justify-end/);
   await expect(page.locator('tbody td').first()).toHaveCSS('padding-top', '8px');
   await expect(page.getByRole('link', { name: 'Open repository settings' })).toHaveClass(/text-sm/);
+  const toggleRepositoryButton = page.getByRole('button', { name: 'Disable' });
+  await toggleRepositoryButton.click();
+  await expect(toggleRepositoryButton).toBeDisabled();
+  await expect(toggleRepositoryButton.locator('[data-slot="leadingIcon"]')).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('repository-action-loading.png'), fullPage: true });
+  releaseRepositoryUpdate?.();
+  await expect(page.locator('tbody').getByRole('button')).toBeEnabled();
   await page.keyboard.press('Shift+O');
   await expect(page.getByText('Table options', { exact: true })).toBeVisible();
   await page.keyboard.press('Shift+O');
@@ -81,8 +102,17 @@ test('repository and user administration render full-page Query Kit tables', asy
   await page.screenshot({ path: testInfo.outputPath('user-table.png'), fullPage: true });
 });
 
-/** Verify that repository discovery follows the provider-first multi-stage dialog flow. */
-test('adds a repository selected from an enabled provider account', async ({ page }) => {
+/** Verify that repository discovery supports searching and selecting multiple repositories. */
+test('adds multiple repositories selected from an enabled provider account', async ({ page }, testInfo) => {
+  const addedRepositoryIds: string[] = [];
+  let releaseRepositoryDiscovery: (() => void) | undefined;
+  let releaseRepositoryAdds: (() => void) | undefined;
+  const repositoryDiscoveryResponse = new Promise<void>((resolve) => {
+    releaseRepositoryDiscovery = resolve;
+  });
+  const repositoryAddResponses = new Promise<void>((resolve) => {
+    releaseRepositoryAdds = resolve;
+  });
   await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
   await page.route(/\/api\/v1\/provider-accounts(?:\?.*)?$/, async (route) => {
     await route.fulfill({
@@ -107,6 +137,7 @@ test('adds a repository selected from an enabled provider account', async ({ pag
     });
   });
   await page.route('**/api/v1/provider-accounts/provider-1/repositories', async (route) => {
+    await repositoryDiscoveryResponse;
     await route.fulfill({
       contentType: 'application/json',
       json: [
@@ -124,22 +155,33 @@ test('adds a repository selected from an enabled provider account', async ({ pag
           tracked: false,
           url: 'https://github.com/flowpeek/new-repository',
         },
+        {
+          name: 'another-repository',
+          owner: 'flowpeek',
+          providerRepositoryId: 'repository-3',
+          tracked: false,
+          url: 'https://github.com/flowpeek/another-repository',
+        },
       ],
     });
   });
   await page.route('**/api/v1/provider-accounts/provider-1/repositories', async (route) => {
     if (route.request().method() !== 'POST') return route.fallback();
-    expect(route.request().postDataJSON()).toEqual({ providerRepositoryId: 'repository-2' });
+    const body = route.request().postDataJSON() as { providerRepositoryId: string };
+    addedRepositoryIds.push(body.providerRepositoryId);
+    await repositoryAddResponses;
     await route.fulfill({
       contentType: 'application/json',
       json: {
         enabled: true,
-        id: 'repository-2',
+        id: body.providerRepositoryId,
         lastSyncAt: null,
-        name: 'new-repository',
+        name: body.providerRepositoryId === 'repository-2' ? 'new-repository' : 'another-repository',
         owner: 'flowpeek',
         providerAccountId: 'provider-1',
-        url: 'https://github.com/flowpeek/new-repository',
+        url: `https://github.com/flowpeek/${
+          body.providerRepositoryId === 'repository-2' ? 'new-repository' : 'another-repository'
+        }`,
         workflowRunRetentionDays: null,
       },
     });
@@ -162,16 +204,30 @@ test('adds a repository selected from an enabled provider account', async ({ pag
 
   await page.goto('/admin/repositories');
   await page.getByRole('button', { name: 'Add repository' }).click();
-  await expect(page.getByRole('heading', { name: 'Add repository' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Add repositories' })).toBeVisible();
   await page.getByRole('dialog').getByRole('button', { name: 'Show popup' }).click();
   await page.getByRole('option', { name: 'Production GitHub (GitHub)' }).click();
-  await page.getByRole('button', { name: 'Next' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Show popup' }).click();
-  await expect(page.getByRole('option', { name: /flowpeek\/already-tracked/ })).toHaveAttribute('data-disabled', '');
-  await page.getByRole('option', { name: 'flowpeek/new-repository' }).click();
-  await page.getByRole('button', { name: 'Add repository' }).last().click();
+  const nextButton = page.getByRole('button', { name: 'Next' });
+  await expect(nextButton).toBeDisabled();
+  await expect(nextButton.locator('[data-slot="leadingIcon"]')).toBeVisible();
+  releaseRepositoryDiscovery?.();
+  await expect(nextButton).toBeEnabled();
+  await nextButton.click();
+  await expect(page.getByRole('checkbox', { name: 'Select flowpeek/already-tracked' })).toBeDisabled();
+  await page.getByPlaceholder('Search repositories').fill('repository');
+  await page.getByRole('checkbox', { name: 'Select flowpeek/new-repository' }).click();
+  await page.getByRole('checkbox', { name: 'Select flowpeek/another-repository' }).click();
+  await expect(page.getByText('Selected: 2', { exact: true })).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('multi-repository-selection.png'), fullPage: true });
+  const addButton = page.getByRole('button', { name: 'Add selected (2)' });
+  await addButton.click();
+  await expect(addButton).toBeDisabled();
+  await expect(addButton.locator('[data-slot="leadingIcon"]')).toBeVisible();
+  await expect.poll(() => addedRepositoryIds.length).toBe(2);
+  releaseRepositoryAdds?.();
 
-  await expect(page.getByRole('heading', { name: 'Add repository' })).not.toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Add repositories' })).not.toBeVisible();
+  expect(addedRepositoryIds.sort()).toEqual(['repository-2', 'repository-3']);
 });
 
 /** Verify the repository settings screen exposes retention, workflow filters, and memberships. */
@@ -253,7 +309,11 @@ test('repository settings load retention, filters, and members', async ({ page }
 test('workflow runs render in a filterable and sortable full-page table', async ({ page }) => {
   await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
   await page.route(/\/api\/v1\/workflow-runs(?:\?.*)?$/, async (route) => {
-    expect(route.request().url()).toContain('fields=');
+    const requestUrl = route.request().url();
+    expect(requestUrl).toContain('fields=');
+    expect(requestUrl).toContain('repositoryName');
+    expect(requestUrl).toContain('repositoryOwner');
+    expect(requestUrl).toContain('providerType');
     await route.fulfill({
       contentType: 'application/json',
       json: {
@@ -264,7 +324,10 @@ test('workflow runs render in a filterable and sortable full-page table', async 
             id: 'run-1',
             providerCreatedAt: '2026-09-08T08:00:00.000Z',
             providerRunId: '42',
+            providerType: 'GITHUB',
             repositoryId: 'repository-1',
+            repositoryName: 'flowpeek',
+            repositoryOwner: 'twaelde',
             startedAt: '2026-09-08T08:00:00.000Z',
             status: 'SUCCESS',
             url: 'https://github.com/tobiaswaelde/flowpeek/actions/runs/42',
@@ -286,10 +349,18 @@ test('workflow runs render in a filterable and sortable full-page table', async 
 
   const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
   await expect(navigation.getByRole('link', { name: 'Workflow runs' })).toHaveAttribute('href', '/workflow-runs');
-  await expect(page.getByRole('link', { name: 'Build', exact: true })).toHaveAttribute(
-    'href',
-    'https://github.com/tobiaswaelde/flowpeek/actions/runs/42',
-  );
+  await expect(page.locator('tbody').getByRole('link', { name: 'Build', exact: true })).toHaveCount(0);
+  await expect(page.getByText('twaelde/flowpeek', { exact: true })).toBeVisible();
+  await expect(page.getByText('GitHub', { exact: true })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Provider time' })).toHaveCount(0);
+  await expect(page.getByRole('columnheader', { name: 'Started' })).toHaveCount(0);
+  await expect(page.getByRole('columnheader', { name: 'Provider run ID' })).toHaveCount(0);
+  await expect(page.getByRole('columnheader', { name: 'Completed' })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Actions' })).toHaveCSS('position', 'sticky');
+  await expect(page.locator('tbody')).not.toContainText(/\b(?:AM|PM)\b/);
+  const externalLink = page.getByRole('link', { name: 'Open in provider' });
+  await expect(externalLink).toHaveAttribute('href', 'https://github.com/tobiaswaelde/flowpeek/actions/runs/42');
+  await expect(externalLink.locator('[aria-hidden="true"]')).toBeVisible();
   await expect(page.getByText('Success', { exact: true })).toBeVisible();
   await page.keyboard.press('Shift+O');
   await expect(page.getByText('Table options', { exact: true })).toBeVisible();

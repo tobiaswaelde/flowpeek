@@ -13,7 +13,7 @@ import type {
   VerifiedWebhook,
 } from '../provider-adapter.js';
 import { PROVIDER_FETCH } from '../provider-adapter.js';
-import { normalizeWorkflowRunStatus } from '../workflow-status.js';
+import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 interface ForgejoRepository {
@@ -120,6 +120,7 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
     const startedAt = run.run_started_at ? new Date(run.run_started_at) : null;
     const completedAt = run.status === 'completed' ? new Date(run.updated_at) : null;
     return {
+      awaitingApproval: isWorkflowRunAwaitingApproval('FORGEJO', run.status, run.conclusion ?? null),
       providerRunId: String(run.id),
       workflowName: run.workflow_name ?? run.name ?? 'Workflow',
       url: run.html_url,
@@ -129,6 +130,7 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
       durationMs: startedAt && completedAt ? completedAt.getTime() - startedAt.getTime() : null,
       status: normalizeWorkflowRunStatus('FORGEJO', run.status, run.conclusion ?? null),
       rawStatus: run.conclusion ?? run.status,
+      reviewUrl: null,
     };
   }
 }

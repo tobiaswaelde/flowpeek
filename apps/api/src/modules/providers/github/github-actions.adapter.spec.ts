@@ -42,4 +42,38 @@ describe('GitHubActionsAdapter', () => {
       }),
     ).resolves.toEqual({ event: 'workflow_run', providerRepositoryId: '1' });
   });
+
+  it('maps waiting runs and their pull request without issuing a provider write', async () => {
+    const fetchFn = jest.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          workflow_runs: [
+            {
+              conclusion: null,
+              created_at: '2026-09-09T08:00:00Z',
+              html_url: 'https://github.com/octo/flowpeek/actions/runs/8',
+              id: 8,
+              name: 'Deploy',
+              pull_requests: [{ number: 42 }],
+              run_started_at: '2026-09-09T08:01:00Z',
+              status: 'waiting',
+              updated_at: '2026-09-09T08:02:00Z',
+            },
+          ],
+        }),
+      ),
+    );
+    const adapter = new GitHubActionsAdapter(fetchFn);
+
+    await expect(
+      adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'octo', name: 'flowpeek' }),
+    ).resolves.toMatchObject([
+      {
+        awaitingApproval: true,
+        reviewUrl: 'https://github.com/octo/flowpeek/pull/42',
+        status: 'QUEUED',
+      },
+    ]);
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+  });
 });

@@ -44,9 +44,7 @@
         }"
       >
         <template #name-cell="{ row }">
-          <a class="font-medium hover:underline" rel="noreferrer" target="_blank" :href="row.original.url">
-            {{ row.original.name }}
-          </a>
+          <span class="font-medium">{{ row.original.name }}</span>
         </template>
         <template #enabled-cell="{ row }">
           <UBadge variant="subtle" :color="row.original.enabled ? 'success' : 'neutral'">
@@ -58,6 +56,9 @@
             {{ row.original.workflowRunRetentionDays ?? $t('repositories.default') }}
           </span>
         </template>
+        <template #workflowRunCount-cell="{ row }">
+          <span class="tabular-nums">{{ row.original.workflowRunCount ?? 0 }}</span>
+        </template>
         <template #lastSyncAt-cell="{ row }">
           <span class="whitespace-nowrap text-sm text-muted">{{ formatLastSync(row.original.lastSyncAt) }}</span>
         </template>
@@ -66,6 +67,15 @@
         </template>
         <template #actions-cell="{ row }">
           <div class="flex justify-end gap-1">
+            <UButton
+              color="neutral"
+              icon="i-tabler-external-link"
+              rel="noreferrer"
+              target="_blank"
+              variant="ghost"
+              :aria-label="$t('dashboard.openProvider')"
+              :to="row.original.url"
+            />
             <UButton
               color="neutral"
               icon="i-lucide-settings-2"
@@ -77,7 +87,9 @@
               color="neutral"
               variant="ghost"
               :aria-label="row.original.enabled ? $t('repositories.disable') : $t('repositories.enable')"
+              :disabled="isPending(row.original.id)"
               :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
+              :loading="isPending(row.original.id)"
               @click="toggle(row.original)"
             />
           </div>
@@ -102,6 +114,8 @@ import { computed, onMounted, ref } from 'vue';
 import { FilterFieldType, type FilterField, type SortingField } from '@querry-kit/nuxt-ui/types';
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
 import { useTable } from '~/composables/api/table';
+import { useDateTime } from '~/composables/use-date-time';
+import { usePendingActions } from '~/composables/use-pending-actions';
 import type { Repository } from '~/types/api/resources';
 import type { ColumnDefinition } from '~/types/table';
 
@@ -111,12 +125,15 @@ type RepositoryTableColumn = ColumnDefinition<RepositoryRow> & { header: string;
 definePageMeta({ fullWidth: true });
 
 const { t } = useI18n();
+const { formatDateTime } = useDateTime();
 const api = useFlowpeekApi();
 const dialogOpen = ref(false);
+const { isPending, run: runPendingAction } = usePendingActions();
 const columnDefinition = computed<RepositoryTableColumn[]>(() => [
   { accessorKey: 'owner', header: t('repositories.columns.owner'), id: 'owner' },
   { accessorKey: 'name', header: t('repositories.columns.name'), id: 'name' },
   { accessorKey: 'enabled', header: t('repositories.columns.status'), id: 'enabled' },
+  { accessorKey: 'workflowRunCount', header: t('repositories.columns.workflowRuns'), id: 'workflowRunCount' },
   {
     accessorKey: 'workflowRunRetentionDays',
     header: t('repositories.columns.retention'),
@@ -165,7 +182,7 @@ const columnPinning = computed({
 /** Format a repository's last successful synchronization in the active interface locale. */
 function formatLastSync(lastSyncAt: string | null): string {
   if (!lastSyncAt) return t('repositories.neverSynced');
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(lastSyncAt));
+  return formatDateTime(lastSyncAt);
 }
 
 /** Open the dialog used to discover a provider-owned repository. */
@@ -185,11 +202,13 @@ async function handleRepositoryCreated(): Promise<void> {
 
 /** Enable or disable a repository without changing its retention configuration. */
 async function toggle(repository: Repository): Promise<void> {
-  await api.repositories.update(repository.id, {
-    enabled: !repository.enabled,
-    workflowRunRetentionDays: repository.workflowRunRetentionDays,
+  await runPendingAction(repository.id, async () => {
+    await api.repositories.update(repository.id, {
+      enabled: !repository.enabled,
+      workflowRunRetentionDays: repository.workflowRunRetentionDays,
+    });
+    repositoryTable.updateRow({ ...repository, enabled: !repository.enabled } as RepositoryRow);
   });
-  repositoryTable.updateRow({ ...repository, enabled: !repository.enabled } as RepositoryRow);
 }
 
 onMounted(() => void repositoryTable.initialize());

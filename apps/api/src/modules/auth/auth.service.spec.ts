@@ -10,7 +10,7 @@ describe('AuthService', () => {
       update: jest.fn(),
     },
   };
-  const jwt = { signAsync: jest.fn() };
+  const jwt = { signAsync: jest.fn(), verifyAsync: jest.fn() };
   const service = new AuthService(prisma as never, jwt as never);
 
   beforeEach(() => {
@@ -36,5 +36,22 @@ describe('AuthService', () => {
       accessToken: 'jwt',
       user: { id: 'user-id', role: 'VIEWER', username: 'viewer' },
     });
+  });
+
+  it('authenticates a valid access token against the current persisted user', async () => {
+    jwt.verifyAsync.mockResolvedValue({ sub: 'user-id' });
+    prisma.user.findUnique.mockResolvedValue({ id: 'user-id', role: 'MANAGER', username: 'manager' });
+
+    await expect(service.authenticateAccessToken('jwt')).resolves.toEqual({
+      id: 'user-id',
+      role: 'MANAGER',
+      username: 'manager',
+    });
+  });
+
+  it('rejects an invalid access token', async () => {
+    jwt.verifyAsync.mockRejectedValue(new Error('invalid token'));
+
+    await expect(service.authenticateAccessToken('invalid')).rejects.toBeInstanceOf(UnauthorizedException);
   });
 });

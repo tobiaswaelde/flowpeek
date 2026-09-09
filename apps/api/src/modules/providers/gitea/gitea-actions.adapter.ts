@@ -13,7 +13,7 @@ import type {
   VerifiedWebhook,
 } from '../provider-adapter.js';
 import { PROVIDER_FETCH } from '../provider-adapter.js';
-import { normalizeWorkflowRunStatus } from '../workflow-status.js';
+import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
@@ -140,11 +140,13 @@ export class GiteaActionsAdapter implements ProviderAdapter {
         ? new Date(run.updated_at)
         : null;
     return {
+      awaitingApproval: isWorkflowRunAwaitingApproval('GITEA', run.status, run.conclusion ?? null),
       completedAt,
       durationMs: startedAt && completedAt ? completedAt.getTime() - startedAt.getTime() : null,
       providerCreatedAt: new Date(run.created_at),
       providerRunId: String(run.id),
       rawStatus: run.conclusion ?? run.status,
+      reviewUrl: null,
       startedAt,
       status: normalizeWorkflowRunStatus('GITEA', run.status, run.conclusion ?? null),
       url: run.html_url,

@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 
+import { ENV } from '../../config/env.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import type { AuthResult, AuthenticatedUser } from './types.js';
 
@@ -28,6 +29,24 @@ export class AuthService {
       where: { id: userId },
       data: { passwordHash: await bcrypt.hash(newPassword, 12) },
     });
+  }
+
+  /**
+   * Validate a bearer token supplied during a non-HTTP transport handshake.
+   *
+   * @param accessToken - Encoded Flowpeek access token.
+   * @returns The current persisted user represented by the token.
+   * @throws UnauthorizedException when the token or referenced user is invalid.
+   */
+  async authenticateAccessToken(accessToken: string): Promise<AuthenticatedUser> {
+    try {
+      const payload = await this.jwt.verifyAsync<{ sub: string }>(accessToken, { issuer: ENV.AUTH_JWT_ISSUER });
+      const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
+      if (!user) throw new UnauthorizedException();
+      return { id: user.id, role: user.role, username: user.username };
+    } catch {
+      throw new UnauthorizedException();
+    }
   }
 
   private createAccessToken(user: AuthenticatedUser): Promise<string> {

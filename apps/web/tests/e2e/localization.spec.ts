@@ -4,7 +4,13 @@ import { expect, test } from '@playwright/test';
 test('selects and persists a translated interface locale with an English fallback', async ({ page }) => {
   await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/provider-accounts', async (route) => {
-    await route.fulfill({ contentType: 'application/json', json: [] });
+    await route.fulfill({
+      contentType: 'application/json',
+      json: {
+        items: [],
+        meta: { hasNextPage: false, hasPrevPage: false, itemCount: 0, page: 1, pageCount: 0, perPage: 10 },
+      },
+    });
   });
   await page.route('**/api/v1/provider-accounts/authentication-options', async (route) => {
     await route.fulfill({ contentType: 'application/json', json: { oauthProviderTypes: [] } });
@@ -17,7 +23,8 @@ test('selects and persists a translated interface locale with an English fallbac
   });
 
   await page.goto('/admin/providers');
-  await page.getByRole('button', { name: 'Language' }).click();
+  await page.getByRole('button', { name: 'playwright' }).click();
+  await page.getByText('Language', { exact: true }).click();
   await page.getByRole('menuitemcheckbox', { name: 'Español' }).click();
 
   await expect(page.getByText('Cuentas de proveedores', { exact: true }).first()).toBeVisible();
