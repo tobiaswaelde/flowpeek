@@ -68,6 +68,21 @@ export class RepositoriesQueryService extends QueryService<
 
   /** Apply a stable default order when the table has no selected sort. */
   toQueryOptions(query: RepositoryQueryDto): QueryOptionsMap<RepositoryTypeMap>['query'] {
-    return { ...query, orderBy: query.orderBy ?? [{ owner: 'asc' }, { name: 'asc' }, { id: 'asc' }] };
+    const { search, where, ...options } = query;
+    const searchWhere: Prisma.RepositoryWhereInput | undefined = search
+      ? {
+          OR: [
+            { owner: { contains: search, mode: 'insensitive' } },
+            { name: { contains: search, mode: 'insensitive' } },
+            { url: { contains: search, mode: 'insensitive' } },
+          ],
+        }
+      : undefined;
+
+    return {
+      ...options,
+      where: searchWhere ? { AND: [where ?? {}, searchWhere] } : where,
+      orderBy: query.orderBy ?? [{ owner: 'asc' }, { name: 'asc' }, { id: 'asc' }],
+    };
   }
 }

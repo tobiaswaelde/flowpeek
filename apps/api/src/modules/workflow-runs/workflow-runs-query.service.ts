@@ -91,6 +91,9 @@ export class WorkflowRunsQueryService extends QueryService<
       ? {
           OR: [
             { displayTitle: { contains: search, mode: 'insensitive' } },
+            { providerRunId: { contains: search, mode: 'insensitive' } },
+            { repository: { name: { contains: search, mode: 'insensitive' } } },
+            { repository: { owner: { contains: search, mode: 'insensitive' } } },
             { workflowName: { contains: search, mode: 'insensitive' } },
           ],
         }

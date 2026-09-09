@@ -62,6 +62,20 @@ export class ProviderAccountsQueryService extends QueryService<
 
   /** Apply a stable default order when no sort is selected in the table. */
   toQueryOptions(query: ProviderAccountQueryDto): QueryOptionsMap<ProviderAccountTypeMap>['query'] {
-    return { ...query, orderBy: query.orderBy ?? [{ displayName: 'asc' }, { id: 'asc' }] };
+    const { search, where, ...options } = query;
+    const searchWhere: Prisma.ProviderAccountWhereInput | undefined = search
+      ? {
+          OR: [
+            { displayName: { contains: search, mode: 'insensitive' } },
+            { baseUrl: { contains: search, mode: 'insensitive' } },
+          ],
+        }
+      : undefined;
+
+    return {
+      ...options,
+      where: searchWhere ? { AND: [where ?? {}, searchWhere] } : where,
+      orderBy: query.orderBy ?? [{ displayName: 'asc' }, { id: 'asc' }],
+    };
   }
 }

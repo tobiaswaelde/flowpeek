@@ -32,4 +32,20 @@ describe('ProviderAccountsQueryService', () => {
       perPage: 10,
     });
   });
+
+  it('searches provider identity fields while preserving caller filters', () => {
+    expect(service.toQueryOptions({ page: 1, perPage: 10, search: 'github', where: { enabled: true } })).toMatchObject({
+      where: {
+        AND: [
+          { enabled: true },
+          {
+            OR: [
+              { displayName: { contains: 'github', mode: 'insensitive' } },
+              { baseUrl: { contains: 'github', mode: 'insensitive' } },
+            ],
+          },
+        ],
+      },
+    });
+  });
 });

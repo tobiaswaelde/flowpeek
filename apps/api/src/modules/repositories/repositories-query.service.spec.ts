@@ -41,4 +41,23 @@ describe('RepositoriesQueryService', () => {
       perPage: 10,
     });
   });
+
+  it('searches repository identity fields while preserving caller filters', () => {
+    expect(
+      service.toQueryOptions({ page: 1, perPage: 10, search: 'flowpeek', where: { enabled: true } }),
+    ).toMatchObject({
+      where: {
+        AND: [
+          { enabled: true },
+          {
+            OR: [
+              { owner: { contains: 'flowpeek', mode: 'insensitive' } },
+              { name: { contains: 'flowpeek', mode: 'insensitive' } },
+              { url: { contains: 'flowpeek', mode: 'insensitive' } },
+            ],
+          },
+        ],
+      },
+    });
+  });
 });

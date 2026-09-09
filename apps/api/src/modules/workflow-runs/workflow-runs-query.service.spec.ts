@@ -35,6 +35,9 @@ describe('WorkflowRunsQueryService', () => {
               {
                 OR: [
                   { displayTitle: { contains: 'deploy', mode: 'insensitive' } },
+                  { providerRunId: { contains: 'deploy', mode: 'insensitive' } },
+                  { repository: { name: { contains: 'deploy', mode: 'insensitive' } } },
+                  { repository: { owner: { contains: 'deploy', mode: 'insensitive' } } },
                   { workflowName: { contains: 'deploy', mode: 'insensitive' } },
                 ],
               },
@@ -93,6 +96,9 @@ describe('WorkflowRunsQueryService', () => {
               {
                 OR: [
                   { displayTitle: { contains: 'deploy', mode: 'insensitive' } },
+                  { providerRunId: { contains: 'deploy', mode: 'insensitive' } },
+                  { repository: { name: { contains: 'deploy', mode: 'insensitive' } } },
+                  { repository: { owner: { contains: 'deploy', mode: 'insensitive' } } },
                   { workflowName: { contains: 'deploy', mode: 'insensitive' } },
                 ],
               },
