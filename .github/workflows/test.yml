@@ -83,5 +83,5 @@ jobs:
         run: pnpm nx run api:test
 
       - name: Test web app
-        if: hashFiles('apps/web/vitest.config.ts') != ''
+        if: hashFiles('apps/web/vitest.config.mts') != ''
         run: pnpm nx run web:test
