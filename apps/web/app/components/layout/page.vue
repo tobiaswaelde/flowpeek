@@ -14,11 +14,42 @@
       </template>
     </UDashboardToolbar>
 
+    <UDashboardToolbar
+      v-if="bannerVisible && !padded"
+      class="shrink-0 border-b border-default px-4 py-2"
+      data-page-introduction
+      data-page-introduction-toolbar
+      :data-intro-banner-id="bannerId"
+      :ui="{ left: 'min-w-0', right: 'shrink-0' }"
+    >
+      <template #left>
+        <div class="flex min-w-0 items-start gap-2">
+          <UIcon class="mt-0.5 size-4 shrink-0 text-muted" :name="icon" />
+          <div class="min-w-0">
+            <h1 class="break-words text-sm font-semibold">{{ title }}</h1>
+            <p class="break-words text-sm text-muted">{{ description }}</p>
+          </div>
+        </div>
+      </template>
+      <template #right>
+        <UButton
+          color="neutral"
+          icon="i-lucide-x"
+          size="xs"
+          variant="ghost"
+          :aria-label="t('pageIntro.dismiss', { title })"
+          :loading="dismissing"
+          @click="dismissBanner"
+        />
+      </template>
+    </UDashboardToolbar>
+
     <div data-page-content :class="contentClasses">
-      <div v-if="bannerVisible" :class="bannerContainerClasses" data-page-introduction>
+      <div v-if="bannerVisible && padded" class="w-full min-w-0 shrink-0" data-page-introduction>
         <UAlert
           class="min-w-0 max-w-full"
           color="neutral"
+          data-page-introduction-alert
           orientation="horizontal"
           variant="subtle"
           :data-intro-banner-id="bannerId"
@@ -41,7 +72,7 @@
           </template>
         </UAlert>
       </div>
-      <h1 v-else class="sr-only">{{ title }}</h1>
+      <h1 v-else-if="!bannerVisible" class="sr-only">{{ title }}</h1>
 
       <slot />
     </div>
@@ -85,10 +116,6 @@ const contentClasses = computed(() => {
     props.fullWidth ? undefined : 'mx-auto max-w-7xl',
   ];
 });
-const bannerContainerClasses = computed(() =>
-  props.padded ? 'w-full min-w-0 shrink-0' : 'w-full min-w-0 shrink-0 px-4 pt-4',
-);
-
 /** Persist dismissal for this page while preserving the banner after a failed request. */
 async function dismissBanner(): Promise<void> {
   if (dismissing.value) return;

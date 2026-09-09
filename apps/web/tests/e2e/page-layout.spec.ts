@@ -53,6 +53,9 @@ async function mockApplication(page: Page, preferences: PreferenceMocks): Promis
   await page.route(/\/api\/v1\/(?:provider-accounts|repositories|users|workflow-runs)(?:\?.*)?$/, (route) =>
     route.fulfill({ json: emptyPage }),
   );
+  await page.route(/\/api\/v1\/workflow-runs\/needs-attention(?:\?.*)?$/, (route) =>
+    route.fulfill({ json: emptyPage }),
+  );
   await page.route('**/api/v1/repositories/repository-1', (route) =>
     route.fulfill({
       json: {
@@ -79,15 +82,31 @@ test('uses the shared page shell, toolbar, breadcrumbs, and introduction on ever
 }, testInfo) => {
   await mockApplication(page, { dismissedBannerIds: new Set() });
   const pages = [
-    { bannerId: 'dashboard', path: '/', title: 'Workflow dashboard' },
-    { bannerId: 'workflow-runs', path: '/workflow-runs', title: 'Workflow runs' },
-    { bannerId: 'awaiting-approval', path: '/workflows/awaiting-approval', title: 'Awaiting approval' },
-    { bannerId: 'notifications', path: '/notifications', title: 'Notifications' },
-    { bannerId: 'admin-providers', path: '/admin/providers', title: 'Provider accounts' },
-    { bannerId: 'admin-repositories', path: '/admin/repositories', title: 'Repositories' },
-    { bannerId: 'repository-details', path: '/admin/repositories/repository-1', title: 'tobiaswaelde/flowpeek' },
-    { bannerId: 'admin-users', path: '/admin/users', title: 'Users' },
-    { bannerId: 'settings', path: '/admin/settings', title: 'Settings' },
+    { bannerId: 'dashboard', path: '/', tablePage: false, title: 'Workflow dashboard' },
+    { bannerId: 'workflow-runs', path: '/workflow-runs', tablePage: true, title: 'Workflow runs' },
+    {
+      bannerId: 'needs-attention',
+      path: '/workflow-runs/needs-attention',
+      tablePage: true,
+      title: 'Needs attention',
+    },
+    {
+      bannerId: 'awaiting-approval',
+      path: '/workflows/awaiting-approval',
+      tablePage: true,
+      title: 'Awaiting approval',
+    },
+    { bannerId: 'notifications', path: '/notifications', tablePage: false, title: 'Notifications' },
+    { bannerId: 'admin-providers', path: '/admin/providers', tablePage: true, title: 'Provider accounts' },
+    { bannerId: 'admin-repositories', path: '/admin/repositories', tablePage: true, title: 'Repositories' },
+    {
+      bannerId: 'repository-details',
+      path: '/admin/repositories/repository-1',
+      tablePage: false,
+      title: 'tobiaswaelde/flowpeek',
+    },
+    { bannerId: 'admin-users', path: '/admin/users', tablePage: true, title: 'Users' },
+    { bannerId: 'settings', path: '/admin/settings', tablePage: false, title: 'Settings' },
   ];
 
   for (const currentPage of pages) {
@@ -101,6 +120,12 @@ test('uses the shared page shell, toolbar, breadcrumbs, and introduction on ever
     await expect(pageToolbar.locator('[data-page-introduction]')).toHaveCount(0);
     await expect(page.getByRole('heading', { level: 1, name: currentPage.title })).toBeVisible();
     await expect(introduction).toBeVisible();
+    await expect(
+      page.locator(`[data-intro-banner-id="${currentPage.bannerId}"][data-page-introduction-toolbar]`),
+    ).toHaveCount(currentPage.tablePage ? 1 : 0);
+    await expect(
+      page.locator(`[data-intro-banner-id="${currentPage.bannerId}"][data-page-introduction-alert]`),
+    ).toHaveCount(currentPage.tablePage ? 0 : 1);
     await expect
       .poll(() =>
         introduction.evaluate((element) => {
@@ -120,6 +145,21 @@ test('uses the shared page shell, toolbar, breadcrumbs, and introduction on ever
       )
       .toBe(true);
   }
+
+  await page.goto('/workflows/awaiting-approval');
+  await expect
+    .poll(() =>
+      page.locator('[data-page-content]').evaluate((content) => {
+        const contentBounds = content.getBoundingClientRect();
+        const shellBounds = content.closest('[data-page-shell]')?.getBoundingClientRect();
+        return Boolean(
+          shellBounds &&
+          Math.abs(contentBounds.left - shellBounds.left) <= 1 &&
+          Math.abs(contentBounds.right - shellBounds.right) <= 1,
+        );
+      }),
+    )
+    .toBe(true);
 
   await page.setViewportSize({ height: 844, width: 390 });
   await page.goto('/admin/providers');
@@ -165,6 +205,7 @@ test('keeps table breadcrumbs, controls, and creation actions in one toolbar row
   await mockApplication(page, { dismissedBannerIds: new Set() });
   const tablePages = [
     { newAction: undefined, path: '/workflow-runs' },
+    { newAction: undefined, path: '/workflow-runs/needs-attention' },
     { newAction: 'Add provider', path: '/admin/providers' },
     { newAction: 'Add repository', path: '/admin/repositories' },
     { newAction: undefined, path: '/admin/users' },
