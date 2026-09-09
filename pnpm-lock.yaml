@@ -196,8 +196,8 @@ importers:
         specifier: ^0.2.3
         version: 0.2.3(ae360acc296cfe70da5c4f8e51cc7686)
       '@querry-kit/nuxt-ui':
-        specifier: ^3.2.1
-        version: 3.2.1(@nuxt/ui@4.11.1(361162b20137b6ccf03ba2b7660cb23c))(@querry-kit/nuxt@0.2.3(ae360acc296cfe70da5c4f8e51cc7686))(@tanstack/table-core@8.21.3)(@vueuse/core@14.4.0(vue@3.5.42(typescript@6.0.3)))(nuxt@4.5.2(6631dc1f704e189f36c9d1f068587f03))(vue@3.5.42(typescript@6.0.3))
+        specifier: ^3.3.0
+        version: 3.3.0(@nuxt/ui@4.11.1(361162b20137b6ccf03ba2b7660cb23c))(@querry-kit/nuxt@0.2.3(ae360acc296cfe70da5c4f8e51cc7686))(@tanstack/table-core@8.21.3)(@types/sortablejs@1.15.9)(@vueuse/core@14.4.0(vue@3.5.42(typescript@6.0.3)))(nuxt@4.5.2(6631dc1f704e189f36c9d1f068587f03))(vue@3.5.42(typescript@6.0.3))
       '@tanstack/table-core':
         specifier: ^8.21.3
         version: 8.21.3
@@ -2507,8 +2507,8 @@ packages:
       '@casl/prisma':
         optional: true
 
-  '@querry-kit/nuxt-ui@3.2.1':
-    resolution: {integrity: sha512-ZCopgxpCVcSjMR7Tip/lNIfiBY/nKM+lu7xamShnQEfFSi2xRJbT5/1NVibxciMt1C01z8J+6MxxQoFjggl/wQ==}
+  '@querry-kit/nuxt-ui@3.3.0':
+    resolution: {integrity: sha512-O2jduJLDFnEyVmsboXCHVZQHk/m7VcEvgMn4W0h9wsIY58zsUYUFhB7B8xjc/Zn3sOLKvtWZEp06Ny24wpYguA==}
     engines: {node: '>=24'}
     peerDependencies:
       '@nuxt/ui': ^4.0.0
@@ -3494,6 +3494,9 @@ packages:
 
   '@types/serve-static@2.2.0':
     resolution: {integrity: sha512-8mam4H1NHLtu7nmtalF7eyBH14QyOASmcxHhSfEoRyr0nP/YdoesEtU+uSRvMe96TW/HPTtkoKqQLl53N7UXMQ==}
+
+  '@types/sortablejs@1.15.9':
+    resolution: {integrity: sha512-7HP+rZGE2p886PKV9c9OJzLBI6BBJu1O7lJGYnPyG3fS4/duUCcngkNCjsLwIMV+WMqANe3tt4irrXHSIe68OQ==}
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
@@ -8427,6 +8430,15 @@ packages:
   vue-devtools-stub@0.1.0:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
 
+  vue-draggable-plus@0.6.1:
+    resolution: {integrity: sha512-FbtQ/fuoixiOfTZzG3yoPl4JAo9HJXRHmBQZFB9x2NYCh6pq0TomHf7g5MUmpaDYv+LU2n6BPq2YN9sBO+FbIg==}
+    peerDependencies:
+      '@types/sortablejs': ^1.15.0
+      '@vue/composition-api': '*'
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+
   vue-eslint-parser@10.4.1:
     resolution: {integrity: sha512-Gk6gRDj0n/fkRa3C3l0bBheoBckUq/Rs0F/TvMWIS6nzzx67amAViMe9CkNgsP2tXyQONvGiHQESHwFtZ3aYDA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -11302,7 +11314,7 @@ snapshots:
       '@casl/ability': 7.0.1
       '@casl/prisma': 2.0.2(@casl/ability@7.0.1)(@prisma/client@7.10.0(prisma@7.10.0(@types/react@19.2.18)(magicast@0.5.4)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(typescript@6.0.3))
 
-  '@querry-kit/nuxt-ui@3.2.1(@nuxt/ui@4.11.1(361162b20137b6ccf03ba2b7660cb23c))(@querry-kit/nuxt@0.2.3(ae360acc296cfe70da5c4f8e51cc7686))(@tanstack/table-core@8.21.3)(@vueuse/core@14.4.0(vue@3.5.42(typescript@6.0.3)))(nuxt@4.5.2(6631dc1f704e189f36c9d1f068587f03))(vue@3.5.42(typescript@6.0.3))':
+  '@querry-kit/nuxt-ui@3.3.0(@nuxt/ui@4.11.1(361162b20137b6ccf03ba2b7660cb23c))(@querry-kit/nuxt@0.2.3(ae360acc296cfe70da5c4f8e51cc7686))(@tanstack/table-core@8.21.3)(@types/sortablejs@1.15.9)(@vueuse/core@14.4.0(vue@3.5.42(typescript@6.0.3)))(nuxt@4.5.2(6631dc1f704e189f36c9d1f068587f03))(vue@3.5.42(typescript@6.0.3))':
     dependencies:
       '@nuxt/ui': 4.11.1(361162b20137b6ccf03ba2b7660cb23c)
       '@querry-kit/nuxt': 0.2.3(ae360acc296cfe70da5c4f8e51cc7686)
@@ -11310,6 +11322,10 @@ snapshots:
       '@vueuse/core': 14.4.0(vue@3.5.42(typescript@6.0.3))
       nuxt: 4.5.2(6631dc1f704e189f36c9d1f068587f03)
       vue: 3.5.42(typescript@6.0.3)
+      vue-draggable-plus: 0.6.1(@types/sortablejs@1.15.9)
+    transitivePeerDependencies:
+      - '@types/sortablejs'
+      - '@vue/composition-api'
 
   '@querry-kit/nuxt@0.2.3(ae360acc296cfe70da5c4f8e51cc7686)':
     dependencies:
@@ -12158,6 +12174,8 @@ snapshots:
     dependencies:
       '@types/http-errors': 2.0.5
       '@types/node': 26.5.0
+
+  '@types/sortablejs@1.15.9': {}
 
   '@types/stack-utils@2.0.3': {}
 
@@ -17883,6 +17901,10 @@ snapshots:
       vue: 3.5.42(typescript@6.0.3)
 
   vue-devtools-stub@0.1.0: {}
+
+  vue-draggable-plus@0.6.1(@types/sortablejs@1.15.9):
+    dependencies:
+      '@types/sortablejs': 1.15.9
 
   vue-eslint-parser@10.4.1(eslint@10.10.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0):
     dependencies:

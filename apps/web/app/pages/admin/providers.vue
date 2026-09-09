@@ -10,28 +10,26 @@
     />
 
     <div class="flex min-h-0 flex-1 flex-col">
-      <UDashboardToolbar>
-        <template #left>
-          <UBreadcrumb
-            :items="[
-              { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
-              { icon: 'i-lucide-plug-zap', label: $t('layout.providers') },
-            ]"
-          />
-        </template>
-        <template #right>
-          <QTableSorting v-model:sorting="sorting" :fields="sortableFields" shortcuts />
-          <QTableFiltering v-model:filtering="filtering" :fields="filterFields" shortcuts />
-          <QTableOptions
-            v-model:column-order="columnOrder"
-            v-model:column-pinning="columnPinning"
-            v-model:invisible-columns="columnVisibility"
-            :columns="columnDefinition"
-            shortcuts
-          />
+      <QTableToolbar
+        v-model:column-order="columnOrder"
+        v-model:column-pinning="columnPinning"
+        v-model:filtering="filtering"
+        v-model:invisible-columns="columnVisibility"
+        v-model:sorting="sorting"
+        :breadcrumb-items="[
+          { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
+          { icon: 'i-lucide-plug-zap', label: $t('layout.providers') },
+        ]"
+        :column-definitions="columnDefinition"
+        :filter-fields="filterFields"
+        :sortable-fields="sortableFields"
+        shortcuts
+        :ui="{ root: 'border-b border-default p-4' }"
+      >
+        <template #new>
           <UButton icon="i-lucide-plus" :label="$t('providers.add')" @click="openAddDialog" />
         </template>
-      </UDashboardToolbar>
+      </QTableToolbar>
 
       <UAlert
         v-if="tableError"

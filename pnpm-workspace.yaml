@@ -37,4 +37,5 @@ minimumReleaseAgeExclude:
   - '@prisma/engines@7.10.0'
   - '@prisma/fetch-engine@7.10.0'
   - '@prisma/get-platform@7.10.0'
+  - '@querry-kit/*'
   - prisma@7.10.0
