@@ -10,8 +10,15 @@
     "usernamePlaceholder": "Inserisci il nome utente",
     "validationError": "Inserisci nome utente e password per continuare."
   },
-  "forms": { "unsavedChanges": "Hai modifiche non salvate. Vuoi comunque uscire da questa pagina?" },
+  "forms": {
+    "unsavedChanges": "Hai modifiche non salvate. Vuoi comunque uscire da questa pagina?"
+  },
   "dashboard": {
+    "activeRuns": "Esecuzioni attive",
+    "activeRunsContext": "{running} in corso · {queued} in coda",
+    "chartScaleHint": "Scale separate mantengono visibili gli errori rari.",
+    "completedDurationContext": "Tra le esecuzioni completate",
+    "completedRuns": "{count} esecuzioni completate",
     "createdAt": "Creato",
     "description": "Controlla lo stato dei flussi di lavoro dei repository a cui hai accesso.",
     "duration": "Durata",
@@ -19,21 +26,46 @@
     "durationSeconds": "{seconds} s",
     "durationUnknown": "Sconosciuta",
     "errors": "Errori",
+    "failedRuns": "{count} esecuzioni non riuscite nel periodo",
+    "failedRunsAxis": "Esecuzioni non riuscite",
+    "failingNow": "Con errori ora",
     "failingWorkflows": "Flussi di lavoro non riusciti",
     "last30Days": "Ultimi 30 giorni",
     "last7Days": "Ultimi 7 giorni",
     "last90Days": "Ultimi 90 giorni",
     "latestRuns": "Ultime esecuzioni",
     "loadError": "Non è stato possibile caricare i dati del pannello. Riprova tra poco.",
+    "loadErrorTitle": "Alcuni dati del pannello non sono disponibili",
+    "medianDuration": "Durata mediana",
+    "needsAttention": "Richiede attenzione",
+    "needsAttentionDescription": "Flussi la cui ultima esecuzione completata non è riuscita.",
     "noFailures": "Al momento non ci sono flussi di lavoro non riusciti.",
+    "noRepositoryHealth": "Non sono disponibili dati sulla salute dei repository per questo periodo.",
     "noRuns": "Non sono ancora disponibili esecuzioni di flussi di lavoro.",
+    "noStatusData": "Non sono disponibili esecuzioni completate per la distribuzione degli stati.",
     "noTrendData": "Non sono disponibili esecuzioni completate per questo periodo.",
     "openProvider": "Apri nel provider",
+    "partialLoadError": "Le sezioni disponibili restano visibili. Aggiorna per riprovare i dati mancanti.",
+    "period": "Periodo del pannello",
     "refresh": "Aggiorna",
+    "repositoryHealth": "Salute dei repository",
+    "repositoryHealthContext": "{runs} esecuzioni · {failures} non riuscite · mediana {duration}",
+    "repositoryHealthDescription": "I repository con errori vengono mostrati per primi.",
+    "repositorySuccessRate": "Tasso di successo di {repository}",
+    "runsTotal": "esecuzioni totali",
     "status": "Stato",
+    "statusDistribution": "Distribuzione degli stati",
+    "statusDistributionDescription": "Tutte le esecuzioni completate nel periodo selezionato.",
+    "statusDistributionLabel": "Distribuzione: {success} riuscite, {failed} non riuscite, {cancelled} annullate, {skipped} ignorate, {unknown} sconosciute.",
     "success": "Riuscite",
+    "successRate": "Tasso di successo",
+    "successfulRunsAxis": "Esecuzioni riuscite",
+    "summary": "Riepilogo della salute dei flussi",
     "title": "Pannello dei flussi di lavoro",
     "trend": "Riuscite ed errori",
+    "trendBucketLabel": "{date}: {successes} riuscite, {errors} non riuscite",
+    "trendChartLabel": "Tendenza con {successes} esecuzioni riuscite e {errors} non riuscite.",
+    "trendDescription": "Le riuscite usano la scala sinistra; gli errori quella destra.",
     "workflow": "Flusso di lavoro"
   },
   "layout": {
@@ -60,7 +92,11 @@
     "users": "Utenti",
     "workflowRuns": "Esecuzioni workflow"
   },
-  "roles": { "MANAGER": "Gestore dei repository", "SYSTEM_ADMIN": "Amministratore di sistema", "VIEWER": "Lettore" },
+  "roles": {
+    "MANAGER": "Gestore dei repository",
+    "SYSTEM_ADMIN": "Amministratore di sistema",
+    "VIEWER": "Lettore"
+  },
   "providers": {
     "accessToken": "Token di accesso personale",
     "accessTokenPlaceholder": "Incolla un token di sola lettura",
@@ -103,7 +139,12 @@
     "tableDescription": "Connessioni provider di sola lettura configurate",
     "type": "Tipo di provider",
     "typePlaceholder": "Seleziona un provider",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -123,8 +164,12 @@
         "title": "Opzioni tabella",
         "visibility": "Cambia visibilità colonna"
       },
-      "pagination": { "summary": "Visualizzazione di {start}–{end} di {total}" },
-      "search": { "placeholder": "Cerca" },
+      "pagination": {
+        "summary": "Visualizzazione di {start}–{end} di {total}"
+      },
+      "search": {
+        "placeholder": "Cerca"
+      },
       "sorting": {
         "add": "Aggiungi ordinamento",
         "clear": "Cancella ordinamenti",
@@ -184,13 +229,20 @@
     "rules": "Regole",
     "title": "Notifiche"
   },
-  "notificationDeliveryStatus": { "DELIVERED": "Consegnata", "FAILED": "Non riuscita", "PENDING": "In attesa" },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Consegnata",
+    "FAILED": "Non riuscita",
+    "PENDING": "In attesa"
+  },
   "repositories": {
     "add": "Aggiungi repository",
     "addDescription": "Scegli un account provider abilitato e un repository da monitorare.",
     "addDialogTitle": "Aggiungi repository",
     "addError": "Non è stato possibile aggiungere il repository. Aggiorna l'elenco del provider e riprova.",
-    "addSteps": { "provider": "Provider", "repository": "Repository" },
+    "addSteps": {
+      "provider": "Provider",
+      "repository": "Repository"
+    },
     "alreadyTracked": "Già monitorato",
     "back": "Indietro",
     "default": "predefinito",

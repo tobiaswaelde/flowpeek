@@ -14,6 +14,11 @@
     "unsavedChanges": "Es gibt ungespeicherte Änderungen. Seite trotzdem verlassen?"
   },
   "dashboard": {
+    "activeRuns": "Aktive Ausführungen",
+    "activeRunsContext": "{running} laufend · {queued} wartend",
+    "chartScaleHint": "Getrennte Skalen machen seltene Fehler sichtbar.",
+    "completedDurationContext": "Über abgeschlossene Ausführungen",
+    "completedRuns": "{count} abgeschlossene Ausführungen",
     "createdAt": "Erstellt",
     "description": "Prüfe Workflow-Status für die Repositories, auf die du Zugriff hast.",
     "duration": "Dauer",
@@ -21,21 +26,46 @@
     "durationSeconds": "{seconds} Sek.",
     "durationUnknown": "Unbekannt",
     "errors": "Fehler",
+    "failedRuns": "{count} fehlgeschlagene Ausführungen in diesem Zeitraum",
+    "failedRunsAxis": "Fehlgeschlagene Ausführungen",
+    "failingNow": "Aktuell fehlerhaft",
     "failingWorkflows": "Fehlerhafte Workflows",
     "last30Days": "Letzte 30 Tage",
     "last7Days": "Letzte 7 Tage",
     "last90Days": "Letzte 90 Tage",
     "latestRuns": "Letzte Ausführungen",
     "loadError": "Dashboard-Daten konnten nicht geladen werden. Versuche es gleich noch einmal.",
+    "loadErrorTitle": "Einige Dashboard-Daten sind nicht verfügbar",
+    "medianDuration": "Mediane Laufzeit",
+    "needsAttention": "Benötigt Aufmerksamkeit",
+    "needsAttentionDescription": "Workflows, deren letzte abgeschlossene Ausführung fehlgeschlagen ist.",
     "noFailures": "Derzeit schlagen keine Workflows fehl.",
+    "noRepositoryHealth": "Für diesen Zeitraum sind keine Repository-Gesundheitsdaten verfügbar.",
     "noRuns": "Es sind noch keine Workflow-Ausführungen verfügbar.",
+    "noStatusData": "Für die Statusverteilung sind keine abgeschlossenen Ausführungen verfügbar.",
     "noTrendData": "Für diesen Zeitraum sind keine abgeschlossenen Ausführungen verfügbar.",
     "openProvider": "Beim Anbieter öffnen",
+    "partialLoadError": "Verfügbare Bereiche bleiben sichtbar. Aktualisiere, um die fehlenden Daten erneut zu laden.",
+    "period": "Dashboard-Zeitraum",
     "refresh": "Aktualisieren",
+    "repositoryHealth": "Repository-Gesundheit",
+    "repositoryHealthContext": "{runs} Ausführungen · {failures} fehlgeschlagen · Median {duration}",
+    "repositoryHealthDescription": "Repositories mit Fehlern werden zuerst angezeigt.",
+    "repositorySuccessRate": "Erfolgsquote für {repository}",
+    "runsTotal": "Ausführungen gesamt",
     "status": "Status",
+    "statusDistribution": "Statusverteilung",
+    "statusDistributionDescription": "Alle abgeschlossenen Ausführungen im gewählten Zeitraum.",
+    "statusDistributionLabel": "Statusverteilung: {success} erfolgreich, {failed} fehlgeschlagen, {cancelled} abgebrochen, {skipped} übersprungen, {unknown} unbekannt.",
     "success": "Erfolg",
+    "successRate": "Erfolgsquote",
+    "successfulRunsAxis": "Erfolgreiche Ausführungen",
+    "summary": "Zusammenfassung der Workflow-Gesundheit",
     "title": "Workflow-Dashboard",
     "trend": "Erfolge und Fehler",
+    "trendBucketLabel": "{date}: {successes} erfolgreich, {errors} fehlgeschlagen",
+    "trendChartLabel": "Workflow-Trend mit {successes} erfolgreichen und {errors} fehlgeschlagenen Ausführungen.",
+    "trendDescription": "Erfolge verwenden die linke Skala, Fehler die rechte Skala.",
     "workflow": "Workflow"
   },
   "layout": {
@@ -109,7 +139,12 @@
     "tableDescription": "Konfigurierte schreibgeschützte Anbieter-Verbindungen",
     "type": "Anbieter-Typ",
     "typePlaceholder": "Anbieter auswählen",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -129,8 +164,12 @@
         "title": "Tabellenoptionen",
         "visibility": "Spaltensichtbarkeit umschalten"
       },
-      "pagination": { "summary": "Zeige {start}–{end} von {total}" },
-      "search": { "placeholder": "Suchen" },
+      "pagination": {
+        "summary": "Zeige {start}–{end} von {total}"
+      },
+      "search": {
+        "placeholder": "Suchen"
+      },
       "sorting": {
         "add": "Sortierung hinzufügen",
         "clear": "Sortierungen löschen",
@@ -200,7 +239,10 @@
     "addDescription": "Wähle ein aktiviertes Anbieter-Konto und ein zu überwachendes Repository aus.",
     "addDialogTitle": "Repository hinzufügen",
     "addError": "Das Repository konnte nicht hinzugefügt werden. Aktualisiere die Anbieter-Liste und versuche es erneut.",
-    "addSteps": { "provider": "Anbieter", "repository": "Repository" },
+    "addSteps": {
+      "provider": "Anbieter",
+      "repository": "Repository"
+    },
     "alreadyTracked": "Bereits getrackt",
     "back": "Zurück",
     "default": "Standard",

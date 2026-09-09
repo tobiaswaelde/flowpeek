@@ -10,8 +10,15 @@
     "usernamePlaceholder": "Introduza o seu nome de utilizador",
     "validationError": "Introduza o seu nome de utilizador e palavra-passe para continuar."
   },
-  "forms": { "unsavedChanges": "Tem alterações não guardadas. Pretende sair desta página mesmo assim?" },
+  "forms": {
+    "unsavedChanges": "Tem alterações não guardadas. Pretende sair desta página mesmo assim?"
+  },
   "dashboard": {
+    "activeRuns": "Execuções ativas",
+    "activeRunsContext": "{running} em execução · {queued} em fila",
+    "chartScaleHint": "Escalas separadas mantêm visíveis as falhas raras.",
+    "completedDurationContext": "Entre as execuções concluídas",
+    "completedRuns": "{count} execuções concluídas",
     "createdAt": "Criado",
     "description": "Analise o estado dos fluxos de trabalho nos repositórios aos quais tem acesso.",
     "duration": "Duração",
@@ -19,21 +26,46 @@
     "durationSeconds": "{seconds} s",
     "durationUnknown": "Desconhecida",
     "errors": "Erros",
+    "failedRuns": "{count} execuções com falha neste período",
+    "failedRunsAxis": "Execuções com falha",
+    "failingNow": "Com falha agora",
     "failingWorkflows": "Fluxos de trabalho com falha",
     "last30Days": "Últimos 30 dias",
     "last7Days": "Últimos 7 dias",
     "last90Days": "Últimos 90 dias",
     "latestRuns": "Últimas execuções",
     "loadError": "Não foi possível carregar os dados do painel. Tente novamente dentro de momentos.",
+    "loadErrorTitle": "Alguns dados do painel não estão disponíveis",
+    "medianDuration": "Duração mediana",
+    "needsAttention": "Requer atenção",
+    "needsAttentionDescription": "Fluxos cuja última execução concluída falhou.",
     "noFailures": "De momento não há fluxos de trabalho com falha.",
+    "noRepositoryHealth": "Não existem dados de saúde dos repositórios para este período.",
     "noRuns": "Ainda não existem execuções de fluxos de trabalho disponíveis.",
+    "noStatusData": "Não existem execuções concluídas para a distribuição de estados.",
     "noTrendData": "Não existem execuções concluídas para este período.",
     "openProvider": "Abrir no fornecedor",
+    "partialLoadError": "As secções disponíveis continuam visíveis. Atualize para tentar carregar os dados em falta.",
+    "period": "Período do painel",
     "refresh": "Atualizar",
+    "repositoryHealth": "Saúde dos repositórios",
+    "repositoryHealthContext": "{runs} execuções · {failures} com falha · mediana {duration}",
+    "repositoryHealthDescription": "Os repositórios com falhas são apresentados primeiro.",
+    "repositorySuccessRate": "Taxa de sucesso de {repository}",
+    "runsTotal": "execuções no total",
     "status": "Estado",
+    "statusDistribution": "Distribuição de estados",
+    "statusDistributionDescription": "Todas as execuções concluídas no período selecionado.",
+    "statusDistributionLabel": "Distribuição: {success} com sucesso, {failed} com falha, {cancelled} canceladas, {skipped} ignoradas, {unknown} desconhecidas.",
     "success": "Sucessos",
+    "successRate": "Taxa de sucesso",
+    "successfulRunsAxis": "Execuções com sucesso",
+    "summary": "Resumo da saúde dos fluxos",
     "title": "Painel de fluxos de trabalho",
     "trend": "Sucessos e erros",
+    "trendBucketLabel": "{date}: {successes} com sucesso, {errors} com falha",
+    "trendChartLabel": "Tendência com {successes} execuções com sucesso e {errors} com falha.",
+    "trendDescription": "As execuções com sucesso usam a escala esquerda; as falhas, a direita.",
     "workflow": "Fluxo de trabalho"
   },
   "layout": {
@@ -60,7 +92,11 @@
     "users": "Utilizadores",
     "workflowRuns": "Execuções de workflow"
   },
-  "roles": { "MANAGER": "Gestor de repositórios", "SYSTEM_ADMIN": "Administrador do sistema", "VIEWER": "Leitor" },
+  "roles": {
+    "MANAGER": "Gestor de repositórios",
+    "SYSTEM_ADMIN": "Administrador do sistema",
+    "VIEWER": "Leitor"
+  },
   "providers": {
     "accessToken": "Token de acesso pessoal",
     "accessTokenPlaceholder": "Cole um token apenas de leitura",
@@ -103,7 +139,12 @@
     "tableDescription": "Ligações de fornecedores apenas de leitura configuradas",
     "type": "Tipo de fornecedor",
     "typePlaceholder": "Selecione um fornecedor",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -123,8 +164,12 @@
         "title": "Opções da tabela",
         "visibility": "Alternar visibilidade da coluna"
       },
-      "pagination": { "summary": "A mostrar {start}–{end} de {total}" },
-      "search": { "placeholder": "Pesquisar" },
+      "pagination": {
+        "summary": "A mostrar {start}–{end} de {total}"
+      },
+      "search": {
+        "placeholder": "Pesquisar"
+      },
       "sorting": {
         "add": "Adicionar ordenação",
         "clear": "Limpar ordenações",
@@ -184,13 +229,20 @@
     "rules": "Regras",
     "title": "Notificações"
   },
-  "notificationDeliveryStatus": { "DELIVERED": "Entregue", "FAILED": "Com falha", "PENDING": "Pendente" },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Entregue",
+    "FAILED": "Com falha",
+    "PENDING": "Pendente"
+  },
   "repositories": {
     "add": "Adicionar repositório",
     "addDescription": "Escolha uma conta de fornecedor ativada e um repositório para monitorizar.",
     "addDialogTitle": "Adicionar repositório",
     "addError": "Não foi possível adicionar o repositório. Atualize a lista do fornecedor e tente novamente.",
-    "addSteps": { "provider": "Fornecedor", "repository": "Repositório" },
+    "addSteps": {
+      "provider": "Fornecedor",
+      "repository": "Repositório"
+    },
     "alreadyTracked": "Já monitorizado",
     "back": "Voltar",
     "default": "predefinido",

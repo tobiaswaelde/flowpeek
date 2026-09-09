@@ -10,8 +10,15 @@
     "usernamePlaceholder": "Voer je gebruikersnaam in",
     "validationError": "Voer je gebruikersnaam en wachtwoord in om door te gaan."
   },
-  "forms": { "unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze pagina toch verlaten?" },
+  "forms": {
+    "unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze pagina toch verlaten?"
+  },
   "dashboard": {
+    "activeRuns": "Actieve uitvoeringen",
+    "activeRunsContext": "{running} actief · {queued} in wachtrij",
+    "chartScaleHint": "Afzonderlijke schalen houden zeldzame fouten zichtbaar.",
+    "completedDurationContext": "Over voltooide uitvoeringen",
+    "completedRuns": "{count} voltooide uitvoeringen",
     "createdAt": "Aangemaakt",
     "description": "Bekijk de workflowstatus van de repositories waartoe je toegang hebt.",
     "duration": "Duur",
@@ -19,21 +26,46 @@
     "durationSeconds": "{seconds} sec.",
     "durationUnknown": "Onbekend",
     "errors": "Fouten",
+    "failedRuns": "{count} mislukte uitvoeringen in deze periode",
+    "failedRunsAxis": "Mislukte uitvoeringen",
+    "failingNow": "Nu mislukt",
     "failingWorkflows": "Mislukte workflows",
     "last30Days": "Afgelopen 30 dagen",
     "last7Days": "Afgelopen 7 dagen",
     "last90Days": "Afgelopen 90 dagen",
     "latestRuns": "Laatste uitvoeringen",
     "loadError": "De dashboardgegevens konden niet worden geladen. Probeer het binnenkort opnieuw.",
+    "loadErrorTitle": "Sommige dashboardgegevens zijn niet beschikbaar",
+    "medianDuration": "Mediane duur",
+    "needsAttention": "Vereist aandacht",
+    "needsAttentionDescription": "Workflows waarvan de laatste voltooide uitvoering mislukte.",
     "noFailures": "Er zijn momenteel geen mislukte workflows.",
+    "noRepositoryHealth": "Er zijn geen gezondheidsgegevens van repositories voor deze periode.",
     "noRuns": "Er zijn nog geen workflowuitvoeringen beschikbaar.",
+    "noStatusData": "Er zijn geen voltooide uitvoeringen voor de statusverdeling.",
     "noTrendData": "Er zijn geen voltooide uitvoeringen beschikbaar voor deze periode.",
     "openProvider": "Openen in provider",
+    "partialLoadError": "Beschikbare onderdelen blijven zichtbaar. Vernieuw om ontbrekende gegevens opnieuw te laden.",
+    "period": "Dashboardperiode",
     "refresh": "Vernieuwen",
+    "repositoryHealth": "Repositorygezondheid",
+    "repositoryHealthContext": "{runs} uitvoeringen · {failures} mislukt · mediaan {duration}",
+    "repositoryHealthDescription": "Repositories met fouten worden eerst weergegeven.",
+    "repositorySuccessRate": "Succespercentage voor {repository}",
+    "runsTotal": "uitvoeringen totaal",
     "status": "Status",
+    "statusDistribution": "Statusverdeling",
+    "statusDistributionDescription": "Alle voltooide uitvoeringen in de geselecteerde periode.",
+    "statusDistributionLabel": "Verdeling: {success} geslaagd, {failed} mislukt, {cancelled} geannuleerd, {skipped} overgeslagen, {unknown} onbekend.",
     "success": "Geslaagd",
+    "successRate": "Succespercentage",
+    "successfulRunsAxis": "Geslaagde uitvoeringen",
+    "summary": "Samenvatting workflowgezondheid",
     "title": "Workflowdashboard",
     "trend": "Geslaagd en fouten",
+    "trendBucketLabel": "{date}: {successes} geslaagd, {errors} mislukt",
+    "trendChartLabel": "Workflowtrend met {successes} geslaagde en {errors} mislukte uitvoeringen.",
+    "trendDescription": "Geslaagde uitvoeringen gebruiken de linkerschaal; fouten de rechterschaal.",
     "workflow": "Workflow"
   },
   "layout": {
@@ -60,7 +92,11 @@
     "users": "Gebruikers",
     "workflowRuns": "Workflowuitvoeringen"
   },
-  "roles": { "MANAGER": "Repositorybeheerder", "SYSTEM_ADMIN": "Systeembeheerder", "VIEWER": "Lezer" },
+  "roles": {
+    "MANAGER": "Repositorybeheerder",
+    "SYSTEM_ADMIN": "Systeembeheerder",
+    "VIEWER": "Lezer"
+  },
   "providers": {
     "accessToken": "Persoonlijk toegangstoken",
     "accessTokenPlaceholder": "Plak een alleen-lezentoken",
@@ -103,7 +139,12 @@
     "tableDescription": "Geconfigureerde alleen-lezenproviderverbindingen",
     "type": "Providertype",
     "typePlaceholder": "Selecteer een provider",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -123,8 +164,12 @@
         "title": "Tabelopties",
         "visibility": "Kolomzichtbaarheid wisselen"
       },
-      "pagination": { "summary": "Toont {start}–{end} van {total}" },
-      "search": { "placeholder": "Zoeken" },
+      "pagination": {
+        "summary": "Toont {start}–{end} van {total}"
+      },
+      "search": {
+        "placeholder": "Zoeken"
+      },
       "sorting": {
         "add": "Sortering toevoegen",
         "clear": "Sorteringen wissen",
@@ -184,13 +229,20 @@
     "rules": "Regels",
     "title": "Meldingen"
   },
-  "notificationDeliveryStatus": { "DELIVERED": "Bezorgd", "FAILED": "Mislukt", "PENDING": "In behandeling" },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Bezorgd",
+    "FAILED": "Mislukt",
+    "PENDING": "In behandeling"
+  },
   "repositories": {
     "add": "Repository toevoegen",
     "addDescription": "Kies een ingeschakeld provideraccount en een repository om te volgen.",
     "addDialogTitle": "Repository toevoegen",
     "addError": "De repository kon niet worden toegevoegd. Vernieuw de providerlijst en probeer het opnieuw.",
-    "addSteps": { "provider": "Provider", "repository": "Repository" },
+    "addSteps": {
+      "provider": "Provider",
+      "repository": "Repository"
+    },
     "alreadyTracked": "Al gevolgd",
     "back": "Terug",
     "default": "standaard",

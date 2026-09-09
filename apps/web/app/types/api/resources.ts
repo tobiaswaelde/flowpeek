@@ -171,14 +171,46 @@ export interface DashboardWorkflowRun {
   workflowName: string;
 }
 
+/** Completed visible workflow-run counts grouped by normalized status. */
+export interface DashboardStatusDistribution {
+  cancelled: number;
+  failed: number;
+  skipped: number;
+  success: number;
+  unknown: number;
+}
+
+/** Permission-aware workflow health summary for one requested period. */
+export interface DashboardSummary {
+  completedCount: number;
+  medianDurationMs: number | null;
+  queuedCount: number;
+  runningCount: number;
+  statuses: DashboardStatusDistribution;
+  successRate: number;
+}
+
+/** Permission-aware workflow health aggregates for one visible repository. */
+export interface RepositoryHealth {
+  completedCount: number;
+  failedCount: number;
+  medianDurationMs: number | null;
+  repository: DashboardRepository;
+  successRate: number;
+}
+
 /** One bucket size supported by the dashboard workflow trend endpoint. */
 export type TrendBucketSize = 'hour' | 'day' | 'week';
 
-/** Parameters for a dashboard workflow trend query. */
-export interface WorkflowRunTrendQuery {
-  bucket?: TrendBucketSize;
+/** Inclusive period used by permission-aware dashboard aggregate queries. */
+export interface DashboardPeriodQuery {
   from: ApiTimestamp;
   to: ApiTimestamp;
+}
+
+/** Parameters for a dashboard workflow trend query. */
+export interface WorkflowRunTrendQuery extends DashboardPeriodQuery {
+  bucket?: TrendBucketSize;
 }
 
 /** Aggregated successful and failed workflow runs for one UTC interval. */

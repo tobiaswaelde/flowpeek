@@ -4,25 +4,40 @@
       <h2 class="font-semibold">{{ $t('dashboard.latestRuns') }}</h2>
     </template>
 
-    <div v-if="runs.length" class="overflow-x-auto">
+    <div v-if="loading && !runs.length" class="space-y-3">
+      <USkeleton v-for="index in 5" :key="index" class="h-12 w-full" />
+    </div>
+    <div v-else-if="runs.length" class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead class="border-b border-default text-muted">
           <tr>
             <th class="pb-3">{{ $t('dashboard.workflow') }}</th>
             <th class="pb-3">{{ $t('dashboard.status') }}</th>
             <th class="pb-3">{{ $t('dashboard.duration') }}</th>
-            <th class="pb-3">{{ $t('dashboard.createdAt') }}</th>
+            <th class="pb-3">{{ $t('workflowRuns.columns.completed') }}</th>
+            <th class="pb-3 text-right">{{ $t('repositories.columns.actions') }}</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="run in runs" :key="run.id" class="border-b border-default last:border-0">
             <td class="py-3">
-              <UButton target="_blank" variant="link" :label="run.workflowName" :to="run.url" />
+              <p class="font-medium">{{ run.workflowName }}</p>
               <p class="text-xs text-muted">{{ run.repository.owner }}/{{ run.repository.name }}</p>
             </td>
             <td class="py-3"><EnumsWorkflowRunStatusBadge :status="run.status" /></td>
             <td class="py-3">{{ formatDuration(run.durationMs) }}</td>
-            <td class="py-3 whitespace-nowrap">{{ formatTimestamp(run.providerCreatedAt) }}</td>
+            <td class="py-3 whitespace-nowrap">{{ formatTimestamp(run.completedAt) }}</td>
+            <td class="py-3 text-right">
+              <UButton
+                color="neutral"
+                icon="i-tabler-external-link"
+                rel="noreferrer"
+                target="_blank"
+                variant="ghost"
+                :aria-label="$t('dashboard.openProvider')"
+                :to="run.url"
+              />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -37,6 +52,7 @@ import type { DashboardWorkflowRun } from '~/types/api/resources';
 const { locale, t } = useI18n();
 
 defineProps<{
+  loading: boolean;
   runs: DashboardWorkflowRun[];
 }>();
 
@@ -54,7 +70,12 @@ function formatDuration(durationMs: number | null): string {
 }
 
 /** Format an API timestamp in the user's browser locale. */
-function formatTimestamp(timestamp: string): string {
-  return new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(timestamp));
+function formatTimestamp(timestamp: string | null): string {
+  if (!timestamp) return t('workflowRuns.notAvailable');
+  return new Intl.DateTimeFormat(locale.value, {
+    dateStyle: 'medium',
+    hourCycle: 'h23',
+    timeStyle: 'short',
+  }).format(new Date(timestamp));
 }
 </script>

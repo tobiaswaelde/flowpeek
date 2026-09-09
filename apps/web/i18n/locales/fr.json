@@ -14,6 +14,11 @@
     "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous quand même quitter cette page ?"
   },
   "dashboard": {
+    "activeRuns": "Exécutions actives",
+    "activeRunsContext": "{running} en cours · {queued} en attente",
+    "chartScaleHint": "Des échelles séparées gardent les échecs rares visibles.",
+    "completedDurationContext": "Parmi les exécutions terminées",
+    "completedRuns": "{count} exécutions terminées",
     "createdAt": "Créé",
     "description": "Consultez l’état des flux de travail des dépôts auxquels vous avez accès.",
     "duration": "Durée",
@@ -21,21 +26,46 @@
     "durationSeconds": "{seconds} s",
     "durationUnknown": "Inconnue",
     "errors": "Erreurs",
+    "failedRuns": "{count} exécutions en échec sur cette période",
+    "failedRunsAxis": "Exécutions en échec",
+    "failingNow": "En échec maintenant",
     "failingWorkflows": "Flux de travail en échec",
     "last30Days": "30 derniers jours",
     "last7Days": "7 derniers jours",
     "last90Days": "90 derniers jours",
     "latestRuns": "Dernières exécutions",
     "loadError": "Les données du tableau de bord n’ont pas pu être chargées. Réessayez dans quelques instants.",
+    "loadErrorTitle": "Certaines données du tableau de bord sont indisponibles",
+    "medianDuration": "Durée médiane",
+    "needsAttention": "Nécessite une attention",
+    "needsAttentionDescription": "Flux dont la dernière exécution terminée a échoué.",
     "noFailures": "Aucun flux de travail n’est actuellement en échec.",
+    "noRepositoryHealth": "Aucune donnée de santé des dépôts pour cette période.",
     "noRuns": "Aucune exécution de flux de travail n’est encore disponible.",
+    "noStatusData": "Aucune exécution terminée pour la répartition des états.",
     "noTrendData": "Aucune exécution terminée n’est disponible pour cette période.",
     "openProvider": "Ouvrir chez le fournisseur",
+    "partialLoadError": "Les sections disponibles restent visibles. Actualisez pour réessayer les données manquantes.",
+    "period": "Période du tableau de bord",
     "refresh": "Actualiser",
+    "repositoryHealth": "Santé des dépôts",
+    "repositoryHealthContext": "{runs} exécutions · {failures} échecs · médiane {duration}",
+    "repositoryHealthDescription": "Les dépôts avec des échecs sont affichés en premier.",
+    "repositorySuccessRate": "Taux de réussite de {repository}",
+    "runsTotal": "exécutions au total",
     "status": "État",
+    "statusDistribution": "Répartition des états",
+    "statusDistributionDescription": "Toutes les exécutions terminées de la période sélectionnée.",
+    "statusDistributionLabel": "Répartition : {success} réussies, {failed} échouées, {cancelled} annulées, {skipped} ignorées, {unknown} inconnues.",
     "success": "Réussites",
+    "successRate": "Taux de réussite",
+    "successfulRunsAxis": "Exécutions réussies",
+    "summary": "Résumé de santé des flux",
     "title": "Tableau de bord des flux de travail",
     "trend": "Réussites et erreurs",
+    "trendBucketLabel": "{date} : {successes} réussies, {errors} échouées",
+    "trendChartLabel": "Tendance avec {successes} exécutions réussies et {errors} échouées.",
+    "trendDescription": "Les réussites utilisent l’échelle gauche, les échecs l’échelle droite.",
     "workflow": "Flux de travail"
   },
   "layout": {
@@ -62,7 +92,11 @@
     "users": "Utilisateurs",
     "workflowRuns": "Exécutions de flux"
   },
-  "roles": { "MANAGER": "Gestionnaire de dépôts", "SYSTEM_ADMIN": "Administrateur système", "VIEWER": "Lecteur" },
+  "roles": {
+    "MANAGER": "Gestionnaire de dépôts",
+    "SYSTEM_ADMIN": "Administrateur système",
+    "VIEWER": "Lecteur"
+  },
   "providers": {
     "accessToken": "Jeton d’accès personnel",
     "accessTokenPlaceholder": "Collez un jeton en lecture seule",
@@ -105,7 +139,12 @@
     "tableDescription": "Connexions fournisseurs en lecture seule configurées",
     "type": "Type de fournisseur",
     "typePlaceholder": "Sélectionnez un fournisseur",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -125,8 +164,12 @@
         "title": "Options du tableau",
         "visibility": "Basculer la visibilité de la colonne"
       },
-      "pagination": { "summary": "Affichage de {start}–{end} sur {total}" },
-      "search": { "placeholder": "Rechercher" },
+      "pagination": {
+        "summary": "Affichage de {start}–{end} sur {total}"
+      },
+      "search": {
+        "placeholder": "Rechercher"
+      },
       "sorting": {
         "add": "Ajouter un tri",
         "clear": "Effacer les tris",
@@ -186,13 +229,20 @@
     "rules": "Règles",
     "title": "Notifications"
   },
-  "notificationDeliveryStatus": { "DELIVERED": "Livrée", "FAILED": "Échouée", "PENDING": "En attente" },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Livrée",
+    "FAILED": "Échouée",
+    "PENDING": "En attente"
+  },
   "repositories": {
     "add": "Ajouter un dépôt",
     "addDescription": "Choisissez un compte fournisseur activé et un dépôt à surveiller.",
     "addDialogTitle": "Ajouter un dépôt",
     "addError": "Impossible d'ajouter le dépôt. Actualisez la liste du fournisseur et réessayez.",
-    "addSteps": { "provider": "Fournisseur", "repository": "Dépôt" },
+    "addSteps": {
+      "provider": "Fournisseur",
+      "repository": "Dépôt"
+    },
     "alreadyTracked": "Déjà suivi",
     "back": "Retour",
     "default": "par défaut",

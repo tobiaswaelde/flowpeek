@@ -10,8 +10,15 @@
     "usernamePlaceholder": "Wpisz nazwę użytkownika",
     "validationError": "Wpisz nazwę użytkownika i hasło, aby kontynuować."
   },
-  "forms": { "unsavedChanges": "Masz niezapisane zmiany. Czy mimo to chcesz opuścić tę stronę?" },
+  "forms": {
+    "unsavedChanges": "Masz niezapisane zmiany. Czy mimo to chcesz opuścić tę stronę?"
+  },
   "dashboard": {
+    "activeRuns": "Aktywne uruchomienia",
+    "activeRunsContext": "{running} w toku · {queued} w kolejce",
+    "chartScaleHint": "Oddzielne skale pokazują nawet rzadkie błędy.",
+    "completedDurationContext": "Dla ukończonych uruchomień",
+    "completedRuns": "Ukończone uruchomienia: {count}",
     "createdAt": "Utworzono",
     "description": "Sprawdź stan przepływów pracy w repozytoriach, do których masz dostęp.",
     "duration": "Czas trwania",
@@ -19,21 +26,46 @@
     "durationSeconds": "{seconds} s",
     "durationUnknown": "Nieznany",
     "errors": "Błędy",
+    "failedRuns": "Nieudane uruchomienia w tym okresie: {count}",
+    "failedRunsAxis": "Nieudane uruchomienia",
+    "failingNow": "Obecnie nieudane",
     "failingWorkflows": "Nieudane przepływy pracy",
     "last30Days": "Ostatnie 30 dni",
     "last7Days": "Ostatnie 7 dni",
     "last90Days": "Ostatnie 90 dni",
     "latestRuns": "Ostatnie uruchomienia",
     "loadError": "Nie można było wczytać danych panelu. Spróbuj ponownie za chwilę.",
+    "loadErrorTitle": "Część danych panelu jest niedostępna",
+    "medianDuration": "Mediana czasu trwania",
+    "needsAttention": "Wymaga uwagi",
+    "needsAttentionDescription": "Przepływy, których ostatnie ukończone uruchomienie nie powiodło się.",
     "noFailures": "Obecnie nie ma nieudanych przepływów pracy.",
+    "noRepositoryHealth": "Brak danych o kondycji repozytoriów dla tego okresu.",
     "noRuns": "Nie ma jeszcze dostępnych uruchomień przepływów pracy.",
+    "noStatusData": "Brak ukończonych uruchomień dla rozkładu stanów.",
     "noTrendData": "Brak ukończonych uruchomień dla tego okresu.",
     "openProvider": "Otwórz u dostawcy",
+    "partialLoadError": "Dostępne sekcje pozostają widoczne. Odśwież, aby ponowić pobieranie brakujących danych.",
+    "period": "Okres panelu",
     "refresh": "Odśwież",
+    "repositoryHealth": "Kondycja repozytoriów",
+    "repositoryHealthContext": "{runs} uruchomień · {failures} nieudanych · mediana {duration}",
+    "repositoryHealthDescription": "Repozytoria z błędami są wyświetlane jako pierwsze.",
+    "repositorySuccessRate": "Wskaźnik sukcesu dla {repository}",
+    "runsTotal": "uruchomień łącznie",
     "status": "Stan",
+    "statusDistribution": "Rozkład stanów",
+    "statusDistributionDescription": "Wszystkie ukończone uruchomienia w wybranym okresie.",
+    "statusDistributionLabel": "Rozkład: {success} udanych, {failed} nieudanych, {cancelled} anulowanych, {skipped} pominiętych, {unknown} nieznanych.",
     "success": "Zakończone powodzeniem",
+    "successRate": "Wskaźnik sukcesu",
+    "successfulRunsAxis": "Udane uruchomienia",
+    "summary": "Podsumowanie kondycji przepływów",
     "title": "Panel przepływów pracy",
     "trend": "Sukcesy i błędy",
+    "trendBucketLabel": "{date}: {successes} udanych, {errors} nieudanych",
+    "trendChartLabel": "Trend z {successes} udanymi i {errors} nieudanymi uruchomieniami.",
+    "trendDescription": "Udane uruchomienia korzystają z lewej skali, błędy z prawej.",
     "workflow": "Przepływ pracy"
   },
   "layout": {
@@ -60,7 +92,11 @@
     "users": "Użytkownicy",
     "workflowRuns": "Wykonania workflow"
   },
-  "roles": { "MANAGER": "Menedżer repozytoriów", "SYSTEM_ADMIN": "Administrator systemu", "VIEWER": "Obserwator" },
+  "roles": {
+    "MANAGER": "Menedżer repozytoriów",
+    "SYSTEM_ADMIN": "Administrator systemu",
+    "VIEWER": "Obserwator"
+  },
   "providers": {
     "accessToken": "Osobisty token dostępu",
     "accessTokenPlaceholder": "Wklej token tylko do odczytu",
@@ -103,7 +139,12 @@
     "tableDescription": "Skonfigurowane połączenia dostawców tylko do odczytu",
     "type": "Typ dostawcy",
     "typePlaceholder": "Wybierz dostawcę",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -123,8 +164,12 @@
         "title": "Opcje tabeli",
         "visibility": "Przełącz widoczność kolumny"
       },
-      "pagination": { "summary": "Wyświetlanie {start}–{end} z {total}" },
-      "search": { "placeholder": "Szukaj" },
+      "pagination": {
+        "summary": "Wyświetlanie {start}–{end} z {total}"
+      },
+      "search": {
+        "placeholder": "Szukaj"
+      },
       "sorting": {
         "add": "Dodaj sortowanie",
         "clear": "Wyczyść sortowania",
@@ -184,13 +229,20 @@
     "rules": "Reguły",
     "title": "Powiadomienia"
   },
-  "notificationDeliveryStatus": { "DELIVERED": "Dostarczono", "FAILED": "Nieudane", "PENDING": "Oczekujące" },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Dostarczono",
+    "FAILED": "Nieudane",
+    "PENDING": "Oczekujące"
+  },
   "repositories": {
     "add": "Dodaj repozytorium",
     "addDescription": "Wybierz włączone konto dostawcy i repozytorium do monitorowania.",
     "addDialogTitle": "Dodaj repozytorium",
     "addError": "Nie udało się dodać repozytorium. Odśwież listę dostawcy i spróbuj ponownie.",
-    "addSteps": { "provider": "Dostawca", "repository": "Repozytorium" },
+    "addSteps": {
+      "provider": "Dostawca",
+      "repository": "Repozytorium"
+    },
     "alreadyTracked": "Już monitorowane",
     "back": "Wstecz",
     "default": "domyślne",

@@ -10,8 +10,15 @@
     "usernamePlaceholder": "Introduce tu nombre de usuario",
     "validationError": "Introduce tu nombre de usuario y contraseña para continuar."
   },
-  "forms": { "unsavedChanges": "Tienes cambios sin guardar. ¿Quieres salir de esta página de todos modos?" },
+  "forms": {
+    "unsavedChanges": "Tienes cambios sin guardar. ¿Quieres salir de esta página de todos modos?"
+  },
   "dashboard": {
+    "activeRuns": "Ejecuciones activas",
+    "activeRunsContext": "{running} en curso · {queued} en cola",
+    "chartScaleHint": "Las escalas separadas mantienen visibles los errores poco frecuentes.",
+    "completedDurationContext": "Entre las ejecuciones completadas",
+    "completedRuns": "{count} ejecuciones completadas",
     "createdAt": "Creado",
     "description": "Revisa el estado de los flujos de trabajo de los repositorios a los que tienes acceso.",
     "duration": "Duración",
@@ -19,21 +26,46 @@
     "durationSeconds": "{seconds} s",
     "durationUnknown": "Desconocida",
     "errors": "Errores",
+    "failedRuns": "{count} ejecuciones fallidas en este período",
+    "failedRunsAxis": "Ejecuciones fallidas",
+    "failingNow": "Con errores ahora",
     "failingWorkflows": "Flujos de trabajo con errores",
     "last30Days": "Últimos 30 días",
     "last7Days": "Últimos 7 días",
     "last90Days": "Últimos 90 días",
     "latestRuns": "Últimas ejecuciones",
     "loadError": "No se pudieron cargar los datos del panel. Vuelve a intentarlo en breve.",
+    "loadErrorTitle": "Algunos datos del panel no están disponibles",
+    "medianDuration": "Duración mediana",
+    "needsAttention": "Requiere atención",
+    "needsAttentionDescription": "Flujos cuya última ejecución completada falló.",
     "noFailures": "Actualmente no hay flujos de trabajo con errores.",
+    "noRepositoryHealth": "No hay datos de salud de repositorios para este período.",
     "noRuns": "Aún no hay ejecuciones de flujos de trabajo disponibles.",
+    "noStatusData": "No hay ejecuciones completadas para la distribución de estados.",
     "noTrendData": "No hay ejecuciones completadas disponibles para este período.",
     "openProvider": "Abrir en el proveedor",
+    "partialLoadError": "Las secciones disponibles siguen visibles. Actualiza para reintentar los datos que faltan.",
+    "period": "Período del panel",
     "refresh": "Actualizar",
+    "repositoryHealth": "Salud de repositorios",
+    "repositoryHealthContext": "{runs} ejecuciones · {failures} fallidas · mediana {duration}",
+    "repositoryHealthDescription": "Los repositorios con errores aparecen primero.",
+    "repositorySuccessRate": "Tasa de éxito de {repository}",
+    "runsTotal": "ejecuciones totales",
     "status": "Estado",
+    "statusDistribution": "Distribución de estados",
+    "statusDistributionDescription": "Todas las ejecuciones completadas del período seleccionado.",
+    "statusDistributionLabel": "Distribución: {success} correctas, {failed} fallidas, {cancelled} canceladas, {skipped} omitidas, {unknown} desconocidas.",
     "success": "Correctas",
+    "successRate": "Tasa de éxito",
+    "successfulRunsAxis": "Ejecuciones correctas",
+    "summary": "Resumen de salud de flujos",
     "title": "Panel de flujos de trabajo",
     "trend": "Correctas y errores",
+    "trendBucketLabel": "{date}: {successes} correctas, {errors} fallidas",
+    "trendChartLabel": "Tendencia con {successes} ejecuciones correctas y {errors} fallidas.",
+    "trendDescription": "Las correctas usan la escala izquierda; las fallidas, la derecha.",
     "workflow": "Flujo de trabajo"
   },
   "layout": {
@@ -107,7 +139,12 @@
     "tableDescription": "Conexiones de proveedores de solo lectura configuradas",
     "type": "Tipo de proveedor",
     "typePlaceholder": "Selecciona un proveedor",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -127,8 +164,12 @@
         "title": "Opciones de tabla",
         "visibility": "Cambiar visibilidad de columna"
       },
-      "pagination": { "summary": "Mostrando {start}–{end} de {total}" },
-      "search": { "placeholder": "Buscar" },
+      "pagination": {
+        "summary": "Mostrando {start}–{end} de {total}"
+      },
+      "search": {
+        "placeholder": "Buscar"
+      },
       "sorting": {
         "add": "Añadir ordenación",
         "clear": "Borrar ordenaciones",
@@ -188,13 +229,20 @@
     "rules": "Reglas",
     "title": "Notificaciones"
   },
-  "notificationDeliveryStatus": { "DELIVERED": "Entregado", "FAILED": "Fallido", "PENDING": "Pendiente" },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Entregado",
+    "FAILED": "Fallido",
+    "PENDING": "Pendiente"
+  },
   "repositories": {
     "add": "Añadir repositorio",
     "addDescription": "Elige una cuenta de proveedor habilitada y un repositorio para supervisar.",
     "addDialogTitle": "Añadir repositorio",
     "addError": "No se pudo añadir el repositorio. Actualiza la lista del proveedor e inténtalo de nuevo.",
-    "addSteps": { "provider": "Proveedor", "repository": "Repositorio" },
+    "addSteps": {
+      "provider": "Proveedor",
+      "repository": "Repositorio"
+    },
     "alreadyTracked": "Ya supervisado",
     "back": "Atrás",
     "default": "predeterminado",

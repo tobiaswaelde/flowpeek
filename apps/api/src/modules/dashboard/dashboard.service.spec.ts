@@ -125,6 +125,87 @@ describe('DashboardService', () => {
     );
   });
 
+  it('summarizes visible completed and active workflow runs', async () => {
+    const ability = {};
+    const workflowRuns = {
+      findMany: jest
+        .fn()
+        .mockResolvedValueOnce([
+          { durationMs: 100_000, status: 'SUCCESS' },
+          { durationMs: 300_000, status: 'FAILED' },
+          { durationMs: null, status: 'SKIPPED' },
+        ])
+        .mockResolvedValueOnce([
+          { durationMs: null, status: 'QUEUED' },
+          { durationMs: null, status: 'RUNNING' },
+        ]),
+      getReadAbility: jest.fn().mockResolvedValue(ability),
+    } as unknown as WorkflowRunsQueryService;
+
+    await expect(
+      new DashboardService(workflowRuns).getSummary(
+        { id: 'viewer', role: 'VIEWER', username: 'viewer' },
+        { from: '2026-08-01T00:00:00.000Z', to: '2026-08-31T23:59:59.999Z' },
+      ),
+    ).resolves.toEqual({
+      completedCount: 3,
+      medianDurationMs: 200_000,
+      queuedCount: 1,
+      runningCount: 1,
+      statuses: { cancelled: 0, failed: 1, skipped: 1, success: 1, unknown: 0 },
+      successRate: 50,
+    });
+    expect(workflowRuns.getReadAbility).toHaveBeenCalledTimes(1);
+    expect(workflowRuns.findMany).toHaveBeenCalledTimes(2);
+  });
+
+  it('ranks visible repository health by failures and success rate', async () => {
+    const ability = {};
+    const repositoryA = { id: 'repository-a', name: 'alpha', owner: 'flowpeek', url: 'https://example.test/alpha' };
+    const repositoryB = { id: 'repository-b', name: 'beta', owner: 'flowpeek', url: 'https://example.test/beta' };
+    const workflowRuns = {
+      findMany: jest.fn().mockResolvedValue([
+        { durationMs: 100_000, repository: repositoryA, status: 'SUCCESS' },
+        { durationMs: 300_000, repository: repositoryA, status: 'FAILED' },
+        { durationMs: null, repository: repositoryA, status: 'SKIPPED' },
+        { durationMs: 120_000, repository: repositoryB, status: 'SUCCESS' },
+        { durationMs: 180_000, repository: repositoryB, status: 'SUCCESS' },
+      ]),
+      getReadAbility: jest.fn().mockResolvedValue(ability),
+    } as unknown as WorkflowRunsQueryService;
+
+    await expect(
+      new DashboardService(workflowRuns).getRepositoryHealth(
+        { id: 'viewer', role: 'VIEWER', username: 'viewer' },
+        { from: '2026-08-01T00:00:00.000Z', to: '2026-08-31T23:59:59.999Z' },
+      ),
+    ).resolves.toEqual([
+      {
+        completedCount: 3,
+        failedCount: 1,
+        medianDurationMs: 200_000,
+        repository: repositoryA,
+        successRate: 50,
+      },
+      {
+        completedCount: 2,
+        failedCount: 0,
+        medianDurationMs: 150_000,
+        repository: repositoryB,
+        successRate: 100,
+      },
+    ]);
+    expect(workflowRuns.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          completedAt: { gte: '2026-08-01T00:00:00.000Z', lte: '2026-08-31T23:59:59.999Z' },
+          status: { in: ['SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED', 'UNKNOWN'] },
+        },
+      }),
+      ability,
+    );
+  });
+
   it('rejects an inverted trend time range before reading workflow runs', async () => {
     const workflowRuns = { getReadAbility: jest.fn() } as unknown as WorkflowRunsQueryService;
 

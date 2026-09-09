@@ -14,6 +14,11 @@
     "unsavedChanges": "You have unsaved changes. Leave this page anyway?"
   },
   "dashboard": {
+    "activeRuns": "Active runs",
+    "activeRunsContext": "{running} running · {queued} queued",
+    "chartScaleHint": "Separate scales keep rare failures visible.",
+    "completedDurationContext": "Across completed runs",
+    "completedRuns": "{count} completed runs",
     "createdAt": "Created",
     "description": "Review workflow status across the repositories you can access.",
     "duration": "Duration",
@@ -21,21 +26,46 @@
     "durationSeconds": "{seconds}s",
     "durationUnknown": "Unknown",
     "errors": "Errors",
+    "failedRuns": "{count} failed runs in this period",
+    "failedRunsAxis": "Failed runs",
+    "failingNow": "Failing now",
     "failingWorkflows": "Failing workflows",
     "last30Days": "Last 30 days",
     "last7Days": "Last 7 days",
     "last90Days": "Last 90 days",
     "latestRuns": "Latest runs",
     "loadError": "Dashboard data could not be loaded. Try again shortly.",
+    "loadErrorTitle": "Some dashboard data is unavailable",
+    "medianDuration": "Median duration",
+    "needsAttention": "Needs attention",
+    "needsAttentionDescription": "Workflows whose latest completed run failed.",
     "noFailures": "No workflows are currently failing.",
+    "noRepositoryHealth": "No repository health data is available for this period.",
     "noRuns": "No workflow runs are available yet.",
+    "noStatusData": "No completed runs are available for the status distribution.",
     "noTrendData": "No completed runs are available for this period.",
     "openProvider": "Open in provider",
+    "partialLoadError": "Available sections remain visible. Refresh to retry the missing data.",
+    "period": "Dashboard period",
     "refresh": "Refresh",
+    "repositoryHealth": "Repository health",
+    "repositoryHealthContext": "{runs} runs · {failures} failed · median {duration}",
+    "repositoryHealthDescription": "Repositories with failures are shown first.",
+    "repositorySuccessRate": "Success rate for {repository}",
+    "runsTotal": "runs total",
     "status": "Status",
+    "statusDistribution": "Status distribution",
+    "statusDistributionDescription": "All completed runs in the selected period.",
+    "statusDistributionLabel": "Run status distribution: {success} successful, {failed} failed, {cancelled} cancelled, {skipped} skipped, {unknown} unknown.",
     "success": "Success",
+    "successRate": "Success rate",
+    "successfulRunsAxis": "Successful runs",
+    "summary": "Workflow health summary",
     "title": "Workflow dashboard",
     "trend": "Success and errors",
+    "trendBucketLabel": "{date}: {successes} successful, {errors} failed",
+    "trendChartLabel": "Workflow trend with {successes} successful and {errors} failed runs.",
+    "trendDescription": "Successful runs use the left scale; failed runs use the right scale.",
     "workflow": "Workflow"
   },
   "layout": {
@@ -109,7 +139,12 @@
     "tableDescription": "Configured read-only provider connections",
     "type": "Provider type",
     "typePlaceholder": "Select a provider",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -129,8 +164,12 @@
         "title": "Table options",
         "visibility": "Toggle column visibility"
       },
-      "pagination": { "summary": "Showing {start}–{end} of {total}" },
-      "search": { "placeholder": "Search" },
+      "pagination": {
+        "summary": "Showing {start}–{end} of {total}"
+      },
+      "search": {
+        "placeholder": "Search"
+      },
       "sorting": {
         "add": "Add sort",
         "clear": "Clear sorting",
@@ -200,7 +239,10 @@
     "addDescription": "Choose an enabled provider account and one repository to track.",
     "addDialogTitle": "Add repository",
     "addError": "The repository could not be added. Refresh the provider list and try again.",
-    "addSteps": { "provider": "Provider", "repository": "Repository" },
+    "addSteps": {
+      "provider": "Provider",
+      "repository": "Repository"
+    },
     "alreadyTracked": "Already tracked",
     "back": "Back",
     "default": "default",

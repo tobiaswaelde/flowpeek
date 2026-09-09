@@ -24,6 +24,8 @@ export const apiEndpoints = {
   dashboard: {
     failures: '/dashboard/failures',
     latestRuns: '/dashboard/latest-runs',
+    repositories: '/dashboard/repositories',
+    summary: '/dashboard/summary',
     trend: '/dashboard/trend',
   },
   health: '/health',

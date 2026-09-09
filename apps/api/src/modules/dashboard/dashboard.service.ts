@@ -4,8 +4,14 @@ import type { QueryOptionsMap } from '@querry-kit/nest';
 import type { Prisma } from '../../generated/prisma/client.js';
 import type { AuthenticatedUser } from '../auth/types.js';
 import { WorkflowRunsQueryService, type WorkflowRunTypeMap } from '../workflow-runs/workflow-runs-query.service.js';
+import type { DashboardStatusDistributionDto, DashboardSummaryDto } from './dto/dashboard-summary.dto.js';
 import type { DashboardWorkflowRunModel } from './dto/dashboard-workflow-run.dto.js';
-import type { TrendBucketSize, WorkflowRunTrendQueryDto } from './dto/workflow-run-trend.dto.js';
+import type { RepositoryHealthDto } from './dto/repository-health.dto.js';
+import type {
+  DashboardPeriodQueryDto,
+  TrendBucketSize,
+  WorkflowRunTrendQueryDto,
+} from './dto/workflow-run-trend.dto.js';
 
 const terminalStatuses = ['SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED'] as const;
 const dashboardRunInclude = {
@@ -19,6 +25,20 @@ const dashboardRunInclude = {
     },
   },
 } satisfies Prisma.WorkflowRunInclude;
+const dashboardSummarySelect = {
+  durationMs: true,
+  status: true,
+} satisfies Prisma.WorkflowRunSelect;
+const repositoryHealthSelect = {
+  durationMs: true,
+  repository: { select: { id: true, name: true, owner: true, url: true } },
+  status: true,
+} satisfies Prisma.WorkflowRunSelect;
+const completedDashboardStatuses = ['SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED', 'UNKNOWN'] as const;
+const repositoryHealthLimit = 6;
+
+type DashboardSummaryRun = Prisma.WorkflowRunGetPayload<{ select: typeof dashboardSummarySelect }>;
+type RepositoryHealthRun = Prisma.WorkflowRunGetPayload<{ select: typeof repositoryHealthSelect }>;
 
 /** Success and error counts for a UTC workflow-run trend interval. */
 export interface WorkflowRunTrendBucket {
@@ -46,13 +66,7 @@ export class DashboardService {
         status: { in: [...terminalStatuses] },
       },
     });
-    const latestByWorkflow = new Map<string, DashboardWorkflowRunModel>();
-    for (const run of terminalRuns) {
-      const key = `${run.repositoryId}\u0000${run.workflowName}`;
-      if (!latestByWorkflow.has(key)) latestByWorkflow.set(key, run);
-    }
-
-    return [...latestByWorkflow.values()].filter((run) => run.status === 'FAILED');
+    return this.selectLatestFailures(terminalRuns);
   }
 
   /**
@@ -69,6 +83,100 @@ export class DashboardService {
   }
 
   /**
+   * Summarize visible period metrics and current workflow state.
+   *
+   * Success rate excludes cancelled, skipped, and unknown outcomes because those runs do not represent a decided result.
+   *
+   * @param user - Authenticated user requesting the dashboard.
+   * @param query - Inclusive period used for completed-run metrics.
+   * @returns Permission-aware summary metrics.
+   */
+  async getSummary(user: AuthenticatedUser, query: DashboardPeriodQueryDto): Promise<DashboardSummaryDto> {
+    const { from, to } = this.parsePeriod(query);
+    const ability = await this.workflowRuns.getReadAbility(user);
+    const [completedRuns, activeRuns] = await Promise.all([
+      this.workflowRuns.findMany<DashboardSummaryRun>(
+        {
+          select: dashboardSummarySelect,
+          where: {
+            completedAt: { gte: from.toISOString(), lte: to.toISOString() },
+            status: { in: [...completedDashboardStatuses] },
+          },
+        },
+        ability,
+      ),
+      this.workflowRuns.findMany<DashboardSummaryRun>(
+        { select: dashboardSummarySelect, where: { status: { in: ['QUEUED', 'RUNNING'] } } },
+        ability,
+      ),
+    ]);
+    const statuses = this.countStatuses(completedRuns);
+    const decidedCount = statuses.success + statuses.failed;
+
+    return {
+      completedCount: completedRuns.length,
+      medianDurationMs: this.median(completedRuns.flatMap((run) => (run.durationMs === null ? [] : [run.durationMs]))),
+      queuedCount: activeRuns.filter((run) => run.status === 'QUEUED').length,
+      runningCount: activeRuns.filter((run) => run.status === 'RUNNING').length,
+      statuses,
+      successRate: decidedCount === 0 ? 0 : this.roundPercentage((statuses.success / decidedCount) * 100),
+    };
+  }
+
+  /**
+   * Aggregate and rank visible repository workflow health for one period.
+   *
+   * @param user - Authenticated user requesting the dashboard.
+   * @param query - Inclusive period used for completed-run metrics.
+   * @returns Up to six visible repositories ordered by failures and success rate.
+   */
+  async getRepositoryHealth(user: AuthenticatedUser, query: DashboardPeriodQueryDto): Promise<RepositoryHealthDto[]> {
+    const { from, to } = this.parsePeriod(query);
+    const ability = await this.workflowRuns.getReadAbility(user);
+    const runs = await this.workflowRuns.findMany<RepositoryHealthRun>(
+      {
+        select: repositoryHealthSelect,
+        where: {
+          completedAt: { gte: from.toISOString(), lte: to.toISOString() },
+          status: { in: [...completedDashboardStatuses] },
+        },
+      },
+      ability,
+    );
+    const groups = new Map<string, RepositoryHealthRun[]>();
+    for (const run of runs) {
+      const group = groups.get(run.repository.id) ?? [];
+      group.push(run);
+      groups.set(run.repository.id, group);
+    }
+
+    return [...groups.values()]
+      .map((repositoryRuns): RepositoryHealthDto => {
+        const statuses = this.countStatuses(repositoryRuns);
+        const decidedCount = statuses.success + statuses.failed;
+        return {
+          completedCount: repositoryRuns.length,
+          failedCount: statuses.failed,
+          medianDurationMs: this.median(
+            repositoryRuns.flatMap((run) => (run.durationMs === null ? [] : [run.durationMs])),
+          ),
+          repository: repositoryRuns[0]!.repository,
+          successRate: decidedCount === 0 ? 0 : this.roundPercentage((statuses.success / decidedCount) * 100),
+        };
+      })
+      .sort(
+        (left, right) =>
+          right.failedCount - left.failedCount ||
+          left.successRate - right.successRate ||
+          right.completedCount - left.completedCount ||
+          `${left.repository.owner}/${left.repository.name}`.localeCompare(
+            `${right.repository.owner}/${right.repository.name}`,
+          ),
+      )
+      .slice(0, repositoryHealthLimit);
+  }
+
+  /**
    * Aggregate visible completed runs into UTC success and error trend buckets.
    *
    * @param user - Authenticated user requesting the dashboard.
@@ -77,11 +185,7 @@ export class DashboardService {
    * @throws {BadRequestException} When the requested range is invalid.
    */
   async getTrend(user: AuthenticatedUser, query: WorkflowRunTrendQueryDto): Promise<WorkflowRunTrendBucket[]> {
-    const from = new Date(query.from);
-    const to = new Date(query.to);
-    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()) || from > to) {
-      throw new BadRequestException('The trend start timestamp must not be after the end timestamp.');
-    }
+    const { from, to } = this.parsePeriod(query);
 
     const runs = await this.findVisibleRuns(user, {
       where: {
@@ -121,6 +225,45 @@ export class DashboardService {
   ): Promise<DashboardWorkflowRunModel[]> {
     const ability = await this.workflowRuns.getReadAbility(user);
     return this.workflowRuns.findMany<DashboardWorkflowRunModel>({ ...options, include: dashboardRunInclude }, ability);
+  }
+
+  private countStatuses(runs: DashboardSummaryRun[]): DashboardStatusDistributionDto {
+    return {
+      cancelled: runs.filter((run) => run.status === 'CANCELLED').length,
+      failed: runs.filter((run) => run.status === 'FAILED').length,
+      skipped: runs.filter((run) => run.status === 'SKIPPED').length,
+      success: runs.filter((run) => run.status === 'SUCCESS').length,
+      unknown: runs.filter((run) => run.status === 'UNKNOWN').length,
+    };
+  }
+
+  private median(values: number[]): number | null {
+    if (values.length === 0) return null;
+    const sorted = [...values].sort((left, right) => left - right);
+    const middle = Math.floor(sorted.length / 2);
+    return sorted.length % 2 === 0 ? Math.round((sorted[middle - 1] + sorted[middle]) / 2) : sorted[middle];
+  }
+
+  private parsePeriod(query: DashboardPeriodQueryDto): { from: Date; to: Date } {
+    const from = new Date(query.from);
+    const to = new Date(query.to);
+    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()) || from > to) {
+      throw new BadRequestException('The dashboard start timestamp must not be after the end timestamp.');
+    }
+    return { from, to };
+  }
+
+  private roundPercentage(value: number): number {
+    return Math.round(value * 10) / 10;
+  }
+
+  private selectLatestFailures(terminalRuns: DashboardWorkflowRunModel[]): DashboardWorkflowRunModel[] {
+    const latestByWorkflow = new Map<string, DashboardWorkflowRunModel>();
+    for (const run of terminalRuns) {
+      const key = `${run.repositoryId}\u0000${run.workflowName}`;
+      if (!latestByWorkflow.has(key)) latestByWorkflow.set(key, run);
+    }
+    return [...latestByWorkflow.values()].filter((run) => run.status === 'FAILED');
   }
 
   private floorBucket(value: Date, size: TrendBucketSize): Date {

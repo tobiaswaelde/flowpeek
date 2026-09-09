@@ -5,6 +5,8 @@ import type {
   CreateNotificationChannel,
   CreateNotificationRule,
   CreateProviderAccount,
+  DashboardPeriodQuery,
+  DashboardSummary,
   DashboardWorkflowRun,
   HealthResponse,
   NotificationChannel,
@@ -16,6 +18,7 @@ import type {
   ProviderOAuthAuthorization,
   ProviderRepository,
   Repository,
+  RepositoryHealth,
   RepositoryMembership,
   StartProviderOAuth,
   UpdateNotificationChannel,
@@ -36,6 +39,10 @@ export function useFlowpeekApi() {
     dashboard: {
       getFailures: (): Promise<AxiosResponse<DashboardWorkflowRun[]>> => api.get(apiEndpoints.dashboard.failures),
       getLatestRuns: (): Promise<AxiosResponse<DashboardWorkflowRun[]>> => api.get(apiEndpoints.dashboard.latestRuns),
+      getRepositoryHealth: (query: DashboardPeriodQuery): Promise<AxiosResponse<RepositoryHealth[]>> =>
+        api.get(apiEndpoints.dashboard.repositories, { params: query }),
+      getSummary: (query: DashboardPeriodQuery): Promise<AxiosResponse<DashboardSummary>> =>
+        api.get(apiEndpoints.dashboard.summary, { params: query }),
       getTrend: (query: WorkflowRunTrendQuery): Promise<AxiosResponse<WorkflowRunTrendBucket[]>> =>
         api.get(apiEndpoints.dashboard.trend, { params: query }),
     },

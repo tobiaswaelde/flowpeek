@@ -4,8 +4,14 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Authenticated } from '../auth/authenticated.decorator.js';
 import type { AuthenticatedUser } from '../auth/types.js';
 import { DashboardService } from './dashboard.service.js';
+import { DashboardSummaryDto } from './dto/dashboard-summary.dto.js';
 import { DashboardWorkflowRunDto } from './dto/dashboard-workflow-run.dto.js';
-import { WorkflowRunTrendBucketDto, WorkflowRunTrendQueryDto } from './dto/workflow-run-trend.dto.js';
+import { RepositoryHealthDto } from './dto/repository-health.dto.js';
+import {
+  DashboardPeriodQueryDto,
+  WorkflowRunTrendBucketDto,
+  WorkflowRunTrendQueryDto,
+} from './dto/workflow-run-trend.dto.js';
 
 interface AuthenticatedRequest {
   user: AuthenticatedUser;
@@ -44,6 +50,44 @@ export class DashboardController {
   async getLatestRuns(@Req() request: AuthenticatedRequest): Promise<DashboardWorkflowRunDto[]> {
     const workflowRuns = await this.dashboard.getLatestRuns(request.user);
     return workflowRuns.map(DashboardWorkflowRunDto.fromModel);
+  }
+
+  /**
+   * Summarize visible workflow health for one requested time range.
+   *
+   * @param request - Authenticated request user.
+   * @param query - Requested inclusive time range.
+   * @returns Period metrics and current visible workflow state.
+   */
+  @Get('summary')
+  @ApiOperation({ summary: 'Get visible workflow health summary' })
+  @ApiOkResponse({ description: 'Permission-aware workflow health summary.', type: DashboardSummaryDto })
+  async getSummary(
+    @Req() request: AuthenticatedRequest,
+    @Query() query: DashboardPeriodQueryDto,
+  ): Promise<DashboardSummaryDto> {
+    return this.dashboard.getSummary(request.user, query);
+  }
+
+  /**
+   * Rank visible repositories by workflow health for one requested time range.
+   *
+   * @param request - Authenticated request user.
+   * @param query - Requested inclusive time range.
+   * @returns Repositories with the most relevant health aggregates first.
+   */
+  @Get('repositories')
+  @ApiOperation({ summary: 'Get visible repository workflow health' })
+  @ApiOkResponse({
+    description: 'Permission-aware repository health aggregates.',
+    type: RepositoryHealthDto,
+    isArray: true,
+  })
+  async getRepositoryHealth(
+    @Req() request: AuthenticatedRequest,
+    @Query() query: DashboardPeriodQueryDto,
+  ): Promise<RepositoryHealthDto[]> {
+    return this.dashboard.getRepositoryHealth(request.user, query);
   }
 
   /**

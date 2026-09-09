@@ -5,8 +5,8 @@ import { IsIn, IsISO8601, IsOptional } from 'class-validator';
 export const trendBucketSizes = ['hour', 'day', 'week'] as const;
 export type TrendBucketSize = (typeof trendBucketSizes)[number];
 
-/** Requested time range and UTC bucket size for the workflow-run trend endpoint. */
-export class WorkflowRunTrendQueryDto {
+/** Requested inclusive time range for permission-aware dashboard aggregates. */
+export class DashboardPeriodQueryDto {
   @ApiProperty({ description: 'Inclusive ISO-8601 start timestamp.' })
   @IsISO8601()
   from!: string;
@@ -14,7 +14,10 @@ export class WorkflowRunTrendQueryDto {
   @ApiProperty({ description: 'Inclusive ISO-8601 end timestamp.' })
   @IsISO8601()
   to!: string;
+}
 
+/** Requested time range and UTC bucket size for the workflow-run trend endpoint. */
+export class WorkflowRunTrendQueryDto extends DashboardPeriodQueryDto {
   @ApiPropertyOptional({ enum: trendBucketSizes, default: 'day', description: 'UTC aggregation bucket size.' })
   @IsOptional()
   @IsIn(trendBucketSizes)

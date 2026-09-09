@@ -105,7 +105,7 @@ describe('workflow-run authorization integration', () => {
     ['viewer', [expect.any(String)], 1, 0],
     ['outsider', [], 0, 0],
   ] as const)(
-    '%s sees only permitted runs in lists, failures, and trend charts',
+    '%s sees only permitted runs in lists, failures, summaries, trends, and repository health',
     async (role, expectedRunIds, failures, successes) => {
       const user = users[role];
       const ability = await runs.getReadAbility(user);
@@ -118,6 +118,17 @@ describe('workflow-run authorization integration', () => {
 
       await expect(dashboard.getLatestFailures(user)).resolves.toHaveLength(failures);
       await expect(
+        dashboard.getSummary(user, {
+          from: '2026-08-26T00:00:00.000Z',
+          to: '2026-08-26T23:59:59.999Z',
+        }),
+      ).resolves.toMatchObject({
+        completedCount: failures + successes,
+        queuedCount: 0,
+        runningCount: 0,
+        statuses: { failed: failures, success: successes },
+      });
+      await expect(
         dashboard.getTrend(user, {
           bucket: 'day',
           from: '2026-08-26T00:00:00.000Z',
@@ -126,6 +137,12 @@ describe('workflow-run authorization integration', () => {
       ).resolves.toEqual([
         { bucketStart: new Date('2026-08-26T00:00:00.000Z'), errorCount: failures, successCount: successes },
       ]);
+      await expect(
+        dashboard.getRepositoryHealth(user, {
+          from: '2026-08-26T00:00:00.000Z',
+          to: '2026-08-26T23:59:59.999Z',
+        }),
+      ).resolves.toHaveLength(failures + successes);
     },
   );
 });

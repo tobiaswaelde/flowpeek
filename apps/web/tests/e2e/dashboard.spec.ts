@@ -14,6 +14,23 @@ const dashboardRun = {
   url: 'https://github.com/flowpeek/flowpeek/actions/runs/101',
   workflowName: 'CI',
 };
+const dashboardSummary = {
+  completedCount: 2,
+  medianDurationMs: 90_000,
+  queuedCount: 1,
+  runningCount: 1,
+  statuses: { cancelled: 0, failed: 1, skipped: 0, success: 1, unknown: 0 },
+  successRate: 50,
+};
+const repositoryHealth = [
+  {
+    completedCount: 2,
+    failedCount: 1,
+    medianDurationMs: 90_000,
+    repository: dashboardRun.repository,
+    successRate: 50,
+  },
+];
 
 /** Configure the current authenticated user and dashboard endpoint responses. */
 async function mockDashboard(page: Page, role: 'SYSTEM_ADMIN' | 'VIEWER'): Promise<void> {
@@ -34,6 +51,19 @@ test('hides system administration navigation from viewers', async ({ page }) => 
   await mockDashboard(page, 'VIEWER');
   await page.route('**/api/v1/dashboard/failures', (route) => route.fulfill({ json: [] }));
   await page.route('**/api/v1/dashboard/latest-runs', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/v1/dashboard/repositories**', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/v1/dashboard/summary**', (route) =>
+    route.fulfill({
+      json: {
+        completedCount: 0,
+        medianDurationMs: null,
+        queuedCount: 0,
+        runningCount: 0,
+        statuses: { cancelled: 0, failed: 0, skipped: 0, success: 0, unknown: 0 },
+        successRate: 0,
+      },
+    }),
+  );
   await page.route('**/api/v1/dashboard/trend**', (route) => route.fulfill({ json: [] }));
 
   await page.goto('/');
@@ -43,11 +73,14 @@ test('hides system administration navigation from viewers', async ({ page }) => 
   await expect(page.getByText('Administration', { exact: true })).not.toBeVisible();
   await expect(page.getByText('No workflows are currently failing.')).toBeVisible();
   await expect(page.getByText('No workflow runs are available yet.')).toBeVisible();
+  await expect(page.getByText('No repository health data is available for this period.')).toBeVisible();
 });
 
 test('renders dashboard values, reloads for range filters, and presents request errors', async ({ page }) => {
   await mockDashboard(page, 'SYSTEM_ADMIN');
   let failDashboardRequest = false;
+  const repositoryUrls: string[] = [];
+  const summaryUrls: string[] = [];
   const trendUrls: string[] = [];
   await page.route('**/api/v1/dashboard/failures', (route) =>
     failDashboardRequest
@@ -57,11 +90,19 @@ test('renders dashboard values, reloads for range filters, and presents request 
   await page.route('**/api/v1/dashboard/latest-runs', (route) =>
     route.fulfill({ contentType: 'application/json', json: [dashboardRun] }),
   );
+  await page.route('**/api/v1/dashboard/repositories**', (route) => {
+    repositoryUrls.push(route.request().url());
+    return route.fulfill({ contentType: 'application/json', json: repositoryHealth });
+  });
+  await page.route('**/api/v1/dashboard/summary**', (route) => {
+    summaryUrls.push(route.request().url());
+    return route.fulfill({ contentType: 'application/json', json: dashboardSummary });
+  });
   await page.route('**/api/v1/dashboard/trend**', (route) => {
     trendUrls.push(route.request().url());
     return route.fulfill({
       contentType: 'application/json',
-      json: [{ bucketStart: '2026-08-27T00:00:00.000Z', errorCount: 1, successCount: 0 }],
+      json: [{ bucketStart: '2026-08-27T00:00:00.000Z', errorCount: 1, successCount: 1 }],
     });
   });
 
@@ -71,12 +112,35 @@ test('renders dashboard values, reloads for range filters, and presents request 
   await expect(page.getByText('CI', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('Failed', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('2m 0s', { exact: true })).toBeVisible();
+  await expect(page.getByText('Success rate')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Workflow health summary' }).getByText('50 %')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Status distribution' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Repository health' })).toBeVisible();
+  await expect(page.getByRole('img', { name: /1 successful and 1 failed run/ })).toBeVisible();
+  const latestRunsTable = page.locator('table');
+  await expect(latestRunsTable.getByRole('link', { name: 'CI', exact: true })).toHaveCount(0);
+  await expect(latestRunsTable.getByRole('link', { name: 'Open in provider' })).toHaveAttribute(
+    'href',
+    'https://github.com/flowpeek/flowpeek/actions/runs/101',
+  );
+  await expect(latestRunsTable).not.toContainText(/\b(?:AM|PM)\b/);
 
   await page.getByRole('combobox').click();
   await page.getByRole('option', { name: 'Last 7 days' }).click();
   await expect.poll(() => trendUrls.some((url) => new URL(url).searchParams.get('bucket') === 'hour')).toBe(true);
+  await expect.poll(() => summaryUrls.length).toBe(2);
+  await expect.poll(() => repositoryUrls.length).toBe(2);
 
   failDashboardRequest = true;
   await page.getByRole('button', { name: 'Refresh' }).click();
-  await expect(page.getByText('Dashboard data could not be loaded. Try again shortly.')).toBeVisible();
+  await expect(page.getByText('Some dashboard data is unavailable')).toBeVisible();
+  await expect(page.getByText('Available sections remain visible. Refresh to retry the missing data.')).toBeVisible();
+  await expect(page.getByText('CI', { exact: true }).first()).toBeVisible();
+
+  await page.setViewportSize({ height: 844, width: 390 });
+  await expect(page.getByRole('heading', { name: 'Status distribution' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Repository health' })).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .toBe(true);
 });
