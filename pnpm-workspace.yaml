@@ -10,6 +10,15 @@ publicHoistPattern:
   - '@intlify/*'
   - vue-i18n
 
+overrides:
+  '@tiptap/core@>=3.7.0 <3.30.5': 3.31.3
+  '@tiptap/pm@>=3.7.0 <3.31.3': 3.31.3
+  'deepmerge-ts@<8.0.0': 8.0.0
+  'esbuild@>=0.27.3 <0.28.1': 0.28.2
+  'js-yaml@>=3.0.0 <3.15.2': 3.15.2
+  'multer@<2.3.0': 2.3.0
+  'mysql2@<=3.23.0': 3.23.1
+
 allowBuilds:
   '@parcel/watcher': false
   '@scarf/scarf': false
