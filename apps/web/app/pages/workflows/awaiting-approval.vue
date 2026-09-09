@@ -8,107 +8,108 @@
       { icon: 'i-lucide-shield-alert', label: $t('awaitingApproval.title') },
     ]"
     :description="$t('awaitingApproval.description')"
+    :padded="false"
     :title="$t('awaitingApproval.title')"
   >
     <template #actions>
+      <UInput
+        v-model="search"
+        class="w-36 sm:w-56"
+        icon="i-lucide-search"
+        :aria-label="$t('awaitingApproval.searchPlaceholder')"
+        :placeholder="$t('awaitingApproval.searchPlaceholder')"
+      />
       <UButton
         color="neutral"
         icon="i-lucide-refresh-cw"
         variant="soft"
+        :aria-label="$t('dashboard.refresh')"
         :label="$t('dashboard.refresh')"
         :loading="loading"
         @click="loadRuns"
       />
     </template>
 
-    <UAlert
-      color="warning"
-      icon="i-lucide-info"
-      variant="subtle"
-      :description="$t('awaitingApproval.providerApprovalDescription')"
-      :title="$t('awaitingApproval.providerApprovalTitle')"
-    />
+    <div class="mx-4 mt-4">
+      <UAlert
+        color="warning"
+        data-provider-approval-notice
+        icon="i-lucide-info"
+        variant="subtle"
+        :description="$t('awaitingApproval.providerApprovalDescription')"
+        :title="$t('awaitingApproval.providerApprovalTitle')"
+      />
+    </div>
 
-    <UCard :ui="{ body: 'p-0 sm:p-0' }">
-      <template #header>
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <p class="text-sm text-muted">{{ $t('awaitingApproval.count', { count: filteredRuns.length }) }}</p>
-          <UInput
-            v-model="search"
-            class="w-full sm:w-72"
-            icon="i-lucide-search"
-            :placeholder="$t('awaitingApproval.searchPlaceholder')"
+    <UAlert
+      v-if="loadError"
+      class="m-4"
+      color="error"
+      icon="i-lucide-circle-alert"
+      variant="subtle"
+      :title="$t('awaitingApproval.loadError')"
+    />
+    <UTable
+      sticky
+      class="min-h-0 flex-1 overflow-x-auto"
+      data-awaiting-approval-table
+      :columns="columns"
+      :data="filteredRuns"
+      :empty="$t('awaitingApproval.empty')"
+      :loading="loading"
+      :ui="{
+        th: 'first:pl-6 whitespace-nowrap bg-neutral-100 dark:bg-neutral-950/20',
+        td: 'first:pl-6 whitespace-nowrap',
+      }"
+    >
+      <template #displayTitle-cell="{ row }">
+        <span class="font-medium">{{ row.original.displayTitle }}</span>
+      </template>
+      <template #repository-cell="{ row }">
+        <span>{{ row.original.repository.owner }}/{{ row.original.repository.name }}</span>
+      </template>
+      <template #provider-cell="{ row }">
+        <EnumsProviderTypeBadge variant="subtle" :value="row.original.provider.providerType" />
+      </template>
+      <template #providerCreatedAt-cell="{ row }">
+        <span class="whitespace-nowrap text-sm text-muted">{{ formatDateTime(row.original.providerCreatedAt) }}</span>
+      </template>
+      <template #actions-header="{ column }">
+        <span class="flex justify-end">{{ column.columnDef.header }}</span>
+      </template>
+      <template #actions-cell="{ row }">
+        <div class="flex justify-end gap-2">
+          <UButton
+            v-if="row.original.reviewUrl"
+            color="neutral"
+            icon="i-tabler-external-link"
+            rel="noreferrer"
+            size="sm"
+            target="_blank"
+            variant="ghost"
+            :aria-label="$t('awaitingApproval.openReview')"
+            :label="$t('awaitingApproval.openReview')"
+            :to="row.original.reviewUrl"
+          />
+          <UButton
+            color="warning"
+            icon="i-tabler-external-link"
+            rel="noreferrer"
+            size="sm"
+            target="_blank"
+            variant="soft"
+            :aria-label="$t('awaitingApproval.approveInProvider')"
+            :label="$t('awaitingApproval.approveInProvider')"
+            :to="row.original.url"
           />
         </div>
       </template>
-
-      <UAlert
-        v-if="loadError"
-        class="m-4"
-        color="error"
-        icon="i-lucide-circle-alert"
-        variant="subtle"
-        :title="$t('awaitingApproval.loadError')"
-      />
-      <div v-if="loading && !runs.length" class="space-y-3 p-4">
-        <USkeleton v-for="index in 5" :key="index" class="h-12 w-full" />
-      </div>
-      <div v-else-if="filteredRuns.length" class="overflow-x-auto">
-        <table class="w-full text-left text-sm">
-          <thead class="border-b border-default bg-elevated/50 text-muted">
-            <tr>
-              <th class="px-4 py-3">{{ $t('dashboard.workflow') }}</th>
-              <th class="px-4 py-3">{{ $t('repositories.columns.name') }}</th>
-              <th class="px-4 py-3">{{ $t('repositories.addSteps.provider') }}</th>
-              <th class="px-4 py-3">{{ $t('awaitingApproval.waitingSince') }}</th>
-              <th class="px-4 py-3 text-right">{{ $t('repositories.columns.actions') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="run in filteredRuns" :key="run.id" class="border-b border-default last:border-0">
-              <td class="px-4 py-3 font-medium">{{ run.displayTitle }}</td>
-              <td class="px-4 py-3">{{ run.repository.owner }}/{{ run.repository.name }}</td>
-              <td class="px-4 py-3">
-                <EnumsProviderTypeBadge variant="subtle" :value="run.provider.providerType" />
-              </td>
-              <td class="whitespace-nowrap px-4 py-3 text-muted">{{ formatDateTime(run.providerCreatedAt) }}</td>
-              <td class="px-4 py-3">
-                <div class="flex justify-end gap-2">
-                  <UButton
-                    v-if="run.reviewUrl"
-                    color="neutral"
-                    icon="i-tabler-external-link"
-                    rel="noreferrer"
-                    size="sm"
-                    target="_blank"
-                    variant="ghost"
-                    :aria-label="$t('awaitingApproval.openReview')"
-                    :label="$t('awaitingApproval.openReview')"
-                    :to="run.reviewUrl"
-                  />
-                  <UButton
-                    color="warning"
-                    icon="i-tabler-external-link"
-                    rel="noreferrer"
-                    size="sm"
-                    target="_blank"
-                    variant="soft"
-                    :aria-label="$t('awaitingApproval.approveInProvider')"
-                    :label="$t('awaitingApproval.approveInProvider')"
-                    :to="run.url"
-                  />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p v-else class="px-4 py-12 text-center text-sm text-muted">{{ $t('awaitingApproval.empty') }}</p>
-    </UCard>
+    </UTable>
   </LayoutPage>
 </template>
 
 <script setup lang="ts">
+import type { TableColumn } from '#ui/types';
 import { computed, onMounted, ref } from 'vue';
 
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
@@ -124,6 +125,13 @@ const loadError = ref(false);
 const loading = ref(true);
 const runs = ref<DashboardWorkflowRun[]>([]);
 const search = ref('');
+const columns = computed<TableColumn<DashboardWorkflowRun>[]>(() => [
+  { accessorKey: 'displayTitle', header: t('dashboard.workflow'), id: 'displayTitle' },
+  { header: t('repositories.columns.name'), id: 'repository' },
+  { header: t('repositories.addSteps.provider'), id: 'provider' },
+  { accessorKey: 'providerCreatedAt', header: t('awaitingApproval.waitingSince'), id: 'providerCreatedAt' },
+  { header: t('repositories.columns.actions'), id: 'actions' },
+]);
 
 useHead({ title: computed(() => t('awaitingApproval.title')) });
 

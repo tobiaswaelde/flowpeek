@@ -32,10 +32,46 @@ test('lists approval-gated workflows with provider and pull-request actions', as
       ],
     }),
   );
+  await page.route('**/api/v1/workflow-runs/needs-attention**', (route) =>
+    route.fulfill({
+      json: {
+        items: [],
+        meta: { hasNextPage: false, hasPrevPage: false, itemCount: 3, page: 1, pageCount: 3, perPage: 1 },
+      },
+    }),
+  );
 
   await page.goto('/workflows/awaiting-approval');
 
+  const workflowRunNavigation = page
+    .getByRole('navigation', { name: 'Primary navigation' })
+    .getByRole('region', { name: 'Workflow runs' });
+  await expect(workflowRunNavigation.getByRole('link', { name: 'All runs' })).toHaveAttribute('href', '/workflow-runs');
+  await expect(workflowRunNavigation.getByRole('link', { name: 'Awaiting approval' })).toHaveAttribute(
+    'href',
+    '/workflows/awaiting-approval',
+  );
+  await expect(workflowRunNavigation.getByRole('link', { name: 'Needs attention' })).toHaveAttribute(
+    'href',
+    '/workflow-runs/needs-attention',
+  );
   await expect(page.getByRole('heading', { name: 'Awaiting approval' })).toBeVisible();
+  const table = page.locator('[data-awaiting-approval-table]');
+  await expect(table).toBeVisible();
+  await expect
+    .poll(() => table.evaluate((element) => element.parentElement?.hasAttribute('data-page-content')))
+    .toBe(true);
+  await expect
+    .poll(() =>
+      page.locator('[data-provider-approval-notice]').evaluate((notice) => {
+        const noticeBounds = notice.getBoundingClientRect();
+        const contentBounds = notice.closest('[data-page-content]')?.getBoundingClientRect();
+        return Boolean(
+          contentBounds && noticeBounds.left >= contentBounds.left && noticeBounds.right <= contentBounds.right,
+        );
+      }),
+    )
+    .toBe(true);
   await expect(page.getByText('twaelde/flowpeek', { exact: true })).toBeVisible();
   await expect(page.getByText('GitHub', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Approve in provider' })).toHaveAttribute(
