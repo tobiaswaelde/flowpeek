@@ -1,18 +1,16 @@
 <template>
-  <section class="space-y-6">
-    <UBreadcrumb
-      :items="[
-        { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
-        { icon: 'i-lucide-list-tree', label: $t('layout.workflowRuns'), to: '/workflow-runs' },
-        { icon: 'i-lucide-shield-alert', label: $t('awaitingApproval.title') },
-      ]"
-    />
-
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-semibold">{{ $t('awaitingApproval.title') }}</h1>
-        <p class="mt-1 text-sm text-muted">{{ $t('awaitingApproval.description') }}</p>
-      </div>
+  <LayoutPage
+    banner-id="awaiting-approval"
+    icon="i-lucide-shield-alert"
+    :breadcrumbs="[
+      { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
+      { icon: 'i-lucide-list-tree', label: $t('layout.workflowRuns'), to: '/workflow-runs' },
+      { icon: 'i-lucide-shield-alert', label: $t('awaitingApproval.title') },
+    ]"
+    :description="$t('awaitingApproval.description')"
+    :title="$t('awaitingApproval.title')"
+  >
+    <template #actions>
       <UButton
         color="neutral"
         icon="i-lucide-refresh-cw"
@@ -21,7 +19,7 @@
         :loading="loading"
         @click="loadRuns"
       />
-    </div>
+    </template>
 
     <UAlert
       color="warning"
@@ -107,7 +105,7 @@
       </div>
       <p v-else class="px-4 py-12 text-center text-sm text-muted">{{ $t('awaitingApproval.empty') }}</p>
     </UCard>
-  </section>
+  </LayoutPage>
 </template>
 
 <script setup lang="ts">
@@ -116,6 +114,8 @@ import { computed, onMounted, ref } from 'vue';
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
 import { useDateTime } from '~/composables/use-date-time';
 import type { DashboardWorkflowRun } from '~/types/api/resources';
+
+definePageMeta({ fullWidth: true });
 
 const { t } = useI18n();
 const api = useFlowpeekApi();

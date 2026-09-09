@@ -109,7 +109,12 @@
     "users": "Users",
     "workflowRuns": "Workflow runs"
   },
+  "pageIntro": {
+    "dismiss": "Dismiss introduction for {title}",
+    "dismissError": "The page introduction could not be dismissed."
+  },
   "settings": {
+    "bannersRestored": "Introductory banners restored.",
     "dateTimeFormat": "Default date and time format",
     "dateTimeFormatHelp": "Controls how timestamps are displayed throughout Flowpeek. All options use a 24-hour clock.",
     "dateTimeFormats": {
@@ -118,14 +123,19 @@
       "LOCALE_SHORT": "Localized, short"
     },
     "days": "days",
-    "description": "Configure defaults that apply throughout Flowpeek.",
+    "description": "Manage application defaults and your personal interface preferences.",
+    "dismissedBanners": "Hidden introductory banners: {count}.",
     "general": "Global defaults",
     "generalDescription": "These settings apply to every user and repository without an override.",
     "loadError": "Global settings could not be loaded.",
+    "pageIntroductions": "Page introductions",
+    "pageIntroductionsDescription": "Restore the introductory banners you previously dismissed.",
     "preview": "Preview",
     "retention": "Workflow run retention",
     "retentionHelp": "Completed workflow runs are deleted after this many days unless a repository has its own retention period.",
     "retry": "Retry",
+    "restoreBanners": "Restore all banners",
+    "restoreBannersError": "The introductory banners could not be restored.",
     "save": "Save settings",
     "saveError": "Global settings could not be saved.",
     "saved": "Global settings saved.",
@@ -246,6 +256,7 @@
     "UNKNOWN": "Unknown"
   },
   "workflowRuns": {
+    "description": "Search and inspect workflow runs across the repositories you can access.",
     "columns": {
       "completed": "Completed",
       "created": "Provider time",
@@ -258,7 +269,8 @@
     "durationValue": "{minutes}m {seconds}s",
     "empty": "No workflow runs are available.",
     "loadError": "Workflow runs could not be loaded.",
-    "notAvailable": "—"
+    "notAvailable": "—",
+    "title": "Workflow runs"
   },
   "notifications": {
     "attempts": "{count} attempts",
@@ -267,6 +279,7 @@
     "disabled": "Disabled",
     "enabled": "Enabled",
     "history": "Delivery history",
+    "loadError": "Notification data could not be loaded.",
     "requiresReconfiguration": "Requires reconfiguration",
     "rules": "Rules",
     "title": "Notifications"

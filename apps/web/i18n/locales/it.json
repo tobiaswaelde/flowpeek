@@ -107,7 +107,17 @@
     "users": "Utenti",
     "workflowRuns": "Esecuzioni workflow"
   },
+  "pageIntro": {
+    "dismiss": "Nascondi l’introduzione di {title}",
+    "dismissError": "Impossibile nascondere l’introduzione della pagina."
+  },
   "settings": {
+    "bannersRestored": "I banner introduttivi sono stati ripristinati.",
+    "dismissedBanners": "Banner introduttivi nascosti: {count}.",
+    "pageIntroductions": "Introduzioni delle pagine",
+    "pageIntroductionsDescription": "Ripristina i banner introduttivi nascosti in precedenza.",
+    "restoreBanners": "Ripristina tutti i banner",
+    "restoreBannersError": "Impossibile ripristinare i banner introduttivi.",
     "dateTimeFormat": "Formato predefinito di data e ora",
     "dateTimeFormatHelp": "Controlla come vengono visualizzati i timestamp in Flowpeek. Tutte le opzioni usano il formato 24 ore.",
     "dateTimeFormats": {
@@ -116,7 +126,7 @@
       "LOCALE_SHORT": "Localizzato, breve"
     },
     "days": "giorni",
-    "description": "Configura i valori predefiniti applicati in Flowpeek.",
+    "description": "Gestisci le impostazioni dell’applicazione e le preferenze personali dell’interfaccia.",
     "general": "Valori predefiniti globali",
     "generalDescription": "Queste impostazioni si applicano a tutti gli utenti e repository senza una configurazione specifica.",
     "loadError": "Impossibile caricare le impostazioni globali.",
@@ -240,6 +250,8 @@
     "UNKNOWN": "Sconosciuta"
   },
   "workflowRuns": {
+    "description": "Cerca e consulta le esecuzioni nei repository a cui puoi accedere.",
+    "title": "Esecuzioni dei workflow",
     "columns": {
       "completed": "Completato",
       "created": "Ora provider",
@@ -255,6 +267,7 @@
     "notAvailable": "—"
   },
   "notifications": {
+    "loadError": "Impossibile caricare i dati delle notifiche.",
     "attempts": "{count} tentativi",
     "channels": "Canali",
     "description": "Canali di notifica dei repository, regole e cronologia delle consegne.",

@@ -1,79 +1,82 @@
 <template>
-  <section class="flex min-h-0 flex-1 flex-col">
-    <div class="flex min-h-0 flex-1 flex-col">
-      <QTableToolbar
+  <LayoutPage
+    banner-id="admin-users"
+    icon="i-lucide-users"
+    :breadcrumbs="[
+      { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
+      { icon: 'i-lucide-users', label: $t('layout.users') },
+    ]"
+    :description="$t('users.description')"
+    :padded="false"
+    :title="$t('users.title')"
+  >
+    <template #actions>
+      <QTableSorting v-model:sorting="sorting" :fields="sortableFields" shortcuts />
+      <QTableFiltering v-model:filtering="filtering" :fields="filterFields" shortcuts />
+      <QTableOptions
         v-model:column-order="columnOrder"
         v-model:column-pinning="columnPinning"
-        v-model:filtering="filtering"
         v-model:invisible-columns="columnVisibility"
-        v-model:sorting="sorting"
-        :breadcrumb-items="[
-          { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
-          { icon: 'i-lucide-users', label: $t('layout.users') },
-        ]"
-        :column-definitions="columnDefinition"
-        :filter-fields="filterFields"
-        :sortable-fields="sortableFields"
+        :columns="columnDefinition"
         shortcuts
-        :ui="{ root: 'border-b border-default p-4' }"
       />
+    </template>
 
-      <UAlert
-        v-if="tableError"
-        class="m-4"
-        color="error"
-        icon="i-lucide-circle-alert"
-        variant="subtle"
-        :title="$t('users.loadError')"
-      />
-      <UTable
-        sticky
-        v-model:column-pinning="columnPinning"
-        class="min-h-0 flex-1"
-        :columns="columns"
-        :data="items"
-        :empty="$t('users.empty')"
-        :loading="loading"
-        :ui="{
-          th: 'first:pl-8 bg-neutral-100 dark:bg-neutral-950/20',
-          td: 'first:pl-8',
-        }"
-      >
-        <template #role-cell="{ row }">
-          <UBadge color="neutral" variant="subtle">{{ $t(`roles.${row.original.role}`) }}</UBadge>
-        </template>
-        <template #createdAt-cell="{ row }">
-          <span class="whitespace-nowrap text-sm text-muted">{{ formatTimestamp(row.original.createdAt) }}</span>
-        </template>
-        <template #updatedAt-cell="{ row }">
-          <span class="whitespace-nowrap text-sm text-muted">{{ formatTimestamp(row.original.updatedAt) }}</span>
-        </template>
-        <template #actions-header="{ column }">
-          <span class="flex justify-end">{{ column.columnDef.header }}</span>
-        </template>
-        <template #actions-cell="{ row }">
-          <div class="flex justify-end">
-            <UButton
-              color="error"
-              icon="i-lucide-trash-2"
-              variant="ghost"
-              :aria-label="$t('users.delete')"
-              :disabled="row.original.id === auth.user?.id || isPending(row.original.id)"
-              :loading="isPending(row.original.id)"
-              @click="remove(row.original.id)"
-            />
-          </div>
-        </template>
-      </UTable>
-      <QTablePagination
-        v-model:items-per-page="itemsPerPage"
-        v-model:page="page"
-        class="border-t border-default"
-        :total-items="totalItems"
-        shortcuts
-      />
-    </div>
-  </section>
+    <UAlert
+      v-if="tableError"
+      class="m-4"
+      color="error"
+      icon="i-lucide-circle-alert"
+      variant="subtle"
+      :title="$t('users.loadError')"
+    />
+    <UTable
+      sticky
+      v-model:column-pinning="columnPinning"
+      class="min-h-0 flex-1"
+      :columns="columns"
+      :data="items"
+      :empty="$t('users.empty')"
+      :loading="loading"
+      :ui="{
+        th: 'first:pl-8 bg-neutral-100 dark:bg-neutral-950/20',
+        td: 'first:pl-8',
+      }"
+    >
+      <template #role-cell="{ row }">
+        <UBadge color="neutral" variant="subtle">{{ $t(`roles.${row.original.role}`) }}</UBadge>
+      </template>
+      <template #createdAt-cell="{ row }">
+        <span class="whitespace-nowrap text-sm text-muted">{{ formatTimestamp(row.original.createdAt) }}</span>
+      </template>
+      <template #updatedAt-cell="{ row }">
+        <span class="whitespace-nowrap text-sm text-muted">{{ formatTimestamp(row.original.updatedAt) }}</span>
+      </template>
+      <template #actions-header="{ column }">
+        <span class="flex justify-end">{{ column.columnDef.header }}</span>
+      </template>
+      <template #actions-cell="{ row }">
+        <div class="flex justify-end">
+          <UButton
+            color="error"
+            icon="i-lucide-trash-2"
+            variant="ghost"
+            :aria-label="$t('users.delete')"
+            :disabled="row.original.id === auth.user?.id || isPending(row.original.id)"
+            :loading="isPending(row.original.id)"
+            @click="remove(row.original.id)"
+          />
+        </div>
+      </template>
+    </UTable>
+    <QTablePagination
+      v-model:items-per-page="itemsPerPage"
+      v-model:page="page"
+      class="border-t border-default"
+      :total-items="totalItems"
+      shortcuts
+    />
+  </LayoutPage>
 </template>
 
 <script setup lang="ts">
@@ -149,6 +152,8 @@ const columnPinning = computed({
     userTable.columnPinning.value = value;
   },
 });
+
+useHead({ title: computed(() => t('users.title')) });
 
 /** Format an account timestamp in the active interface locale. */
 function formatTimestamp(timestamp: string): string {

@@ -9,9 +9,9 @@ Select the `DEV` environment. It targets `http://localhost:3001` by default.
 Adjust `host` for a different local port or a deployed instance.
 
 The environment declares `username`, `password`, and `token` as Bruno secret
-variables. Add their values in Bruno's environment editor; do not place them
-in a committed `.bru` file. The variables are reserved for the authentication
-requests that will be added with the auth module.
+variables. Add the credentials in Bruno's environment editor; do not place them
+in a committed `.bru` file. Run `auth/sign in` to populate the secret `token`
+variable before calling protected endpoints.
 
 ## Current manual check
 
@@ -29,5 +29,6 @@ Start the API with the required values from `.env.example`, then run
 ```
 
 Add a request to the relevant module folder whenever an endpoint is introduced.
-Protected requests must inherit bearer authentication only after the auth module
-adds a sign-in request that populates `token`.
+The settings folder includes requests for reading, dismissing, and restoring
+personal page-introduction preferences. These requests use bearer authentication
+and operate only on the signed-in user.

@@ -295,7 +295,7 @@ test('repository settings load retention, filters, and members', async ({ page }
 
   await page.goto('/admin/repositories/repository-1');
 
-  await expect(page.getByRole('heading', { name: 'twaelde/flowpeek' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'twaelde/flowpeek' })).toBeVisible();
   await expect(page.locator('input[type=number]')).toHaveValue('30');
   await expect(page.getByText('draft-*', { exact: true })).toBeVisible();
   await expect(page.getByText('maintainer', { exact: true })).toBeVisible();

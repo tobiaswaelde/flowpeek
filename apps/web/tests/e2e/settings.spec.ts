@@ -24,6 +24,9 @@ test('updates global retention and date-time formatting with visible request pro
     }
     await route.fulfill({ contentType: 'application/json', json: settings });
   });
+  await page.route('**/api/v1/settings/preferences', async (route) => {
+    await route.fulfill({ contentType: 'application/json', json: { dismissedIntroBannerIds: [] } });
+  });
   await page.route(/\/api\/v1\/users(?:\?.*)?$/, async (route) => {
     await route.fulfill({
       contentType: 'application/json',
@@ -63,8 +66,8 @@ test('updates global retention and date-time formatting with visible request pro
   await expect(page.locator('tbody')).toContainText('2026-09-08 10:00');
 });
 
-/** Prevent direct access to the settings form for a signed-in non-administrator. */
-test('redirects non-administrators away from global settings', async ({ page }) => {
+/** Let non-administrators manage personal preferences without exposing global settings. */
+test('shows personal settings but hides global defaults from non-administrators', async ({ page }) => {
   await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', async (route) => {
     await route.fulfill({
@@ -72,9 +75,22 @@ test('redirects non-administrators away from global settings', async ({ page }) 
       json: { id: 'playwright-viewer', role: 'VIEWER', username: 'viewer' },
     });
   });
+  await page.route('**/api/v1/settings', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: { dateTimeFormat: 'LOCALE_MEDIUM', workflowRunRetentionDays: 90 },
+    });
+  });
+  await page.route('**/api/v1/settings/preferences', async (route) => {
+    await route.fulfill({ contentType: 'application/json', json: { dismissedIntroBannerIds: ['dashboard'] } });
+  });
 
   await page.goto('/admin/settings');
 
-  await expect(page).toHaveURL('/');
-  await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toHaveCount(0);
+  await expect(page).toHaveURL('/admin/settings');
+  await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Page introductions' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Restore all banners' })).toBeEnabled();
+  await expect(page.getByRole('spinbutton', { name: 'Workflow run retention' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Save settings' })).toHaveCount(0);
 });

@@ -2,7 +2,7 @@
   <UCard class="lg:col-span-2" :ui="{ body: 'space-y-4' }">
     <template #header>
       <div>
-        <h1 class="font-semibold">{{ repository.owner }}/{{ repository.name }}</h1>
+        <h2 class="font-semibold">{{ repository.owner }}/{{ repository.name }}</h2>
         <p class="text-sm text-muted">{{ $t('repositoryDetails.generalDescription') }}</p>
       </div>
     </template>

@@ -109,7 +109,12 @@
     "users": "Benutzer",
     "workflowRuns": "Workflow-Ausführungen"
   },
+  "pageIntro": {
+    "dismiss": "Einführung für {title} ausblenden",
+    "dismissError": "Die Seiteneinführung konnte nicht ausgeblendet werden."
+  },
   "settings": {
+    "bannersRestored": "Einführungsbanner wurden wiederhergestellt.",
     "dateTimeFormat": "Standardformat für Datum und Uhrzeit",
     "dateTimeFormatHelp": "Legt fest, wie Zeitstempel in Flowpeek angezeigt werden. Alle Optionen verwenden das 24-Stunden-Format.",
     "dateTimeFormats": {
@@ -118,14 +123,19 @@
       "LOCALE_SHORT": "Lokalisiert, kurz"
     },
     "days": "Tage",
-    "description": "Konfiguriere Standards, die in Flowpeek global gelten.",
+    "description": "Verwalte Anwendungsstandards und deine persönlichen Oberflächeneinstellungen.",
+    "dismissedBanners": "Ausgeblendete Einführungsbanner: {count}.",
     "general": "Globale Standards",
     "generalDescription": "Diese Einstellungen gelten für alle Benutzer und Repositories ohne eigene Abweichung.",
     "loadError": "Die globalen Einstellungen konnten nicht geladen werden.",
+    "pageIntroductions": "Seiteneinführungen",
+    "pageIntroductionsDescription": "Stelle zuvor ausgeblendete Einführungsbanner wieder her.",
     "preview": "Vorschau",
     "retention": "Aufbewahrung von Workflow-Ausführungen",
     "retentionHelp": "Abgeschlossene Workflow-Ausführungen werden nach dieser Anzahl an Tagen gelöscht, sofern ein Repository keine eigene Aufbewahrungsdauer hat.",
     "retry": "Erneut versuchen",
+    "restoreBanners": "Alle Banner wiederherstellen",
+    "restoreBannersError": "Die Einführungsbanner konnten nicht wiederhergestellt werden.",
     "save": "Einstellungen speichern",
     "saveError": "Die globalen Einstellungen konnten nicht gespeichert werden.",
     "saved": "Globale Einstellungen gespeichert.",
@@ -246,6 +256,7 @@
     "UNKNOWN": "Unbekannt"
   },
   "workflowRuns": {
+    "description": "Durchsuche Workflow-Ausführungen in allen Repositories, auf die du Zugriff hast.",
     "columns": {
       "completed": "Abgeschlossen",
       "created": "Anbieter-Zeitpunkt",
@@ -258,7 +269,8 @@
     "durationValue": "{minutes} Min. {seconds} Sek.",
     "empty": "Es sind keine Workflow-Ausführungen verfügbar.",
     "loadError": "Workflow-Ausführungen konnten nicht geladen werden.",
-    "notAvailable": "—"
+    "notAvailable": "—",
+    "title": "Workflow-Ausführungen"
   },
   "notifications": {
     "attempts": "{count} Versuche",
@@ -267,6 +279,7 @@
     "disabled": "Deaktiviert",
     "enabled": "Aktiviert",
     "history": "Zustellverlauf",
+    "loadError": "Die Benachrichtigungsdaten konnten nicht geladen werden.",
     "requiresReconfiguration": "Erfordert eine Neukonfiguration",
     "rules": "Regeln",
     "title": "Benachrichtigungen"

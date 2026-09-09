@@ -1,108 +1,115 @@
 <template>
-  <section class="flex min-h-0 flex-1 flex-col">
-    <UAlert v-if="oauthStatus === 'connected'" color="success" :title="$t('providers.oauthConnected')" />
+  <LayoutPage
+    banner-id="admin-providers"
+    icon="i-lucide-plug-zap"
+    :breadcrumbs="[
+      { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
+      { icon: 'i-lucide-plug-zap', label: $t('layout.providers') },
+    ]"
+    :description="$t('providers.description')"
+    :padded="false"
+    :title="$t('providers.title')"
+  >
+    <template #actions>
+      <QTableSorting v-model:sorting="sorting" :fields="sortableFields" shortcuts />
+      <QTableFiltering v-model:filtering="filtering" :fields="filterFields" shortcuts />
+      <QTableOptions
+        v-model:column-order="columnOrder"
+        v-model:column-pinning="columnPinning"
+        v-model:invisible-columns="columnVisibility"
+        :columns="columnDefinition"
+        shortcuts
+      />
+      <UButton icon="i-lucide-plus" :aria-label="$t('providers.add')" @click="openAddDialog">
+        <span class="hidden sm:inline">{{ $t('providers.add') }}</span>
+      </UButton>
+    </template>
+
+    <UAlert
+      v-if="oauthStatus === 'connected'"
+      class="mx-4 mt-4"
+      color="success"
+      :title="$t('providers.oauthConnected')"
+    />
     <UAlert
       v-else-if="oauthStatus === 'failed'"
+      class="mx-4 mt-4"
       color="error"
       icon="i-lucide-circle-alert"
       variant="subtle"
       :title="$t('providers.oauthError')"
     />
 
-    <div class="flex min-h-0 flex-1 flex-col">
-      <QTableToolbar
-        v-model:column-order="columnOrder"
-        v-model:column-pinning="columnPinning"
-        v-model:filtering="filtering"
-        v-model:invisible-columns="columnVisibility"
-        v-model:sorting="sorting"
-        :breadcrumb-items="[
-          { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
-          { icon: 'i-lucide-plug-zap', label: $t('layout.providers') },
-        ]"
-        :column-definitions="columnDefinition"
-        :filter-fields="filterFields"
-        :sortable-fields="sortableFields"
-        shortcuts
-        :ui="{ root: 'border-b border-default p-4' }"
-      >
-        <template #new>
-          <UButton icon="i-lucide-plus" :label="$t('providers.add')" @click="openAddDialog" />
-        </template>
-      </QTableToolbar>
-
-      <UAlert
-        v-if="tableError"
-        class="m-4"
-        color="error"
-        icon="i-lucide-circle-alert"
-        variant="subtle"
-        :title="$t('providers.loadError')"
-      />
-      <UTable
-        sticky
-        v-model:column-pinning="columnPinning"
-        class="min-h-0 flex-1"
-        :columns="columns"
-        :data="items"
-        :empty="$t('providers.empty')"
-        :loading="loading"
-        :ui="{
-          th: 'first:pl-8 bg-neutral-100 dark:bg-neutral-950/20',
-          td: 'first:pl-8',
-        }"
-      >
-        <template #providerType-cell="{ row }">
-          <EnumsProviderTypeBadge variant="subtle" :value="row.original.providerType" />
-        </template>
-        <template #baseUrl-cell="{ row }">
-          <span class="break-all text-sm text-muted">{{ row.original.baseUrl ?? $t('providers.defaultUrl') }}</span>
-        </template>
-        <template #enabled-cell="{ row }">
-          <UBadge variant="subtle" :color="row.original.enabled ? 'success' : 'neutral'">
-            {{ row.original.enabled ? $t('providers.enabled') : $t('providers.disabled') }}
-          </UBadge>
-        </template>
-        <template #lastSyncAt-cell="{ row }">
-          <span class="whitespace-nowrap text-sm text-muted">{{ formatLastSync(row.original.lastSyncAt) }}</span>
-        </template>
-        <template #actions-header="{ column }">
-          <span class="flex justify-end">{{ column.columnDef.header }}</span>
-        </template>
-        <template #actions-cell="{ row }">
-          <div class="flex justify-end gap-1">
-            <UButton
-              color="neutral"
-              variant="ghost"
-              :aria-label="row.original.enabled ? $t('providers.disable') : $t('providers.enable')"
-              :disabled="isProviderPending(row.original.id)"
-              :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
-              :loading="isPending(providerActionKey('toggle', row.original.id))"
-              @click="toggle(row.original)"
-            />
-            <UButton
-              color="error"
-              icon="i-lucide-trash-2"
-              variant="ghost"
-              :aria-label="$t('providers.delete')"
-              :disabled="isProviderPending(row.original.id)"
-              :loading="isPending(providerActionKey('delete', row.original.id))"
-              @click="remove(row.original.id)"
-            />
-          </div>
-        </template>
-      </UTable>
-      <QTablePagination
-        v-model:items-per-page="itemsPerPage"
-        v-model:page="page"
-        class="border-t border-default"
-        :total-items="totalItems"
-        shortcuts
-      />
-    </div>
-
+    <UAlert
+      v-if="tableError"
+      class="m-4"
+      color="error"
+      icon="i-lucide-circle-alert"
+      variant="subtle"
+      :title="$t('providers.loadError')"
+    />
+    <UTable
+      sticky
+      v-model:column-pinning="columnPinning"
+      class="min-h-0 flex-1"
+      :columns="columns"
+      :data="items"
+      :empty="$t('providers.empty')"
+      :loading="loading"
+      :ui="{
+        th: 'first:pl-8 bg-neutral-100 dark:bg-neutral-950/20',
+        td: 'first:pl-8',
+      }"
+    >
+      <template #providerType-cell="{ row }">
+        <EnumsProviderTypeBadge variant="subtle" :value="row.original.providerType" />
+      </template>
+      <template #baseUrl-cell="{ row }">
+        <span class="break-all text-sm text-muted">{{ row.original.baseUrl ?? $t('providers.defaultUrl') }}</span>
+      </template>
+      <template #enabled-cell="{ row }">
+        <UBadge variant="subtle" :color="row.original.enabled ? 'success' : 'neutral'">
+          {{ row.original.enabled ? $t('providers.enabled') : $t('providers.disabled') }}
+        </UBadge>
+      </template>
+      <template #lastSyncAt-cell="{ row }">
+        <span class="whitespace-nowrap text-sm text-muted">{{ formatLastSync(row.original.lastSyncAt) }}</span>
+      </template>
+      <template #actions-header="{ column }">
+        <span class="flex justify-end">{{ column.columnDef.header }}</span>
+      </template>
+      <template #actions-cell="{ row }">
+        <div class="flex justify-end gap-1">
+          <UButton
+            color="neutral"
+            variant="ghost"
+            :aria-label="row.original.enabled ? $t('providers.disable') : $t('providers.enable')"
+            :disabled="isProviderPending(row.original.id)"
+            :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
+            :loading="isPending(providerActionKey('toggle', row.original.id))"
+            @click="toggle(row.original)"
+          />
+          <UButton
+            color="error"
+            icon="i-lucide-trash-2"
+            variant="ghost"
+            :aria-label="$t('providers.delete')"
+            :disabled="isProviderPending(row.original.id)"
+            :loading="isPending(providerActionKey('delete', row.original.id))"
+            @click="remove(row.original.id)"
+          />
+        </div>
+      </template>
+    </UTable>
+    <QTablePagination
+      v-model:items-per-page="itemsPerPage"
+      v-model:page="page"
+      class="border-t border-default"
+      :total-items="totalItems"
+      shortcuts
+    />
     <ModulesProvidersAddDialog v-model:open="dialogOpen" @created="handleProviderCreated" />
-  </section>
+  </LayoutPage>
 </template>
 
 <script setup lang="ts">
@@ -183,6 +190,8 @@ const columnPinning = computed({
     providerTable.columnPinning.value = value;
   },
 });
+
+useHead({ title: computed(() => t('providers.title')) });
 
 /** Format a provider's last successful synchronization in the active interface locale. */
 function formatLastSync(lastSyncAt: string | null): string {

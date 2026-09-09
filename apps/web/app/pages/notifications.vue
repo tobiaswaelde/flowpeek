@@ -1,9 +1,32 @@
 <template>
-  <section class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-semibold">{{ $t('notifications.title') }}</h1>
-      <p class="text-sm text-muted">{{ $t('notifications.description') }}</p>
-    </div>
+  <LayoutPage
+    banner-id="notifications"
+    icon="i-lucide-bell"
+    :breadcrumbs="[
+      { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
+      { icon: 'i-lucide-bell', label: $t('layout.notifications') },
+    ]"
+    :description="$t('notifications.description')"
+    :title="$t('notifications.title')"
+  >
+    <template #actions>
+      <UButton
+        color="neutral"
+        icon="i-lucide-refresh-cw"
+        variant="soft"
+        :label="$t('dashboard.refresh')"
+        :loading="loading"
+        @click="load"
+      />
+    </template>
+
+    <UAlert
+      v-if="loadError"
+      color="error"
+      icon="i-lucide-circle-alert"
+      variant="subtle"
+      :title="$t('notifications.loadError')"
+    />
     <UCard>
       <template #header>
         <h2 class="font-semibold">{{ $t('notifications.channels') }}</h2>
@@ -30,11 +53,11 @@
         {{ $t('notifications.attempts', { count: delivery.attempts.length }) }}
       </p>
     </UCard>
-  </section>
+  </LayoutPage>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
 import type { NotificationChannel, NotificationDelivery, NotificationRule } from '~/types/api/resources';
 
@@ -43,14 +66,29 @@ const api = useFlowpeekApi();
 const channels = ref<NotificationChannel[]>([]);
 const rules = ref<NotificationRule[]>([]);
 const deliveries = ref<NotificationDelivery[]>([]);
+const loadError = ref(false);
+const loading = ref(false);
+
+definePageMeta({ fullWidth: true });
+useHead({ title: computed(() => t('notifications.title')) });
+
+/** Load all notification resources while keeping the page-level refresh action pending. */
 async function load(): Promise<void> {
-  [channels.value, rules.value, deliveries.value] = await Promise.all([
-    api.notificationChannels.list().then((r) => r.data),
-    api.notificationRules.list().then((r) => r.data),
-    api.notificationDeliveries.list().then((r) => r.data),
-  ]);
+  loading.value = true;
+  loadError.value = false;
+  try {
+    [channels.value, rules.value, deliveries.value] = await Promise.all([
+      api.notificationChannels.list().then((response) => response.data),
+      api.notificationRules.list().then((response) => response.data),
+      api.notificationDeliveries.list().then((response) => response.data),
+    ]);
+  } catch {
+    loadError.value = true;
+  } finally {
+    loading.value = false;
+  }
 }
-onMounted(load);
+onMounted(() => void load());
 
 /** Translate a persisted notification delivery status for display. */
 function formatDeliveryStatus(status: NotificationDelivery['status']): string {

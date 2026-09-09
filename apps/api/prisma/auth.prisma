@@ -9,10 +9,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  username     String   @unique @db.VarChar(255)
-  passwordHash String   @db.VarChar(255)
-  role         UserRole @default(VIEWER)
-  repositoryMemberships RepositoryMembership[]
+  username                String                 @unique @db.VarChar(255)
+  passwordHash            String                 @db.VarChar(255)
+  role                    UserRole               @default(VIEWER)
+  dismissedIntroBannerIds String[]               @default([])
+  repositoryMemberships   RepositoryMembership[]
 
   @@map("users")
 }

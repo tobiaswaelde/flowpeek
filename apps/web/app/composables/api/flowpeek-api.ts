@@ -27,6 +27,7 @@ import type {
   UpdateNotificationRule,
   UpdateProviderAccount,
   User,
+  UserPreferences,
   WorkflowFilter,
   WorkflowRunTrendBucket,
   WorkflowRunTrendQuery,
@@ -119,9 +120,16 @@ export function useFlowpeekApi() {
         api.put(`${apiEndpoints.repositories}/${id}/memberships/${userId}`, input),
     },
     settings: {
-      get: (): Promise<AxiosResponse<ApplicationSettings>> => api.get(apiEndpoints.settings),
+      get: (): Promise<AxiosResponse<ApplicationSettings>> => api.get(apiEndpoints.settings.base),
       update: (input: UpdateApplicationSettings): Promise<AxiosResponse<ApplicationSettings>> =>
-        api.patch(apiEndpoints.settings, input),
+        api.patch(apiEndpoints.settings.base, input),
+    },
+    userPreferences: {
+      dismissIntroBanner: (bannerId: string): Promise<AxiosResponse<UserPreferences>> =>
+        api.put(`${apiEndpoints.settings.preferences}/intro-banners/${encodeURIComponent(bannerId)}`),
+      get: (): Promise<AxiosResponse<UserPreferences>> => api.get(apiEndpoints.settings.preferences),
+      restoreIntroBanners: (): Promise<AxiosResponse<UserPreferences>> =>
+        api.delete(`${apiEndpoints.settings.preferences}/intro-banners`),
     },
     users: {
       delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.users}/${id}`),

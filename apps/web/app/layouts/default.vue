@@ -37,12 +37,28 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 
+import { useAuthStore } from '~/store/auth';
 import { useSettingsStore } from '~/store/settings';
+import { useUserPreferencesStore } from '~/store/user-preferences';
 
 const { t } = useI18n();
 const route = useRoute();
 const usesFullWidthContent = computed(() => route.meta.fullWidth === true);
+const auth = useAuthStore();
 const settings = useSettingsStore();
+const userPreferences = useUserPreferencesStore();
 
-onMounted(() => void settings.load());
+onMounted(() => {
+  void settings.load();
+  void userPreferences.load();
+});
+
+watch(
+  () => auth.user?.id,
+  (userId, previousUserId) => {
+    if (userId === previousUserId) return;
+    userPreferences.reset();
+    if (userId) void userPreferences.load(true);
+  },
+);
 </script>

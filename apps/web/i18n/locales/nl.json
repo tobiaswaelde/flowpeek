@@ -107,7 +107,17 @@
     "users": "Gebruikers",
     "workflowRuns": "Workflowuitvoeringen"
   },
+  "pageIntro": {
+    "dismiss": "Introductie voor {title} verbergen",
+    "dismissError": "De pagina-introductie kon niet worden verborgen."
+  },
   "settings": {
+    "bannersRestored": "De introductiebanners zijn hersteld.",
+    "dismissedBanners": "Verborgen introductiebanners: {count}.",
+    "pageIntroductions": "Pagina-introducties",
+    "pageIntroductionsDescription": "Herstel introductiebanners die je eerder hebt verborgen.",
+    "restoreBanners": "Alle banners herstellen",
+    "restoreBannersError": "De introductiebanners konden niet worden hersteld.",
     "dateTimeFormat": "Standaard datum- en tijdnotatie",
     "dateTimeFormatHelp": "Bepaalt hoe tijdstempels in Flowpeek worden weergegeven. Alle opties gebruiken een 24-uursklok.",
     "dateTimeFormats": {
@@ -116,7 +126,7 @@
       "LOCALE_SHORT": "Gelokaliseerd, kort"
     },
     "days": "dagen",
-    "description": "Configureer standaardwaarden die in heel Flowpeek gelden.",
+    "description": "Beheer applicatiestandaarden en je persoonlijke interfacevoorkeuren.",
     "general": "Globale standaardwaarden",
     "generalDescription": "Deze instellingen gelden voor alle gebruikers en repositories zonder eigen afwijking.",
     "loadError": "De globale instellingen konden niet worden geladen.",
@@ -240,6 +250,8 @@
     "UNKNOWN": "Onbekend"
   },
   "workflowRuns": {
+    "description": "Zoek en bekijk workflowruns in de repositories waartoe je toegang hebt.",
+    "title": "Workflowruns",
     "columns": {
       "completed": "Voltooid",
       "created": "Providertijd",
@@ -255,6 +267,7 @@
     "notAvailable": "—"
   },
   "notifications": {
+    "loadError": "De meldingsgegevens konden niet worden geladen.",
     "attempts": "{count} pogingen",
     "channels": "Kanalen",
     "description": "Repositorymeldingskanalen, regels en bezorggeschiedenis.",

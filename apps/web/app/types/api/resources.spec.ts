@@ -14,7 +14,7 @@ describe('web API contracts', () => {
 
   it('keeps the Query Kit endpoint relative to the configured API version', () => {
     expect(apiEndpoints.workflowRuns).toBe('workflow-runs');
-    expect(apiEndpoints.settings).toBe('/settings');
+    expect(apiEndpoints.settings).toEqual({ base: '/settings', preferences: '/settings/preferences' });
   });
 
   it('validates the complete global settings payload', () => {

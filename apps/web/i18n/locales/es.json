@@ -107,7 +107,17 @@
     "users": "Usuarios",
     "workflowRuns": "Ejecuciones de flujo"
   },
+  "pageIntro": {
+    "dismiss": "Ocultar la introducción de {title}",
+    "dismissError": "No se pudo ocultar la introducción de la página."
+  },
   "settings": {
+    "bannersRestored": "Se restauraron los banners de introducción.",
+    "dismissedBanners": "Banners de introducción ocultos: {count}.",
+    "pageIntroductions": "Introducciones de página",
+    "pageIntroductionsDescription": "Restaura los banners de introducción que ocultaste anteriormente.",
+    "restoreBanners": "Restaurar todos los banners",
+    "restoreBannersError": "No se pudieron restaurar los banners de introducción.",
     "dateTimeFormat": "Formato predeterminado de fecha y hora",
     "dateTimeFormatHelp": "Controla cómo se muestran las marcas de tiempo en Flowpeek. Todas las opciones usan el formato de 24 horas.",
     "dateTimeFormats": {
@@ -116,7 +126,7 @@
       "LOCALE_SHORT": "Localizado, corto"
     },
     "days": "días",
-    "description": "Configura los valores predeterminados que se aplican en todo Flowpeek.",
+    "description": "Gestiona los valores de la aplicación y tus preferencias personales de interfaz.",
     "general": "Valores predeterminados globales",
     "generalDescription": "Esta configuración se aplica a todos los usuarios y repositorios sin una configuración propia.",
     "loadError": "No se pudo cargar la configuración global.",
@@ -244,6 +254,8 @@
     "UNKNOWN": "Desconocida"
   },
   "workflowRuns": {
+    "description": "Busca e inspecciona ejecuciones en los repositorios a los que tienes acceso.",
+    "title": "Ejecuciones de workflows",
     "columns": {
       "completed": "Completado",
       "created": "Hora del proveedor",
@@ -259,6 +271,7 @@
     "notAvailable": "—"
   },
   "notifications": {
+    "loadError": "No se pudieron cargar los datos de notificaciones.",
     "attempts": "{count} intentos",
     "channels": "Canales",
     "description": "Canales de notificación del repositorio, reglas e historial de entrega.",

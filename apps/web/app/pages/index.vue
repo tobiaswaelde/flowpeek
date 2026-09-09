@@ -1,10 +1,12 @@
 <template>
-  <section class="space-y-6">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-semibold">{{ $t('dashboard.title') }}</h1>
-        <p class="mt-1 text-sm text-muted">{{ $t('dashboard.description') }}</p>
-      </div>
+  <LayoutPage
+    banner-id="dashboard"
+    icon="i-lucide-layout-dashboard"
+    :breadcrumbs="[{ icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard') }]"
+    :description="$t('dashboard.description')"
+    :title="$t('dashboard.title')"
+  >
+    <template #actions>
       <div class="flex items-center gap-2">
         <USelect
           v-model="range"
@@ -24,7 +26,7 @@
           @click="loadDashboard"
         />
       </div>
-    </div>
+    </template>
 
     <UAlert
       v-if="hasError"
@@ -56,7 +58,7 @@
     </div>
 
     <ModulesDashboardLatestRuns :loading="isCurrentLoading" :runs="latestRuns" />
-  </section>
+  </LayoutPage>
 </template>
 
 <script setup lang="ts">
@@ -71,6 +73,8 @@ import type {
   RepositoryHealth,
   WorkflowRunTrendBucket,
 } from '~/types/api/resources';
+
+definePageMeta({ fullWidth: true });
 
 const { t } = useI18n();
 const api = useFlowpeekApi();

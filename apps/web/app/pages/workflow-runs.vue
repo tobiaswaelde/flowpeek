@@ -1,90 +1,93 @@
 <template>
-  <section class="flex min-h-0 flex-1 flex-col">
-    <div class="flex min-h-0 flex-1 flex-col">
-      <QTableToolbar
+  <LayoutPage
+    banner-id="workflow-runs"
+    icon="i-lucide-list-tree"
+    :breadcrumbs="[
+      { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
+      { icon: 'i-lucide-list-tree', label: $t('layout.workflowRuns') },
+    ]"
+    :description="$t('workflowRuns.description')"
+    :padded="false"
+    :title="$t('workflowRuns.title')"
+  >
+    <template #actions>
+      <QTableSorting v-model:sorting="sorting" :fields="sortableFields" shortcuts />
+      <QTableFiltering v-model:filtering="filtering" :fields="filterFields" shortcuts />
+      <QTableOptions
         v-model:column-order="columnOrder"
         v-model:column-pinning="columnPinning"
-        v-model:filtering="filtering"
         v-model:invisible-columns="columnVisibility"
-        v-model:sorting="sorting"
-        :breadcrumb-items="[
-          { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
-          { icon: 'i-lucide-list-tree', label: $t('layout.workflowRuns') },
-        ]"
-        :column-definitions="columnDefinition"
-        :filter-fields="filterFields"
-        :sortable-fields="sortableFields"
+        :columns="columnDefinition"
         shortcuts
-        :ui="{ root: 'border-b border-default p-4' }"
       />
+    </template>
 
-      <UAlert
-        v-if="tableError"
-        class="m-4"
-        color="error"
-        icon="i-lucide-circle-alert"
-        variant="subtle"
-        :title="$t('workflowRuns.loadError')"
-      />
-      <UTable
-        sticky
-        v-model:column-pinning="columnPinning"
-        class="min-h-0 flex-1"
-        :columns="columns"
-        :data="items"
-        :empty="$t('workflowRuns.empty')"
-        :loading="loading"
-        :ui="{
-          th: 'first:pl-6 bg-neutral-100 dark:bg-neutral-950/20',
-          td: 'first:pl-6',
-        }"
-      >
-        <template #workflowName-cell="{ row }">
-          <span class="font-medium">{{ row.original.workflowName }}</span>
-        </template>
-        <template #repositoryName-cell="{ row }">
-          <span>{{ row.original.repositoryOwner }}/{{ row.original.repositoryName }}</span>
-        </template>
-        <template #providerType-cell="{ row }">
-          <EnumsProviderTypeBadge variant="subtle" :value="row.original.providerType" />
-        </template>
-        <template #status-cell="{ row }">
-          <UBadge variant="subtle" :color="statusColor(row.original.status)">
-            {{ $t(`workflowStatus.${row.original.status}`) }}
-          </UBadge>
-        </template>
-        <template #completedAt-cell="{ row }">
-          <span class="whitespace-nowrap text-sm text-muted">{{ formatTimestamp(row.original.completedAt) }}</span>
-        </template>
-        <template #durationMs-cell="{ row }">
-          <span class="whitespace-nowrap text-sm text-muted">{{ formatDuration(row.original.durationMs) }}</span>
-        </template>
-        <template #actions-header="{ column }">
-          <span class="flex justify-end">{{ column.columnDef.header }}</span>
-        </template>
-        <template #actions-cell="{ row }">
-          <div class="flex justify-end">
-            <UButton
-              color="neutral"
-              icon="i-tabler-external-link"
-              rel="noreferrer"
-              target="_blank"
-              variant="ghost"
-              :aria-label="$t('dashboard.openProvider')"
-              :to="row.original.url"
-            />
-          </div>
-        </template>
-      </UTable>
-      <QTablePagination
-        v-model:items-per-page="itemsPerPage"
-        v-model:page="page"
-        class="border-t border-default"
-        :total-items="totalItems"
-        shortcuts
-      />
-    </div>
-  </section>
+    <UAlert
+      v-if="tableError"
+      class="m-4"
+      color="error"
+      icon="i-lucide-circle-alert"
+      variant="subtle"
+      :title="$t('workflowRuns.loadError')"
+    />
+    <UTable
+      sticky
+      v-model:column-pinning="columnPinning"
+      class="min-h-0 flex-1"
+      :columns="columns"
+      :data="items"
+      :empty="$t('workflowRuns.empty')"
+      :loading="loading"
+      :ui="{
+        th: 'first:pl-6 bg-neutral-100 dark:bg-neutral-950/20',
+        td: 'first:pl-6',
+      }"
+    >
+      <template #workflowName-cell="{ row }">
+        <span class="font-medium">{{ row.original.workflowName }}</span>
+      </template>
+      <template #repositoryName-cell="{ row }">
+        <span>{{ row.original.repositoryOwner }}/{{ row.original.repositoryName }}</span>
+      </template>
+      <template #providerType-cell="{ row }">
+        <EnumsProviderTypeBadge variant="subtle" :value="row.original.providerType" />
+      </template>
+      <template #status-cell="{ row }">
+        <UBadge variant="subtle" :color="statusColor(row.original.status)">
+          {{ $t(`workflowStatus.${row.original.status}`) }}
+        </UBadge>
+      </template>
+      <template #completedAt-cell="{ row }">
+        <span class="whitespace-nowrap text-sm text-muted">{{ formatTimestamp(row.original.completedAt) }}</span>
+      </template>
+      <template #durationMs-cell="{ row }">
+        <span class="whitespace-nowrap text-sm text-muted">{{ formatDuration(row.original.durationMs) }}</span>
+      </template>
+      <template #actions-header="{ column }">
+        <span class="flex justify-end">{{ column.columnDef.header }}</span>
+      </template>
+      <template #actions-cell="{ row }">
+        <div class="flex justify-end">
+          <UButton
+            color="neutral"
+            icon="i-tabler-external-link"
+            rel="noreferrer"
+            target="_blank"
+            variant="ghost"
+            :aria-label="$t('dashboard.openProvider')"
+            :to="row.original.url"
+          />
+        </div>
+      </template>
+    </UTable>
+    <QTablePagination
+      v-model:items-per-page="itemsPerPage"
+      v-model:page="page"
+      class="border-t border-default"
+      :total-items="totalItems"
+      shortcuts
+    />
+  </LayoutPage>
 </template>
 
 <script setup lang="ts">
@@ -161,6 +164,8 @@ const columnPinning = computed({
     workflowRunTable.columnPinning.value = value;
   },
 });
+
+useHead({ title: computed(() => t('workflowRuns.title')) });
 
 /** Format a provider timestamp in the active interface locale. */
 function formatTimestamp(timestamp: string | null): string {

@@ -109,7 +109,17 @@
     "users": "Utilisateurs",
     "workflowRuns": "Exécutions de flux"
   },
+  "pageIntro": {
+    "dismiss": "Masquer l’introduction de {title}",
+    "dismissError": "Impossible de masquer l’introduction de la page."
+  },
   "settings": {
+    "bannersRestored": "Les bannières d’introduction ont été restaurées.",
+    "dismissedBanners": "Bannières d’introduction masquées : {count}.",
+    "pageIntroductions": "Introductions des pages",
+    "pageIntroductionsDescription": "Restaurez les bannières d’introduction précédemment masquées.",
+    "restoreBanners": "Restaurer toutes les bannières",
+    "restoreBannersError": "Impossible de restaurer les bannières d’introduction.",
     "dateTimeFormat": "Format de date et d'heure par défaut",
     "dateTimeFormatHelp": "Contrôle l'affichage des horodatages dans Flowpeek. Toutes les options utilisent le format 24 heures.",
     "dateTimeFormats": {
@@ -118,7 +128,7 @@
       "LOCALE_SHORT": "Localisé, court"
     },
     "days": "jours",
-    "description": "Configurez les valeurs par défaut appliquées dans Flowpeek.",
+    "description": "Gérez les valeurs par défaut de l’application et vos préférences d’interface.",
     "general": "Valeurs globales par défaut",
     "generalDescription": "Ces paramètres s'appliquent à tous les utilisateurs et dépôts sans remplacement spécifique.",
     "loadError": "Les paramètres globaux n'ont pas pu être chargés.",
@@ -242,6 +252,8 @@
     "UNKNOWN": "Inconnue"
   },
   "workflowRuns": {
+    "description": "Recherchez et consultez les exécutions des dépôts auxquels vous avez accès.",
+    "title": "Exécutions de workflows",
     "columns": {
       "completed": "Terminé",
       "created": "Heure du fournisseur",
@@ -257,6 +269,7 @@
     "notAvailable": "—"
   },
   "notifications": {
+    "loadError": "Impossible de charger les données de notification.",
     "attempts": "{count} tentatives",
     "channels": "Canaux",
     "description": "Canaux de notification des dépôts, règles et historique de livraison.",

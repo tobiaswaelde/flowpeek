@@ -107,7 +107,17 @@
     "users": "Użytkownicy",
     "workflowRuns": "Wykonania workflow"
   },
+  "pageIntro": {
+    "dismiss": "Ukryj wprowadzenie do {title}",
+    "dismissError": "Nie udało się ukryć wprowadzenia do strony."
+  },
   "settings": {
+    "bannersRestored": "Banery wprowadzające zostały przywrócone.",
+    "dismissedBanners": "Ukryte banery wprowadzające: {count}.",
+    "pageIntroductions": "Wprowadzenia do stron",
+    "pageIntroductionsDescription": "Przywróć wcześniej ukryte banery wprowadzające.",
+    "restoreBanners": "Przywróć wszystkie banery",
+    "restoreBannersError": "Nie udało się przywrócić banerów wprowadzających.",
     "dateTimeFormat": "Domyślny format daty i czasu",
     "dateTimeFormatHelp": "Określa sposób wyświetlania znaczników czasu w Flowpeek. Wszystkie opcje używają zegara 24-godzinnego.",
     "dateTimeFormats": {
@@ -116,7 +126,7 @@
       "LOCALE_SHORT": "Lokalny, krótki"
     },
     "days": "dni",
-    "description": "Skonfiguruj wartości domyślne obowiązujące w całym Flowpeek.",
+    "description": "Zarządzaj ustawieniami aplikacji i osobistymi preferencjami interfejsu.",
     "general": "Globalne wartości domyślne",
     "generalDescription": "Te ustawienia dotyczą wszystkich użytkowników i repozytoriów bez własnego nadpisania.",
     "loadError": "Nie udało się wczytać ustawień globalnych.",
@@ -240,6 +250,8 @@
     "UNKNOWN": "Nieznane"
   },
   "workflowRuns": {
+    "description": "Wyszukuj i przeglądaj uruchomienia w repozytoriach, do których masz dostęp.",
+    "title": "Uruchomienia workflow",
     "columns": {
       "completed": "Zakończono",
       "created": "Czas dostawcy",
@@ -255,6 +267,7 @@
     "notAvailable": "—"
   },
   "notifications": {
+    "loadError": "Nie udało się wczytać danych powiadomień.",
     "attempts": "{count} prób",
     "channels": "Kanały",
     "description": "Kanały powiadomień repozytoriów, reguły i historia dostarczania.",

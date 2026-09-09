@@ -18,6 +18,11 @@ export interface ApplicationSettings {
 /** Complete mutable global settings payload accepted from a system administrator. */
 export type UpdateApplicationSettings = ApplicationSettings;
 
+/** Personal interface preferences persisted for the authenticated user. */
+export interface UserPreferences {
+  dismissedIntroBannerIds: string[];
+}
+
 /** Validate global settings before sending an administrative update. */
 export const applicationSettingsSchema = z.object({
   dateTimeFormat: z.enum(defaultDateTimeFormats),

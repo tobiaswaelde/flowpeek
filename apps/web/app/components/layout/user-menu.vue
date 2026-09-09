@@ -29,6 +29,12 @@ const { dropdownMenuItems: themeItems } = useThemes();
 
 const items = computed<DropdownMenuItem[]>(() => [
   {
+    icon: 'i-lucide-settings',
+    label: t('layout.settings'),
+    to: '/admin/settings',
+  },
+  { type: 'separator' },
+  {
     children: localeItems.value,
     icon: 'i-tabler-language',
     label: t('layout.language'),

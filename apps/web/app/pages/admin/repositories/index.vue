@@ -1,111 +1,112 @@
 <template>
-  <section class="flex min-h-0 flex-1 flex-col">
-    <div class="flex min-h-0 flex-1 flex-col">
-      <QTableToolbar
+  <LayoutPage
+    banner-id="admin-repositories"
+    icon="i-lucide-git-branch"
+    :breadcrumbs="[
+      { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
+      { icon: 'i-lucide-git-branch', label: $t('layout.repositories') },
+    ]"
+    :description="$t('repositories.description')"
+    :padded="false"
+    :title="$t('repositories.title')"
+  >
+    <template #actions>
+      <QTableSorting v-model:sorting="sorting" :fields="sortableFields" shortcuts />
+      <QTableFiltering v-model:filtering="filtering" :fields="filterFields" shortcuts />
+      <QTableOptions
         v-model:column-order="columnOrder"
         v-model:column-pinning="columnPinning"
-        v-model:filtering="filtering"
         v-model:invisible-columns="columnVisibility"
-        v-model:sorting="sorting"
-        :breadcrumb-items="[
-          { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
-          { icon: 'i-lucide-git-branch', label: $t('layout.repositories') },
-        ]"
-        :column-definitions="columnDefinition"
-        :filter-fields="filterFields"
-        :sortable-fields="sortableFields"
-        shortcuts
-        :ui="{ root: 'border-b border-default p-4' }"
-      >
-        <template #new>
-          <UButton icon="i-lucide-plus" :label="$t('repositories.add')" @click="openAddDialog" />
-        </template>
-      </QTableToolbar>
-
-      <UAlert
-        v-if="tableError"
-        class="m-4"
-        color="error"
-        icon="i-lucide-circle-alert"
-        variant="subtle"
-        :title="$t('repositories.loadError')"
-      />
-      <UTable
-        sticky
-        v-model:column-pinning="columnPinning"
-        class="min-h-0 flex-1"
-        :columns="columns"
-        :data="items"
-        :empty="$t('repositories.empty')"
-        :loading="loading"
-        :ui="{
-          th: 'first:pl-8 bg-neutral-100 dark:bg-neutral-950/20',
-          td: 'first:pl-8',
-        }"
-      >
-        <template #name-cell="{ row }">
-          <span class="font-medium">{{ row.original.name }}</span>
-        </template>
-        <template #enabled-cell="{ row }">
-          <UBadge variant="subtle" :color="row.original.enabled ? 'success' : 'neutral'">
-            {{ row.original.enabled ? $t('repositories.enabled') : $t('repositories.disabled') }}
-          </UBadge>
-        </template>
-        <template #workflowRunRetentionDays-cell="{ row }">
-          <span class="text-sm text-muted">
-            {{ row.original.workflowRunRetentionDays ?? $t('repositories.default') }}
-          </span>
-        </template>
-        <template #workflowRunCount-cell="{ row }">
-          <span class="tabular-nums">{{ row.original.workflowRunCount ?? 0 }}</span>
-        </template>
-        <template #lastSyncAt-cell="{ row }">
-          <span class="whitespace-nowrap text-sm text-muted">{{ formatLastSync(row.original.lastSyncAt) }}</span>
-        </template>
-        <template #actions-header="{ column }">
-          <span class="flex justify-end">{{ column.columnDef.header }}</span>
-        </template>
-        <template #actions-cell="{ row }">
-          <div class="flex justify-end gap-1">
-            <UButton
-              color="neutral"
-              icon="i-tabler-external-link"
-              rel="noreferrer"
-              target="_blank"
-              variant="ghost"
-              :aria-label="$t('dashboard.openProvider')"
-              :to="row.original.url"
-            />
-            <UButton
-              color="neutral"
-              icon="i-lucide-settings-2"
-              variant="ghost"
-              :aria-label="$t('repositoryDetails.open')"
-              :to="`/admin/repositories/${row.original.id}`"
-            />
-            <UButton
-              color="neutral"
-              variant="ghost"
-              :aria-label="row.original.enabled ? $t('repositories.disable') : $t('repositories.enable')"
-              :disabled="isPending(row.original.id)"
-              :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
-              :loading="isPending(row.original.id)"
-              @click="toggle(row.original)"
-            />
-          </div>
-        </template>
-      </UTable>
-      <QTablePagination
-        v-model:items-per-page="itemsPerPage"
-        v-model:page="page"
-        class="border-t border-default"
-        :total-items="totalItems"
+        :columns="columnDefinition"
         shortcuts
       />
-    </div>
+      <UButton icon="i-lucide-plus" :aria-label="$t('repositories.add')" @click="openAddDialog">
+        <span class="hidden sm:inline">{{ $t('repositories.add') }}</span>
+      </UButton>
+    </template>
 
+    <UAlert
+      v-if="tableError"
+      class="m-4"
+      color="error"
+      icon="i-lucide-circle-alert"
+      variant="subtle"
+      :title="$t('repositories.loadError')"
+    />
+    <UTable
+      sticky
+      v-model:column-pinning="columnPinning"
+      class="min-h-0 flex-1"
+      :columns="columns"
+      :data="items"
+      :empty="$t('repositories.empty')"
+      :loading="loading"
+      :ui="{
+        th: 'first:pl-8 bg-neutral-100 dark:bg-neutral-950/20',
+        td: 'first:pl-8',
+      }"
+    >
+      <template #name-cell="{ row }">
+        <span class="font-medium">{{ row.original.name }}</span>
+      </template>
+      <template #enabled-cell="{ row }">
+        <UBadge variant="subtle" :color="row.original.enabled ? 'success' : 'neutral'">
+          {{ row.original.enabled ? $t('repositories.enabled') : $t('repositories.disabled') }}
+        </UBadge>
+      </template>
+      <template #workflowRunRetentionDays-cell="{ row }">
+        <span class="text-sm text-muted">
+          {{ row.original.workflowRunRetentionDays ?? $t('repositories.default') }}
+        </span>
+      </template>
+      <template #workflowRunCount-cell="{ row }">
+        <span class="tabular-nums">{{ row.original.workflowRunCount ?? 0 }}</span>
+      </template>
+      <template #lastSyncAt-cell="{ row }">
+        <span class="whitespace-nowrap text-sm text-muted">{{ formatLastSync(row.original.lastSyncAt) }}</span>
+      </template>
+      <template #actions-header="{ column }">
+        <span class="flex justify-end">{{ column.columnDef.header }}</span>
+      </template>
+      <template #actions-cell="{ row }">
+        <div class="flex justify-end gap-1">
+          <UButton
+            color="neutral"
+            icon="i-tabler-external-link"
+            rel="noreferrer"
+            target="_blank"
+            variant="ghost"
+            :aria-label="$t('dashboard.openProvider')"
+            :to="row.original.url"
+          />
+          <UButton
+            color="neutral"
+            icon="i-lucide-settings-2"
+            variant="ghost"
+            :aria-label="$t('repositoryDetails.open')"
+            :to="`/admin/repositories/${row.original.id}`"
+          />
+          <UButton
+            color="neutral"
+            variant="ghost"
+            :aria-label="row.original.enabled ? $t('repositories.disable') : $t('repositories.enable')"
+            :disabled="isPending(row.original.id)"
+            :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
+            :loading="isPending(row.original.id)"
+            @click="toggle(row.original)"
+          />
+        </div>
+      </template>
+    </UTable>
+    <QTablePagination
+      v-model:items-per-page="itemsPerPage"
+      v-model:page="page"
+      class="border-t border-default"
+      :total-items="totalItems"
+      shortcuts
+    />
     <ModulesRepositoriesAddDialog v-model:open="dialogOpen" @created="handleRepositoryCreated" />
-  </section>
+  </LayoutPage>
 </template>
 
 <script setup lang="ts">
@@ -178,6 +179,8 @@ const columnPinning = computed({
     repositoryTable.columnPinning.value = value;
   },
 });
+
+useHead({ title: computed(() => t('repositories.title')) });
 
 /** Format a repository's last successful synchronization in the active interface locale. */
 function formatLastSync(lastSyncAt: string | null): string {

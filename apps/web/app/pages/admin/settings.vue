@@ -1,19 +1,16 @@
 <template>
-  <section class="space-y-6">
-    <UBreadcrumb
-      :items="[
-        { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
-        { icon: 'i-lucide-settings', label: $t('layout.settings') },
-      ]"
-    />
-
-    <div>
-      <h1 class="text-2xl font-semibold">{{ $t('settings.title') }}</h1>
-      <p class="text-sm text-muted">{{ $t('settings.description') }}</p>
-    </div>
-
+  <LayoutPage
+    banner-id="settings"
+    icon="i-lucide-settings"
+    :breadcrumbs="[
+      { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
+      { icon: 'i-lucide-settings', label: $t('layout.settings') },
+    ]"
+    :description="$t('settings.description')"
+    :title="$t('settings.title')"
+  >
     <UAlert
-      v-if="settingsStore.error"
+      v-if="isAdmin && settingsStore.error"
       color="error"
       icon="i-lucide-circle-alert"
       variant="subtle"
@@ -31,7 +28,7 @@
       </template>
     </UAlert>
 
-    <UCard :ui="{ body: 'space-y-6' }">
+    <UCard v-if="isAdmin" :ui="{ body: 'space-y-6' }">
       <template #header>
         <div>
           <h2 class="font-semibold">{{ $t('settings.general') }}</h2>
@@ -104,7 +101,46 @@
         </div>
       </UForm>
     </UCard>
-  </section>
+
+    <UCard :ui="{ body: 'space-y-4' }">
+      <template #header>
+        <div>
+          <h2 class="font-semibold">{{ $t('settings.pageIntroductions') }}</h2>
+          <p class="text-sm text-muted">{{ $t('settings.pageIntroductionsDescription') }}</p>
+        </div>
+      </template>
+
+      <UAlert
+        v-if="restoreError"
+        color="error"
+        icon="i-lucide-circle-alert"
+        variant="subtle"
+        :title="$t('settings.restoreBannersError')"
+      />
+      <UAlert
+        v-else-if="restored"
+        color="success"
+        icon="i-lucide-circle-check"
+        variant="subtle"
+        :title="$t('settings.bannersRestored')"
+      />
+
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <p class="text-sm text-muted">
+          {{ $t('settings.dismissedBanners', { count: userPreferences.dismissedIntroBannerIds.length }) }}
+        </p>
+        <UButton
+          color="neutral"
+          icon="i-lucide-rotate-ccw"
+          variant="soft"
+          :disabled="userPreferences.dismissedIntroBannerIds.length === 0"
+          :label="$t('settings.restoreBanners')"
+          :loading="restoring"
+          @click="restoreBanners"
+        />
+      </div>
+    </UCard>
+  </LayoutPage>
 </template>
 
 <script setup lang="ts">
@@ -112,20 +148,28 @@ import type { FormSubmitEvent } from '@nuxt/ui';
 import { computed, onMounted, reactive, ref } from 'vue';
 
 import { useUnsavedChangesGuard } from '~/composables/use-unsaved-changes-guard';
+import { useAuthStore } from '~/store/auth';
 import { useSettingsStore } from '~/store/settings';
+import { useUserPreferencesStore } from '~/store/user-preferences';
 import { applicationSettingsSchema, defaultDateTimeFormats, type ApplicationSettings } from '~/types/api/resources';
 import { formatDateTimeValue } from '~/utils/date-time';
 
-definePageMeta({ middleware: 'admin' });
+definePageMeta({ fullWidth: true });
 
 const previewTimestamp = '2026-09-09T13:05:00.000Z';
 const { locale, t } = useI18n();
+const auth = useAuthStore();
 const settingsStore = useSettingsStore();
+const userPreferences = useUserPreferencesStore();
 const form = reactive<ApplicationSettings>({ ...settingsStore.settings });
+const restoreError = ref(false);
+const restored = ref(false);
+const restoring = ref(false);
 const saveError = ref(false);
 const saved = ref(false);
 const saving = ref(false);
 const { reset: resetDirtyState } = useUnsavedChangesGuard(form);
+const isAdmin = computed(() => auth.user?.role === 'SYSTEM_ADMIN');
 const dateTimeFormatOptions = computed(() =>
   defaultDateTimeFormats.map((format) => ({ label: t(`settings.dateTimeFormats.${format}`), value: format })),
 );
@@ -135,10 +179,26 @@ useHead({ title: t('settings.title') });
 
 /** Load persisted settings and initialize the editable form snapshot. */
 async function loadSettings(): Promise<void> {
+  if (!isAdmin.value) return;
   await settingsStore.load(true);
   if (settingsStore.error) return;
   Object.assign(form, settingsStore.settings);
   resetDirtyState();
+}
+
+/** Restore every dismissed introductory banner for only the current authenticated user. */
+async function restoreBanners(): Promise<void> {
+  restoring.value = true;
+  restoreError.value = false;
+  restored.value = false;
+  try {
+    await userPreferences.restoreIntroBanners();
+    restored.value = true;
+  } catch {
+    restoreError.value = true;
+  } finally {
+    restoring.value = false;
+  }
 }
 
 /** Persist a validated full global-settings payload. */

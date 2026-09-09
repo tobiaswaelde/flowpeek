@@ -39,7 +39,10 @@ export const apiEndpoints = {
     base: '/provider-accounts',
   },
   repositories: '/repositories',
-  settings: '/settings',
+  settings: {
+    base: '/settings',
+    preferences: '/settings/preferences',
+  },
   users: '/users',
   workflowRuns: 'workflow-runs',
 } as const;

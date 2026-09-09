@@ -1,32 +1,41 @@
 <template>
-  <section class="flex min-h-0 flex-1 flex-col">
-    <UDashboardToolbar>
-      <template #left>
-        <UBreadcrumb
-          :items="[
-            { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
-            { icon: 'i-lucide-git-branch', label: $t('layout.repositories'), to: '/admin/repositories' },
-            { label: repository ? `${repository.owner}/${repository.name}` : $t('repositoryDetails.title') },
-          ]"
-        />
-      </template>
-    </UDashboardToolbar>
+  <LayoutPage
+    banner-id="repository-details"
+    icon="i-lucide-git-branch"
+    :breadcrumbs="[
+      { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
+      { icon: 'i-lucide-git-branch', label: $t('layout.repositories'), to: '/admin/repositories' },
+      { label: pageTitle },
+    ]"
+    :description="$t('repositoryDetails.generalDescription')"
+    :title="pageTitle"
+  >
+    <template v-if="repository" #actions>
+      <UButton
+        color="neutral"
+        icon="i-tabler-external-link"
+        rel="noreferrer"
+        target="_blank"
+        variant="soft"
+        :label="$t('dashboard.openProvider')"
+        :to="repository.url"
+      />
+    </template>
 
     <UAlert
       v-if="loadError"
-      class="m-4"
       color="error"
       icon="i-lucide-circle-alert"
       variant="subtle"
       :title="$t('repositoryDetails.loadError')"
     />
 
-    <div v-else-if="repository" class="grid gap-6 p-4 lg:grid-cols-2">
+    <div v-else-if="repository" class="grid gap-6 lg:grid-cols-2">
       <ModulesRepositoriesDetailsGeneralCard :repository="repository" @updated="repository = $event" />
       <ModulesRepositoriesDetailsWorkflowFiltersCard :repository-id="repository.id" />
       <ModulesRepositoriesDetailsMembersCard :repository-id="repository.id" />
     </div>
-  </section>
+  </LayoutPage>
 </template>
 
 <script setup lang="ts">
@@ -39,9 +48,15 @@ definePageMeta({ fullWidth: true });
 
 const route = useRoute();
 const api = useFlowpeekApi();
+const { t } = useI18n();
 const repositoryId = computed(() => String(route.params.id));
 const repository = ref<Repository>();
 const loadError = ref(false);
+const pageTitle = computed(() =>
+  repository.value ? `${repository.value.owner}/${repository.value.name}` : t('repositoryDetails.title'),
+);
+
+useHead({ title: pageTitle });
 
 /** Load the repository identity that scopes each details component. */
 async function load(): Promise<void> {

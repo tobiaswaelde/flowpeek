@@ -107,7 +107,17 @@
     "users": "Utilizadores",
     "workflowRuns": "Execuções de workflow"
   },
+  "pageIntro": {
+    "dismiss": "Ocultar a introdução de {title}",
+    "dismissError": "Não foi possível ocultar a introdução da página."
+  },
   "settings": {
+    "bannersRestored": "Os banners de introdução foram restaurados.",
+    "dismissedBanners": "Banners de introdução ocultos: {count}.",
+    "pageIntroductions": "Introduções das páginas",
+    "pageIntroductionsDescription": "Restaure os banners de introdução que ocultou anteriormente.",
+    "restoreBanners": "Restaurar todos os banners",
+    "restoreBannersError": "Não foi possível restaurar os banners de introdução.",
     "dateTimeFormat": "Formato predefinido de data e hora",
     "dateTimeFormatHelp": "Controla como os carimbos de data/hora são apresentados no Flowpeek. Todas as opções usam o formato de 24 horas.",
     "dateTimeFormats": {
@@ -116,7 +126,7 @@
       "LOCALE_SHORT": "Localizado, curto"
     },
     "days": "dias",
-    "description": "Configure os valores predefinidos aplicados em todo o Flowpeek.",
+    "description": "Gira as predefinições da aplicação e as suas preferências pessoais da interface.",
     "general": "Predefinições globais",
     "generalDescription": "Estas definições aplicam-se a todos os utilizadores e repositórios sem uma substituição própria.",
     "loadError": "Não foi possível carregar as definições globais.",
@@ -240,6 +250,8 @@
     "UNKNOWN": "Desconhecida"
   },
   "workflowRuns": {
+    "description": "Pesquise e consulte execuções nos repositórios a que tem acesso.",
+    "title": "Execuções de workflows",
     "columns": {
       "completed": "Concluído",
       "created": "Hora do fornecedor",
@@ -255,6 +267,7 @@
     "notAvailable": "—"
   },
   "notifications": {
+    "loadError": "Não foi possível carregar os dados das notificações.",
     "attempts": "{count} tentativas",
     "channels": "Canais",
     "description": "Canais de notificação de repositórios, regras e histórico de entrega.",
