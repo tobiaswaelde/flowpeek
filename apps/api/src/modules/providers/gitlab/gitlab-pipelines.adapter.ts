@@ -12,7 +12,7 @@ import type {
   ProviderWorkflowRun,
   VerifiedWebhook,
 } from '../provider-adapter.js';
-import { PROVIDER_FETCH } from '../provider-adapter.js';
+import { buildWorkflowRunScopeKey, PROVIDER_FETCH } from '../provider-adapter.js';
 import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
@@ -33,6 +33,8 @@ interface GitLabPipeline {
   duration: number | null;
   name?: string;
   ref?: string;
+  sha?: string;
+  source?: string;
   merge_request?: { iid: number };
 }
 
@@ -140,10 +142,18 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
   private toWorkflowRun(pipeline: GitLabPipeline): ProviderWorkflowRun {
     const startedAt = pipeline.started_at ? new Date(pipeline.started_at) : null;
     const completedAt = pipeline.finished_at ? new Date(pipeline.finished_at) : null;
+    const changeRequestNumber = this.gitLabMergeRequestNumber(pipeline)?.toString() ?? null;
+    const headBranch = pipeline.ref ?? null;
+    const workflowName = pipeline.name ?? 'Pipeline';
     return {
       awaitingApproval: isWorkflowRunAwaitingApproval('GITLAB', pipeline.status),
+      changeRequestNumber,
+      displayTitle: pipeline.name ?? pipeline.ref ?? 'Pipeline',
+      event: pipeline.source ?? null,
+      headBranch,
+      headSha: pipeline.sha ?? null,
       providerRunId: String(pipeline.id),
-      workflowName: pipeline.name ?? pipeline.ref ?? 'Pipeline',
+      providerWorkflowId: pipeline.name ? `name:${pipeline.name}` : 'pipeline',
       url: pipeline.web_url,
       providerCreatedAt: new Date(pipeline.created_at),
       startedAt,
@@ -157,13 +167,21 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
       status: normalizeWorkflowRunStatus('GITLAB', pipeline.status),
       rawStatus: pipeline.status,
       reviewUrl: this.gitLabMergeRequestUrl(pipeline),
+      scopeKey: buildWorkflowRunScopeKey(changeRequestNumber, headBranch),
+      workflowKind: 'STANDARD',
+      workflowName,
+      workflowPath: null,
     };
   }
 
   private gitLabMergeRequestUrl(pipeline: GitLabPipeline): string | null {
-    const refMatch = pipeline.ref?.match(/^refs\/merge-requests\/(\d+)\/head$/);
-    const mergeRequestIid = pipeline.merge_request?.iid ?? (refMatch ? Number(refMatch[1]) : null);
+    const mergeRequestIid = this.gitLabMergeRequestNumber(pipeline);
     if (!mergeRequestIid) return null;
     return pipeline.web_url.replace(/\/-\/pipelines\/\d+(?:\/)?$/, `/-/merge_requests/${mergeRequestIid}`);
+  }
+
+  private gitLabMergeRequestNumber(pipeline: GitLabPipeline): number | null {
+    const refMatch = pipeline.ref?.match(/^refs\/merge-requests\/(\d+)\/head$/);
+    return pipeline.merge_request?.iid ?? (refMatch ? Number(refMatch[1]) : null);
   }
 }

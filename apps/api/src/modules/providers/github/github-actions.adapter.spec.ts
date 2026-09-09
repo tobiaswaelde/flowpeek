@@ -22,7 +22,22 @@ describe('GitHubActionsAdapter', () => {
     ]);
     await expect(
       adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'octo', name: 'flowpeek' }),
-    ).resolves.toMatchObject([{ providerRunId: '7', status: 'SUCCESS', durationMs: 120_000 }]);
+    ).resolves.toMatchObject([
+      {
+        displayTitle: 'CI',
+        durationMs: 120_000,
+        event: 'push',
+        headBranch: 'main',
+        headSha: '0123456789abcdef',
+        providerRunId: '7',
+        providerWorkflowId: '17',
+        scopeKey: 'branch:main',
+        status: 'SUCCESS',
+        workflowKind: 'STANDARD',
+        workflowName: 'CI',
+        workflowPath: '.github/workflows/ci.yml',
+      },
+    ]);
     expect(fetchFn).toHaveBeenCalledWith(
       expect.stringContaining('/user/repos'),
       expect.objectContaining({ headers: expect.objectContaining({ Authorization: 'Bearer token' }) }),
@@ -54,6 +69,12 @@ describe('GitHubActionsAdapter', () => {
               html_url: 'https://github.com/octo/flowpeek/actions/runs/8',
               id: 8,
               name: 'Deploy',
+              workflow_id: 18,
+              path: '.github/workflows/deploy.yml',
+              display_title: 'Deploy pull request',
+              event: 'pull_request',
+              head_branch: 'feature/deploy',
+              head_sha: 'abcdef',
               pull_requests: [{ number: 42 }],
               run_started_at: '2026-09-09T08:01:00Z',
               status: 'waiting',
@@ -70,10 +91,73 @@ describe('GitHubActionsAdapter', () => {
     ).resolves.toMatchObject([
       {
         awaitingApproval: true,
+        changeRequestNumber: '42',
+        displayTitle: 'Deploy pull request',
         reviewUrl: 'https://github.com/octo/flowpeek/pull/42',
+        scopeKey: 'change-request:42',
         status: 'QUEUED',
       },
     ]);
     expect(fetchFn).toHaveBeenCalledTimes(1);
+  });
+
+  it('classifies dynamic Dependabot updates under one stable internal workflow', async () => {
+    const fetchFn = jest.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          workflow_runs: [
+            {
+              conclusion: 'failure',
+              created_at: '2026-09-09T12:52:58Z',
+              display_title: 'npm_and_yarn in /. for brace-expansion - Update #1566127419',
+              event: 'dynamic',
+              head_branch: 'main',
+              head_sha: '3ba01f8e',
+              html_url: 'https://github.com/octo/flowpeek/actions/runs/34353631785',
+              id: 34353631785,
+              name: 'npm_and_yarn in /. for brace-expansion - Update #1566127419',
+              path: 'dynamic/dependabot/dependabot-updates',
+              pull_requests: [],
+              run_started_at: '2026-09-09T12:53:01Z',
+              status: 'completed',
+              updated_at: '2026-09-09T12:54:11Z',
+              workflow_id: 204858725,
+            },
+            {
+              conclusion: 'failure',
+              created_at: '2026-09-09T12:23:48Z',
+              display_title: 'npm_and_yarn in /. for brace-expansion - Update #1566075990',
+              event: 'dynamic',
+              head_branch: 'main',
+              head_sha: '53df4d60',
+              html_url: 'https://github.com/octo/flowpeek/actions/runs/34350764213',
+              id: 34350764213,
+              name: 'npm_and_yarn in /. for brace-expansion - Update #1566075990',
+              path: 'dynamic/dependabot/dependabot-updates',
+              pull_requests: [],
+              run_started_at: '2026-09-09T12:24:00Z',
+              status: 'completed',
+              updated_at: '2026-09-09T12:24:39Z',
+              workflow_id: 204858725,
+            },
+          ],
+        }),
+      ),
+    );
+
+    const runs = await new GitHubActionsAdapter(fetchFn).listWorkflowRuns(context, {
+      name: 'flowpeek',
+      owner: 'octo',
+      providerRepositoryId: '1',
+    });
+
+    expect(runs).toHaveLength(2);
+    expect(runs.map((run) => run.providerWorkflowId)).toEqual(['204858725', '204858725']);
+    expect(runs.map((run) => run.workflowName)).toEqual(['Dependabot Updates', 'Dependabot Updates']);
+    expect(runs.map((run) => run.workflowKind)).toEqual(['DEPENDABOT_INTERNAL', 'DEPENDABOT_INTERNAL']);
+    expect(runs.map((run) => run.displayTitle)).toEqual([
+      'npm_and_yarn in /. for brace-expansion - Update #1566127419',
+      'npm_and_yarn in /. for brace-expansion - Update #1566075990',
+    ]);
   });
 });

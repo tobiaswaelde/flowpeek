@@ -27,7 +27,20 @@ describe('GitLabPipelinesAdapter', () => {
     ]);
     await expect(
       adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'group', name: 'flowpeek' }),
-    ).resolves.toMatchObject([{ providerRunId: '7', workflowName: 'main', status: 'SUCCESS', durationMs: 120_000 }]);
+    ).resolves.toMatchObject([
+      {
+        displayTitle: 'main',
+        durationMs: 120_000,
+        event: 'push',
+        headBranch: 'main',
+        headSha: '0123456789abcdef',
+        providerRunId: '7',
+        providerWorkflowId: 'pipeline',
+        scopeKey: 'branch:main',
+        status: 'SUCCESS',
+        workflowName: 'Pipeline',
+      },
+    ]);
     expect(fetchFn).toHaveBeenCalledWith(expect.stringContaining('/api/v4/projects'), expect.anything());
   });
 

@@ -44,6 +44,9 @@ export class DashboardWorkflowRunDto {
   workflowName!: string;
 
   @ApiProperty()
+  displayTitle!: string;
+
+  @ApiProperty()
   url!: string;
 
   @ApiProperty()
@@ -77,6 +80,7 @@ export class DashboardWorkflowRunDto {
       id: model.id,
       providerRunId: model.providerRunId,
       workflowName: model.workflowName,
+      displayTitle: model.displayTitle,
       url: model.url,
       providerCreatedAt: model.providerCreatedAt,
       startedAt: model.startedAt,

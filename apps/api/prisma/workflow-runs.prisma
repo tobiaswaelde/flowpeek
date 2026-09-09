@@ -8,6 +8,32 @@ enum WorkflowRunStatus {
   UNKNOWN
 }
 
+enum WorkflowKind {
+  STANDARD
+  DEPENDABOT_INTERNAL
+}
+
+model Workflow {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  providerWorkflowId String       @db.VarChar(2048)
+  name               String       @db.VarChar(1024)
+  path               String?      @db.VarChar(2048)
+  kind               WorkflowKind @default(STANDARD)
+  lastSeenAt         DateTime
+
+  repositoryId String        @db.Uuid
+  repository   Repository    @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  runs         WorkflowRun[]
+
+  @@unique([repositoryId, providerWorkflowId])
+  @@index([repositoryId, kind])
+  @@index([lastSeenAt])
+  @@map("workflows")
+}
+
 model WorkflowRun {
   id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
@@ -15,6 +41,7 @@ model WorkflowRun {
 
   providerRunId     String            @db.VarChar(255)
   workflowName      String            @db.VarChar(1024)
+  displayTitle      String            @db.VarChar(1024)
   url               String            @db.VarChar(2048)
   providerCreatedAt DateTime
   startedAt         DateTime?
@@ -24,6 +51,14 @@ model WorkflowRun {
   rawStatus         String?           @db.VarChar(255)
   awaitingApproval  Boolean           @default(false)
   reviewUrl         String?           @db.VarChar(2048)
+  event             String?           @db.VarChar(255)
+  headBranch        String?           @db.VarChar(1024)
+  headSha           String?           @db.VarChar(255)
+  changeRequestNumber String? @db.VarChar(255)
+  scopeKey            String  @db.VarChar(2048)
+
+  workflowId String   @db.Uuid
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
   repositoryId String     @db.Uuid
   repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
@@ -32,6 +67,7 @@ model WorkflowRun {
   @@unique([repositoryId, providerRunId])
   @@index([repositoryId, providerCreatedAt])
   @@index([repositoryId, status, completedAt])
+  @@index([workflowId, scopeKey, providerCreatedAt])
   @@index([awaitingApproval, providerCreatedAt])
   @@index([completedAt])
   @@map("workflow_runs")

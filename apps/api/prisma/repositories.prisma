@@ -17,6 +17,7 @@ model Repository {
   notificationChannels NotificationChannel[]
   notificationRules    NotificationRule[]
   workflowFilters      WorkflowFilter[]
+  workflows            Workflow[]
   workflowRuns      WorkflowRun[]
 
   @@unique([providerAccountId, providerRepositoryId])

@@ -21,7 +21,7 @@
         <tbody>
           <tr v-for="run in runs" :key="run.id" class="border-b border-default last:border-0">
             <td class="py-3">
-              <p class="font-medium">{{ run.workflowName }}</p>
+              <p class="font-medium">{{ run.displayTitle }}</p>
               <p class="text-xs text-muted">{{ run.repository.owner }}/{{ run.repository.name }}</p>
             </td>
             <td class="py-3"><EnumsWorkflowRunStatusBadge :status="run.status" /></td>

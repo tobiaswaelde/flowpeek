@@ -12,7 +12,7 @@ import type {
   ProviderWorkflowRun,
   VerifiedWebhook,
 } from '../provider-adapter.js';
-import { PROVIDER_FETCH } from '../provider-adapter.js';
+import { buildWorkflowRunScopeKey, PROVIDER_FETCH } from '../provider-adapter.js';
 import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
@@ -23,9 +23,15 @@ interface ForgejoRepository {
   owner: { login: string };
 }
 interface ForgejoRun {
+  event?: string;
+  head_branch?: string | null;
+  head_sha?: string | null;
   id: number;
   name?: string;
+  path?: string;
+  pull_requests?: { number: number }[];
   workflow_name?: string;
+  workflow_id?: number | string;
   html_url: string;
   created_at: string;
   run_started_at?: string | null;
@@ -119,10 +125,19 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
   private toWorkflowRun(run: ForgejoRun): ProviderWorkflowRun {
     const startedAt = run.run_started_at ? new Date(run.run_started_at) : null;
     const completedAt = run.status === 'completed' ? new Date(run.updated_at) : null;
+    const changeRequestNumber = run.pull_requests?.[0]?.number?.toString() ?? null;
+    const headBranch = run.head_branch ?? null;
+    const workflowName = run.workflow_name ?? run.name ?? 'Workflow';
+    const workflowPath = run.path ?? null;
     return {
       awaitingApproval: isWorkflowRunAwaitingApproval('FORGEJO', run.status, run.conclusion ?? null),
+      changeRequestNumber,
+      displayTitle: run.name ?? workflowName,
+      event: run.event ?? null,
+      headBranch,
+      headSha: run.head_sha ?? null,
       providerRunId: String(run.id),
-      workflowName: run.workflow_name ?? run.name ?? 'Workflow',
+      providerWorkflowId: run.workflow_id ? String(run.workflow_id) : (workflowPath ?? `name:${workflowName}`),
       url: run.html_url,
       providerCreatedAt: new Date(run.created_at),
       startedAt,
@@ -131,6 +146,10 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
       status: normalizeWorkflowRunStatus('FORGEJO', run.status, run.conclusion ?? null),
       rawStatus: run.conclusion ?? run.status,
       reviewUrl: null,
+      scopeKey: buildWorkflowRunScopeKey(changeRequestNumber, headBranch),
+      workflowKind: 'STANDARD',
+      workflowName,
+      workflowPath,
     };
   }
 }

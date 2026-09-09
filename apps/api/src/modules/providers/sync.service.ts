@@ -182,11 +182,56 @@ export class ProviderSyncService {
   }
 
   private async persistRunAndEvaluateRules(repositoryId: string, run: ProviderWorkflowRun): Promise<void> {
+    const { providerWorkflowId, workflowKind, workflowPath, ...runData } = run;
+    const lastSeenAt = new Date();
+    const workflow = await this.prisma.workflow.upsert({
+      where: { repositoryId_providerWorkflowId: { repositoryId, providerWorkflowId } },
+      create: {
+        kind: workflowKind,
+        lastSeenAt,
+        name: run.workflowName,
+        path: workflowPath,
+        providerWorkflowId,
+        repositoryId,
+      },
+      update: {
+        kind: workflowKind,
+        lastSeenAt,
+        name: run.workflowName,
+        path: workflowPath,
+      },
+    });
+    await this.consolidateLegacyWorkflow(repositoryId, run, workflow.id);
     const workflowRun = await this.prisma.workflowRun.upsert({
       where: { repositoryId_providerRunId: { repositoryId, providerRunId: run.providerRunId } },
-      create: { ...run, repositoryId },
-      update: run,
+      create: { ...runData, repositoryId, workflowId: workflow.id },
+      update: { ...runData, workflowId: workflow.id },
     });
     await this.notifications.evaluateRulesForRun(workflowRun);
+  }
+
+  private async consolidateLegacyWorkflow(
+    repositoryId: string,
+    run: ProviderWorkflowRun,
+    workflowId: string,
+  ): Promise<void> {
+    const legacyProviderWorkflowId =
+      run.workflowKind === 'DEPENDABOT_INTERNAL'
+        ? 'github:dynamic/dependabot/dependabot-updates'
+        : `legacy:name:${run.workflowName}`;
+    if (legacyProviderWorkflowId === run.providerWorkflowId) return;
+
+    const legacyWorkflow = await this.prisma.workflow.findUnique({
+      where: {
+        repositoryId_providerWorkflowId: { providerWorkflowId: legacyProviderWorkflowId, repositoryId },
+      },
+    });
+    if (!legacyWorkflow || legacyWorkflow.id === workflowId) return;
+
+    await this.prisma.workflowRun.updateMany({
+      data: { scopeKey: run.scopeKey, workflowId },
+      where: { workflowId: legacyWorkflow.id },
+    });
+    await this.prisma.workflow.delete({ where: { id: legacyWorkflow.id } });
   }
 }

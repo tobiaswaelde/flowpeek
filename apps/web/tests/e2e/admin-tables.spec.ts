@@ -320,6 +320,7 @@ test('workflow runs render in a filterable and sortable full-page table', async 
         items: [
           {
             completedAt: '2026-09-08T08:02:30.000Z',
+            displayTitle: 'Build',
             durationMs: 150_000,
             id: 'run-1',
             providerCreatedAt: '2026-09-08T08:00:00.000Z',

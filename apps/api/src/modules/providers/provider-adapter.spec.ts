@@ -1,4 +1,4 @@
-import type { ProviderAdapter } from './provider-adapter.js';
+import { buildWorkflowRunScopeKey, type ProviderAdapter } from './provider-adapter.js';
 
 describe('ProviderAdapter contract', () => {
   it('supports only read-only provider operations', async () => {
@@ -16,5 +16,11 @@ describe('ProviderAdapter contract', () => {
     ).resolves.toEqual([]);
     expect('createWorkflowRun' in adapter).toBe(false);
     expect('startWorkflow' in adapter).toBe(false);
+  });
+
+  it('uses change requests before branches when identifying an execution context', () => {
+    expect(buildWorkflowRunScopeKey('42', 'feature/workflows')).toBe('change-request:42');
+    expect(buildWorkflowRunScopeKey(null, 'main')).toBe('branch:main');
+    expect(buildWorkflowRunScopeKey(null, null)).toBe('repository');
   });
 });

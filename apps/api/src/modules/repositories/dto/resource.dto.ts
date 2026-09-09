@@ -104,6 +104,8 @@ export class WorkflowRunDto {
   providerRunId!: string;
   @ApiProperty()
   workflowName!: string;
+  @ApiProperty()
+  displayTitle!: string;
   @ApiProperty({ format: 'uri' })
   url!: string;
   @ApiProperty({ format: 'date-time' })
@@ -132,6 +134,7 @@ export class WorkflowRunDto {
         id: model.id,
         providerRunId: model.providerRunId,
         workflowName: model.workflowName,
+        displayTitle: model.displayTitle,
         url: model.url,
         providerCreatedAt: model.providerCreatedAt,
         startedAt: model.startedAt,

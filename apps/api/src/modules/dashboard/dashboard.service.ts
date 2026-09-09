@@ -60,8 +60,9 @@ export class DashboardService {
    */
   async getLatestFailures(user: AuthenticatedUser): Promise<DashboardWorkflowRunModel[]> {
     const runs = await this.findVisibleRuns(user, {
-      distinct: ['repositoryId', 'workflowName'],
+      distinct: ['workflowId', 'scopeKey'],
       orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+      where: { workflow: { kind: 'STANDARD' } },
     });
     return this.selectLatestFailures(runs);
   }
@@ -269,12 +270,12 @@ export class DashboardService {
   }
 
   private selectLatestFailures(runs: DashboardWorkflowRunModel[]): DashboardWorkflowRunModel[] {
-    const latestByWorkflow = new Map<string, DashboardWorkflowRunModel>();
+    const latestByContext = new Map<string, DashboardWorkflowRunModel>();
     for (const run of runs) {
-      const key = `${run.repositoryId}\u0000${run.workflowName}`;
-      if (!latestByWorkflow.has(key)) latestByWorkflow.set(key, run);
+      const key = `${run.workflowId}\u0000${run.scopeKey}`;
+      if (!latestByContext.has(key)) latestByContext.set(key, run);
     }
-    return [...latestByWorkflow.values()].filter((run) => run.status === 'FAILED');
+    return [...latestByContext.values()].filter((run) => run.status === 'FAILED');
   }
 
   private floorBucket(value: Date, size: TrendBucketSize): Date {

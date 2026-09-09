@@ -20,7 +20,13 @@ describe('ProviderSyncService', () => {
         },
         workflowRun: {
           findMany: jest.fn().mockResolvedValue([{ providerRunId: '12345' }]),
+          updateMany: jest.fn().mockResolvedValue({ count: 0 }),
           upsert: jest.fn(({ create }) => Promise.resolve({ id: 'run-id', ...create })),
+        },
+        workflow: {
+          delete: jest.fn().mockResolvedValue(undefined),
+          findUnique: jest.fn().mockResolvedValue(null),
+          upsert: jest.fn().mockResolvedValue({ id: 'workflow-id' }),
         },
       },
       adapter: {
@@ -50,11 +56,37 @@ describe('ProviderSyncService', () => {
     await service.syncEnabledRepositories();
     await service.syncEnabledRepositories();
 
+    const { providerWorkflowId, workflowKind, workflowPath, ...persistedRun } = createWorkflowRun();
+    expect(mocks.prisma.workflow.upsert).toHaveBeenCalledTimes(4);
+    expect(mocks.prisma.workflow.upsert).toHaveBeenNthCalledWith(1, {
+      create: {
+        kind: workflowKind,
+        lastSeenAt: expect.any(Date),
+        name: persistedRun.workflowName,
+        path: workflowPath,
+        providerWorkflowId,
+        repositoryId: firstRepository.id,
+      },
+      update: {
+        kind: workflowKind,
+        lastSeenAt: expect.any(Date),
+        name: persistedRun.workflowName,
+        path: workflowPath,
+      },
+      where: {
+        repositoryId_providerWorkflowId: {
+          providerWorkflowId,
+          repositoryId: firstRepository.id,
+        },
+      },
+    });
     expect(mocks.prisma.workflowRun.upsert).toHaveBeenCalledTimes(4);
+    expect(mocks.prisma.workflowRun.updateMany).not.toHaveBeenCalled();
+    expect(mocks.prisma.workflow.delete).not.toHaveBeenCalled();
     expect(mocks.adapter.getWorkflowRun).toHaveBeenCalledTimes(4);
     expect(mocks.prisma.workflowRun.upsert).toHaveBeenNthCalledWith(1, {
-      create: { ...createWorkflowRun(), repositoryId: firstRepository.id },
-      update: createWorkflowRun(),
+      create: { ...persistedRun, repositoryId: firstRepository.id, workflowId: 'workflow-id' },
+      update: { ...persistedRun, workflowId: 'workflow-id' },
       where: {
         repositoryId_providerRunId: {
           providerRunId: '12345',
@@ -63,8 +95,8 @@ describe('ProviderSyncService', () => {
       },
     });
     expect(mocks.prisma.workflowRun.upsert).toHaveBeenNthCalledWith(2, {
-      create: { ...createWorkflowRun(), repositoryId: secondRepository.id },
-      update: createWorkflowRun(),
+      create: { ...persistedRun, repositoryId: secondRepository.id, workflowId: 'workflow-id' },
+      update: { ...persistedRun, workflowId: 'workflow-id' },
       where: {
         repositoryId_providerRunId: {
           providerRunId: '12345',
@@ -82,6 +114,64 @@ describe('ProviderSyncService', () => {
       workflowRunsTotal: 1,
     });
     expect(mocks.status.finishProviderSync).toHaveBeenCalledTimes(2);
+  });
+
+  it('moves migrated name-based runs to their provider-native workflow on first observation', async () => {
+    const repository = createRepository('repository');
+    const run = createWorkflowRun();
+    const prisma = {
+      providerAccount: { update: jest.fn().mockResolvedValue(undefined) },
+      repository: {
+        findMany: jest.fn().mockResolvedValue([repository]),
+        update: jest.fn().mockResolvedValue(undefined),
+      },
+      workflow: {
+        delete: jest.fn().mockResolvedValue(undefined),
+        findUnique: jest.fn().mockResolvedValue({ id: 'legacy-workflow-id' }),
+        upsert: jest.fn().mockResolvedValue({ id: 'provider-workflow-id' }),
+      },
+      workflowRun: {
+        findMany: jest.fn().mockResolvedValue([]),
+        updateMany: jest.fn().mockResolvedValue({ count: 3 }),
+        upsert: jest.fn(({ create }) => Promise.resolve({ id: 'run-id', ...create })),
+      },
+    };
+    const status = {
+      beginProviderSync: jest.fn().mockReturnValue('sync-id'),
+      finishProviderSync: jest.fn(),
+      refreshRunningWorkflowCount: jest.fn().mockResolvedValue(undefined),
+      updateProviderSync: jest.fn(),
+    };
+    const service = new ProviderSyncService(
+      prisma as unknown as PrismaService,
+      {} as JobRunnerService,
+      {
+        get: jest.fn().mockReturnValue({
+          getWorkflowRun: jest.fn(),
+          listWorkflowRuns: jest.fn().mockResolvedValue([run]),
+        }),
+      } as unknown as ProviderAdapterRegistry,
+      { decrypt: jest.fn().mockReturnValue('access-token') } as unknown as ProviderCredentialService,
+      { shouldTrack: jest.fn().mockReturnValue(true) } as unknown as WorkflowFilterService,
+      { evaluateRulesForRun: jest.fn().mockResolvedValue([]) } as unknown as NotificationsService,
+      status as unknown as SystemStatusService,
+    );
+
+    await service.syncEnabledRepositories();
+
+    expect(prisma.workflow.findUnique).toHaveBeenCalledWith({
+      where: {
+        repositoryId_providerWorkflowId: {
+          providerWorkflowId: 'legacy:name:Test',
+          repositoryId: repository.id,
+        },
+      },
+    });
+    expect(prisma.workflowRun.updateMany).toHaveBeenCalledWith({
+      data: { scopeKey: 'branch:main', workflowId: 'provider-workflow-id' },
+      where: { workflowId: 'legacy-workflow-id' },
+    });
+    expect(prisma.workflow.delete).toHaveBeenCalledWith({ where: { id: 'legacy-workflow-id' } });
   });
 });
 
@@ -105,15 +195,24 @@ function createRepository(id: string) {
 function createWorkflowRun() {
   return {
     awaitingApproval: false,
+    changeRequestNumber: null,
     completedAt: new Date('2026-08-26T09:10:00.000Z'),
+    displayTitle: 'Test on main',
     durationMs: 60_000,
+    event: 'push',
+    headBranch: 'main',
+    headSha: '0123456789abcdef',
     providerCreatedAt: new Date('2026-08-26T09:09:00.000Z'),
     providerRunId: '12345',
+    providerWorkflowId: '17',
     rawStatus: 'success',
     reviewUrl: null,
+    scopeKey: 'branch:main',
     startedAt: new Date('2026-08-26T09:09:00.000Z'),
     status: 'SUCCESS',
     url: 'https://github.com/flowpeek/flowpeek/actions/runs/12345',
+    workflowKind: 'STANDARD',
     workflowName: 'Test',
+    workflowPath: '.github/workflows/test.yml',
   };
 }

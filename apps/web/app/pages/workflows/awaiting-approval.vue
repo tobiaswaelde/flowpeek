@@ -66,7 +66,7 @@
           </thead>
           <tbody>
             <tr v-for="run in filteredRuns" :key="run.id" class="border-b border-default last:border-0">
-              <td class="px-4 py-3 font-medium">{{ run.workflowName }}</td>
+              <td class="px-4 py-3 font-medium">{{ run.displayTitle }}</td>
               <td class="px-4 py-3">{{ run.repository.owner }}/{{ run.repository.name }}</td>
               <td class="px-4 py-3">
                 <EnumsProviderTypeBadge variant="subtle" :value="run.provider.providerType" />
@@ -131,7 +131,14 @@ const filteredRuns = computed(() => {
   const value = search.value.trim().toLocaleLowerCase();
   if (!value) return runs.value;
   return runs.value.filter((run) =>
-    [run.workflowName, run.repository.owner, run.repository.name, run.provider.displayName, run.provider.providerType]
+    [
+      run.displayTitle,
+      run.workflowName,
+      run.repository.owner,
+      run.repository.name,
+      run.provider.displayName,
+      run.provider.providerType,
+    ]
       .join(' ')
       .toLocaleLowerCase()
       .includes(value),

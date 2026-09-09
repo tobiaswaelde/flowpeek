@@ -7,6 +7,7 @@ describe('DashboardWorkflowRunDto', () => {
       awaitingApproval: true,
       completedAt: new Date('2026-08-26T10:01:00.000Z'),
       createdAt: new Date('2026-08-26T10:00:00.000Z'),
+      displayTitle: 'Test pull request',
       durationMs: 60_000,
       id: 'run-id',
       providerCreatedAt: new Date('2026-08-26T10:00:00.000Z'),
@@ -37,6 +38,7 @@ describe('DashboardWorkflowRunDto', () => {
     expect(dto).toEqual({
       awaitingApproval: true,
       completedAt: new Date('2026-08-26T10:01:00.000Z'),
+      displayTitle: 'Test pull request',
       durationMs: 60_000,
       id: 'run-id',
       provider: { displayName: 'Flowpeek GitHub', id: 'provider-id', providerType: 'GITHUB' },

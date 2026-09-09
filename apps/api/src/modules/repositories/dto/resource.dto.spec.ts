@@ -93,12 +93,13 @@ describe('resource DTO mappings', () => {
 
     expect(
       Fields.parseAndValidate(
-        'id,url,workflowName,status,completedAt,durationMs,repositoryName,repositoryOwner,providerType',
+        'id,url,workflowName,displayTitle,status,completedAt,durationMs,repositoryName,repositoryOwner,providerType',
         schema,
       ),
     ).toEqual({
       completedAt: true,
       durationMs: true,
+      displayTitle: true,
       id: true,
       providerType: true,
       repositoryName: true,
@@ -114,6 +115,7 @@ describe('resource DTO mappings', () => {
       id: 'run',
       providerRunId: '1',
       workflowName: 'Build',
+      displayTitle: 'Build on main',
       url: 'https://example.test/run',
       providerCreatedAt: new Date(),
       startedAt: null,
@@ -134,6 +136,7 @@ describe('resource DTO mappings', () => {
     expect(dto).not.toHaveProperty('rawStatus');
     expect(dto.status).toBe('RUNNING');
     expect(dto).toMatchObject({
+      displayTitle: 'Build on main',
       providerType: 'GITHUB',
       repositoryName: 'flowpeek',
       repositoryOwner: 'twaelde',

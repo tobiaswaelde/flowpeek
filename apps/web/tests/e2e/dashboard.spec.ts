@@ -4,6 +4,7 @@ const accessToken = 'playwright-access-token';
 const dashboardRun = {
   awaitingApproval: false,
   completedAt: '2026-08-27T10:02:00.000Z',
+  displayTitle: 'CI',
   durationMs: 120_000,
   id: 'run-1',
   provider: { displayName: 'GitHub', id: 'provider-1', providerType: 'GITHUB' },

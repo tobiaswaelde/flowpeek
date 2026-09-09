@@ -11,6 +11,7 @@ test('lists approval-gated workflows with provider and pull-request actions', as
         {
           awaitingApproval: true,
           completedAt: null,
+          displayTitle: 'Deploy pull request',
           durationMs: null,
           id: 'run-1',
           provider: { displayName: 'GitHub', id: 'provider-1', providerType: 'GITHUB' },

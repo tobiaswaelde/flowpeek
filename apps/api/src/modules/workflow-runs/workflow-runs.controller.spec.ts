@@ -9,7 +9,11 @@ describe('WorkflowRunsController', () => {
       awaitingApproval: false,
       completedAt: new Date('2026-09-08T08:02:30.000Z'),
       createdAt: new Date('2026-09-08T08:00:00.000Z'),
+      displayTitle: 'Build on main',
       durationMs: 150_000,
+      event: 'push',
+      headBranch: 'main',
+      headSha: '0123456789abcdef',
       id: 'run-1',
       providerCreatedAt: new Date('2026-09-08T08:00:00.000Z'),
       providerRunId: '42',
@@ -21,14 +25,18 @@ describe('WorkflowRunsController', () => {
         providerAccount: { providerType: 'GITHUB' },
       },
       repositoryId: 'repository-1',
+      scopeKey: 'branch:main',
       startedAt: new Date('2026-09-08T08:00:00.000Z'),
       status: 'SUCCESS',
       updatedAt: new Date('2026-09-08T08:02:30.000Z'),
       url: 'https://github.com/tobiaswaelde/flowpeek/actions/runs/42',
+      changeRequestNumber: null,
+      workflowId: 'workflow-1',
       workflowName: 'Build',
     } satisfies WorkflowRunResourceModel;
     const query = {
-      fields: 'id,url,workflowName,status,durationMs,completedAt,repositoryName,repositoryOwner,providerType',
+      fields:
+        'id,url,workflowName,displayTitle,status,durationMs,completedAt,repositoryName,repositoryOwner,providerType',
       page: 1,
       perPage: 25,
     } as WorkflowRunQueryDto;
@@ -61,6 +69,7 @@ describe('WorkflowRunsController', () => {
     expect(response.items).toEqual([
       {
         completedAt: workflowRun.completedAt,
+        displayTitle: 'Build on main',
         durationMs: 150_000,
         id: 'run-1',
         providerType: 'GITHUB',

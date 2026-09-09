@@ -1,4 +1,4 @@
-import type { ProviderType, WorkflowRunStatus } from '../../generated/prisma/client.js';
+import type { ProviderType, WorkflowKind, WorkflowRunStatus } from '../../generated/prisma/client.js';
 
 /** Injection token for the read-only HTTP client used by provider adapters. */
 export const PROVIDER_FETCH = Symbol('PROVIDER_FETCH');
@@ -28,16 +28,32 @@ export interface ProviderRepositoryReference {
 /** Provider workflow run normalized before persistence in Flowpeek. */
 export interface ProviderWorkflowRun {
   awaitingApproval: boolean;
+  changeRequestNumber: string | null;
   completedAt: Date | null;
+  displayTitle: string;
   durationMs: number | null;
+  event: string | null;
+  headBranch: string | null;
+  headSha: string | null;
   providerCreatedAt: Date;
   providerRunId: string;
+  providerWorkflowId: string;
   rawStatus: string | null;
   reviewUrl: string | null;
+  scopeKey: string;
   startedAt: Date | null;
   status: WorkflowRunStatus;
   url: string;
+  workflowKind: WorkflowKind;
   workflowName: string;
+  workflowPath: string | null;
+}
+
+/** Build the stable execution context used to decide whether a workflow is currently failing. */
+export function buildWorkflowRunScopeKey(changeRequestNumber: string | null, headBranch: string | null): string {
+  if (changeRequestNumber) return `change-request:${changeRequestNumber}`;
+  if (headBranch) return `branch:${headBranch}`;
+  return 'repository';
 }
 
 /** Result of validating a provider account without mutating provider state. */

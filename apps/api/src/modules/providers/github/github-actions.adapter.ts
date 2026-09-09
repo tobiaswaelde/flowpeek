@@ -12,7 +12,7 @@ import type {
   ProviderWorkflowRun,
   VerifiedWebhook,
 } from '../provider-adapter.js';
-import { PROVIDER_FETCH } from '../provider-adapter.js';
+import { buildWorkflowRunScopeKey, PROVIDER_FETCH } from '../provider-adapter.js';
 import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
@@ -25,8 +25,13 @@ interface GitHubRepositoryResponse {
   owner: { login: string };
 }
 interface GitHubWorkflowRunResponse {
+  display_title?: string;
+  event?: string;
+  head_branch?: string | null;
+  head_sha?: string | null;
   id: number;
   name: string;
+  path?: string;
   html_url: string;
   created_at: string;
   run_started_at: string | null;
@@ -34,7 +39,10 @@ interface GitHubWorkflowRunResponse {
   status: string;
   conclusion: string | null;
   pull_requests?: { number: number }[];
+  workflow_id?: number;
 }
+
+const dependabotWorkflowPath = 'dynamic/dependabot/dependabot-updates';
 
 /** GitHub Actions adapter that only reads repositories, runs, and webhook metadata. */
 @Injectable()
@@ -116,10 +124,20 @@ export class GitHubActionsAdapter implements ProviderAdapter {
   private toWorkflowRun(run: GitHubWorkflowRunResponse, repository: ProviderRepositoryReference): ProviderWorkflowRun {
     const startedAt = run.run_started_at ? new Date(run.run_started_at) : null;
     const completedAt = run.status === 'completed' ? new Date(run.updated_at) : null;
+    const changeRequestNumber = run.pull_requests?.[0]?.number?.toString() ?? null;
+    const headBranch = run.head_branch ?? null;
+    const workflowPath = run.path ?? null;
+    const workflowKind = workflowPath === dependabotWorkflowPath ? 'DEPENDABOT_INTERNAL' : 'STANDARD';
+    const workflowName = workflowKind === 'DEPENDABOT_INTERNAL' ? 'Dependabot Updates' : run.name;
     return {
       awaitingApproval: isWorkflowRunAwaitingApproval('GITHUB', run.status, run.conclusion),
+      changeRequestNumber,
+      displayTitle: run.display_title ?? run.name,
+      event: run.event ?? null,
+      headBranch,
+      headSha: run.head_sha ?? null,
       providerRunId: String(run.id),
-      workflowName: run.name,
+      providerWorkflowId: run.workflow_id ? String(run.workflow_id) : (workflowPath ?? `name:${workflowName}`),
       url: run.html_url,
       providerCreatedAt: new Date(run.created_at),
       startedAt,
@@ -128,6 +146,10 @@ export class GitHubActionsAdapter implements ProviderAdapter {
       status: normalizeWorkflowRunStatus('GITHUB', run.status, run.conclusion),
       rawStatus: run.conclusion ?? run.status,
       reviewUrl: this.githubPullRequestUrl(run, repository),
+      scopeKey: buildWorkflowRunScopeKey(changeRequestNumber, headBranch),
+      workflowKind,
+      workflowName,
+      workflowPath,
     };
   }
 

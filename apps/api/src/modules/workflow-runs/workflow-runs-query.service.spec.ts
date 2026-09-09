@@ -30,7 +30,15 @@ describe('WorkflowRunsQueryService', () => {
         AND: [
           { OR: [{ repositoryId: { in: ['repository-a'] } }] },
           {
-            AND: [{ status: 'FAILED' }, { workflowName: { contains: 'deploy', mode: 'insensitive' } }],
+            AND: [
+              { status: 'FAILED' },
+              {
+                OR: [
+                  { displayTitle: { contains: 'deploy', mode: 'insensitive' } },
+                  { workflowName: { contains: 'deploy', mode: 'insensitive' } },
+                ],
+              },
+            ],
           },
         ],
       },

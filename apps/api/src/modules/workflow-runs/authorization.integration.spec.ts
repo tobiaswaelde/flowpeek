@@ -15,6 +15,7 @@ describe('workflow-run authorization integration', () => {
   let users: Record<'admin' | 'manager' | 'viewer' | 'outsider', AuthenticatedUser>;
   let visibleRunId: string;
   let hiddenRunId: string;
+  let visibleWorkflowId: string;
 
   beforeAll(async () => prisma.onModuleInit());
   beforeEach(async () => {
@@ -61,30 +62,56 @@ describe('workflow-run authorization integration', () => {
         data: { repositoryId: visibleRepository.id, role: 'VIEWER', userId: viewer.id },
       }),
     ]);
+    const [visibleWorkflow, hiddenWorkflow] = await Promise.all([
+      prisma.workflow.create({
+        data: {
+          lastSeenAt: new Date('2026-08-26T10:00:00.000Z'),
+          name: 'Visible workflow',
+          path: '.github/workflows/visible.yml',
+          providerWorkflowId: 'visible-workflow',
+          repositoryId: visibleRepository.id,
+        },
+      }),
+      prisma.workflow.create({
+        data: {
+          lastSeenAt: new Date('2026-08-26T10:00:00.000Z'),
+          name: 'Hidden workflow',
+          path: '.github/workflows/hidden.yml',
+          providerWorkflowId: 'hidden-workflow',
+          repositoryId: hiddenRepository.id,
+        },
+      }),
+    ]);
     const createdAt = new Date('2026-08-26T10:00:00.000Z');
     const [visibleRun, hiddenRun] = await Promise.all([
       prisma.workflowRun.create({
         data: {
           completedAt: createdAt,
+          displayTitle: 'Visible workflow',
           providerCreatedAt: createdAt,
           providerRunId: 'visible-run',
           rawStatus: 'failure',
           repositoryId: visibleRepository.id,
+          scopeKey: 'branch:main',
           status: 'FAILED',
           url: 'https://github.com/flowpeek/visible/actions/runs/1',
           workflowName: 'Visible workflow',
+          workflowId: visibleWorkflow.id,
         },
       }),
       prisma.workflowRun.create({
         data: {
           completedAt: createdAt,
+          displayTitle: 'Hidden workflow',
           providerCreatedAt: createdAt,
           providerRunId: 'hidden-run',
           rawStatus: 'success',
           repositoryId: hiddenRepository.id,
+          scopeKey: 'branch:main',
           status: 'SUCCESS',
           url: 'https://github.com/flowpeek/hidden/actions/runs/1',
           workflowName: 'Hidden workflow',
+          workflowId: hiddenWorkflow.id,
         },
       }),
     ]);
@@ -96,6 +123,7 @@ describe('workflow-run authorization integration', () => {
     };
     hiddenRunId = hiddenRun.id;
     visibleRunId = visibleRun.id;
+    visibleWorkflowId = visibleWorkflow.id;
   });
   afterAll(async () => prisma.onModuleDestroy());
 
@@ -155,18 +183,56 @@ describe('workflow-run authorization integration', () => {
       await prisma.workflowRun.create({
         data: {
           completedAt: status === 'SUCCESS' ? laterTimestamp : null,
+          displayTitle: previousFailure.displayTitle,
           providerCreatedAt: laterTimestamp,
           providerRunId: `later-${status.toLowerCase()}`,
           rawStatus: status.toLowerCase(),
           repositoryId: previousFailure.repositoryId,
+          scopeKey: previousFailure.scopeKey,
           startedAt: laterTimestamp,
           status,
           url: `https://github.com/flowpeek/visible/actions/runs/later-${status.toLowerCase()}`,
           workflowName: previousFailure.workflowName,
+          workflowId: previousFailure.workflowId,
         },
       });
 
       await expect(dashboard.getLatestFailures(users.viewer)).resolves.toEqual([]);
     },
   );
+
+  it('keeps internal Dependabot runs in history but excludes them from needs attention', async () => {
+    const timestamp = new Date('2026-08-26T12:00:00.000Z');
+    const workflow = await prisma.workflow.create({
+      data: {
+        kind: 'DEPENDABOT_INTERNAL',
+        lastSeenAt: timestamp,
+        name: 'Dependabot Updates',
+        path: 'dynamic/dependabot/dependabot-updates',
+        providerWorkflowId: '204858725',
+        repositoryId: (await prisma.workflow.findUniqueOrThrow({ where: { id: visibleWorkflowId } })).repositoryId,
+      },
+    });
+    const dependabotRun = await prisma.workflowRun.create({
+      data: {
+        completedAt: timestamp,
+        displayTitle: 'npm_and_yarn in /. for brace-expansion - Update #1566127419',
+        providerCreatedAt: timestamp,
+        providerRunId: '34353631785',
+        rawStatus: 'failure',
+        repositoryId: workflow.repositoryId,
+        scopeKey: 'branch:main',
+        status: 'FAILED',
+        url: 'https://github.com/flowpeek/visible/actions/runs/34353631785',
+        workflowId: workflow.id,
+        workflowName: workflow.name,
+      },
+    });
+
+    const ability = await runs.getReadAbility(users.viewer);
+    await expect(runs.findMany<{ id: string }>({ where: { id: dependabotRun.id } }, ability)).resolves.toHaveLength(1);
+    await expect(dashboard.getLatestFailures(users.viewer)).resolves.toEqual([
+      expect.objectContaining({ id: visibleRunId }),
+    ]);
+  });
 });

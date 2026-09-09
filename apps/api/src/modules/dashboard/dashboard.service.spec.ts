@@ -52,11 +52,41 @@ describe('DashboardService', () => {
     ]);
     expect(workflowRuns.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        distinct: ['repositoryId', 'workflowName'],
+        distinct: ['workflowId', 'scopeKey'],
         orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+        where: { workflow: { kind: 'STANDARD' } },
       }),
       ability,
     );
+  });
+
+  it('keeps failures from separate execution contexts of the same workflow independent', async () => {
+    const ability = {};
+    const workflowRuns = {
+      findMany: jest.fn().mockResolvedValue([
+        run({
+          completedAt: '2026-08-26T13:00:00.000Z',
+          repositoryId: 'repository-a',
+          scopeKey: 'branch:main',
+          status: 'SUCCESS',
+          workflowId: 'workflow-a',
+          workflowName: 'Test',
+        }),
+        run({
+          completedAt: '2026-08-26T12:00:00.000Z',
+          repositoryId: 'repository-a',
+          scopeKey: 'change-request:42',
+          status: 'FAILED',
+          workflowId: 'workflow-a',
+          workflowName: 'Test',
+        }),
+      ]),
+      getReadAbility: jest.fn().mockResolvedValue(ability),
+    } as unknown as WorkflowRunsQueryService;
+
+    await expect(
+      new DashboardService(workflowRuns).getLatestFailures({ id: 'viewer', role: 'VIEWER', username: 'viewer' }),
+    ).resolves.toEqual([expect.objectContaining({ scopeKey: 'change-request:42', status: 'FAILED' })]);
   });
 
   it('limits the latest-run dashboard result to ten visible runs', async () => {
@@ -303,25 +333,35 @@ function run(input: {
   completedAt: string | null;
   providerCreatedAt?: string;
   repositoryId: string;
+  scopeKey?: string;
   status: WorkflowRun['status'];
+  workflowId?: string;
   workflowName: string;
 }): WorkflowRun {
   const providerCreatedAt = input.providerCreatedAt ?? input.completedAt!;
+  const workflowId = input.workflowId ?? `${input.repositoryId}-${input.workflowName}`;
   return {
     awaitingApproval: false,
+    changeRequestNumber: null,
     completedAt: input.completedAt ? new Date(input.completedAt) : null,
     createdAt: new Date(providerCreatedAt),
+    displayTitle: input.workflowName,
     durationMs: 60_000,
+    event: 'push',
+    headBranch: 'main',
+    headSha: '0123456789abcdef',
     id: `${input.repositoryId}-${input.workflowName}-${providerCreatedAt}`,
     providerCreatedAt: new Date(providerCreatedAt),
     providerRunId: providerCreatedAt,
     rawStatus: input.status.toLowerCase(),
     reviewUrl: null,
     repositoryId: input.repositoryId,
+    scopeKey: input.scopeKey ?? 'branch:main',
     startedAt: new Date(providerCreatedAt),
     status: input.status,
     updatedAt: new Date(providerCreatedAt),
     url: 'https://example.test/run',
+    workflowId,
     workflowName: input.workflowName,
   };
 }

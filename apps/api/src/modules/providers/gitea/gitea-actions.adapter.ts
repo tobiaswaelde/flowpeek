@@ -12,7 +12,7 @@ import type {
   ProviderWorkflowRun,
   VerifiedWebhook,
 } from '../provider-adapter.js';
-import { PROVIDER_FETCH } from '../provider-adapter.js';
+import { buildWorkflowRunScopeKey, PROVIDER_FETCH } from '../provider-adapter.js';
 import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
@@ -28,13 +28,19 @@ interface GiteaWorkflowRun {
   completed_at?: string | null;
   conclusion?: string | null;
   created_at: string;
+  event?: string;
+  head_branch?: string | null;
+  head_sha?: string | null;
   html_url: string;
   id: number;
   name?: string;
+  path?: string;
+  pull_requests?: { number: number }[];
   run_started_at?: string | null;
   status: string;
   updated_at: string;
   workflow_name?: string;
+  workflow_id?: number | string;
 }
 
 interface GiteaWorkflowRunsResponse {
@@ -139,18 +145,31 @@ export class GiteaActionsAdapter implements ProviderAdapter {
       : run.status === 'completed'
         ? new Date(run.updated_at)
         : null;
+    const changeRequestNumber = run.pull_requests?.[0]?.number?.toString() ?? null;
+    const headBranch = run.head_branch ?? null;
+    const workflowName = run.workflow_name ?? run.name ?? 'Workflow';
+    const workflowPath = run.path ?? null;
     return {
       awaitingApproval: isWorkflowRunAwaitingApproval('GITEA', run.status, run.conclusion ?? null),
+      changeRequestNumber,
       completedAt,
+      displayTitle: run.name ?? workflowName,
       durationMs: startedAt && completedAt ? completedAt.getTime() - startedAt.getTime() : null,
+      event: run.event ?? null,
+      headBranch,
+      headSha: run.head_sha ?? null,
       providerCreatedAt: new Date(run.created_at),
       providerRunId: String(run.id),
+      providerWorkflowId: run.workflow_id ? String(run.workflow_id) : (workflowPath ?? `name:${workflowName}`),
       rawStatus: run.conclusion ?? run.status,
       reviewUrl: null,
+      scopeKey: buildWorkflowRunScopeKey(changeRequestNumber, headBranch),
       startedAt,
       status: normalizeWorkflowRunStatus('GITEA', run.status, run.conclusion ?? null),
       url: run.html_url,
-      workflowName: run.workflow_name ?? run.name ?? 'Workflow',
+      workflowKind: 'STANDARD',
+      workflowName,
+      workflowPath,
     };
   }
 }

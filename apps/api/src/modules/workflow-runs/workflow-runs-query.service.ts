@@ -77,7 +77,12 @@ export class WorkflowRunsQueryService extends QueryService<
   toQueryOptions(query: WorkflowRunQueryDto): QueryOptionsMap<WorkflowRunTypeMap>['query'] {
     const { search, where, ...options } = query;
     const searchWhere: Prisma.WorkflowRunWhereInput | undefined = search
-      ? { workflowName: { contains: search, mode: 'insensitive' } }
+      ? {
+          OR: [
+            { displayTitle: { contains: search, mode: 'insensitive' } },
+            { workflowName: { contains: search, mode: 'insensitive' } },
+          ],
+        }
       : undefined;
 
     return {

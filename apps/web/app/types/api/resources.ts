@@ -187,6 +187,7 @@ export interface DashboardRepository {
 export interface DashboardWorkflowRun {
   awaitingApproval: boolean;
   completedAt: ApiTimestamp | null;
+  displayTitle: string;
   durationMs: number | null;
   id: string;
   provider: DashboardProvider;
@@ -253,6 +254,7 @@ export interface WorkflowRunTrendBucket {
 /** One permission-filtered workflow run returned by the resource query endpoint. */
 export interface WorkflowRun {
   completedAt: ApiTimestamp | null;
+  displayTitle: string;
   durationMs: number | null;
   id: string;
   providerCreatedAt: ApiTimestamp;

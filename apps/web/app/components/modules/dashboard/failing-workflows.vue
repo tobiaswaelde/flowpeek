@@ -16,7 +16,7 @@
           <UIcon class="size-4" name="i-lucide-triangle-alert" />
         </span>
         <div class="min-w-0 flex-1">
-          <p class="truncate font-medium">{{ run.workflowName }}</p>
+          <p class="truncate font-medium">{{ run.displayTitle }}</p>
           <p class="truncate text-xs text-muted">
             {{ run.repository.owner }}/{{ run.repository.name }} · {{ formatTimestamp(run.completedAt) }}
           </p>
