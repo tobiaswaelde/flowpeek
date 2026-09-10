@@ -84,7 +84,7 @@
             icon="i-lucide-settings-2"
             variant="ghost"
             :aria-label="$t('repositoryDetails.open')"
-            :to="`/admin/repositories/${row.original.id}`"
+            :to="`/repositories/${row.original.id}`"
           />
           <UButton
             v-if="isAdmin"

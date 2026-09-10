@@ -90,7 +90,7 @@
               class="flex items-center gap-3 px-3 py-2 text-sm transition-colors hover:bg-elevated focus-visible:bg-elevated focus-visible:outline-none"
               role="option"
               :aria-label="`${repository.owner}/${repository.name}`"
-              :to="`/admin/repositories/${repository.id}`"
+              :to="`/repositories/${repository.id}`"
               @click="close"
             >
               <UIcon class="size-4 shrink-0 text-muted" name="i-lucide-git-fork" />

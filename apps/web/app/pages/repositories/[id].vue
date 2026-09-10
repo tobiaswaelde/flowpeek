@@ -4,7 +4,7 @@
     icon="i-lucide-git-branch"
     :breadcrumbs="[
       { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
-      { icon: 'i-lucide-git-branch', label: $t('layout.repositories'), to: '/admin/repositories' },
+      { icon: 'i-lucide-git-branch', label: $t('layout.repositories'), to: '/repositories' },
       { label: pageTitle },
     ]"
     :description="isAdmin ? $t('repositoryDetails.generalDescription') : $t('repositories.description')"

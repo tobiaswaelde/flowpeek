@@ -87,7 +87,7 @@ async function mockCommandPaletteShell(page: Page, role: 'SYSTEM_ADMIN' | 'VIEWE
   );
 }
 
-test('opens globally, restores focus, supports keyboard navigation, and starts existing creation dialogs', async ({
+test('opens globally, restores focus, supports keyboard navigation, and opens resource results', async ({
   page,
 }, testInfo) => {
   await mockCommandPaletteShell(page, 'SYSTEM_ADMIN');
@@ -123,21 +123,7 @@ test('opens globally, restores focus, supports keyboard navigation, and starts e
   await page.keyboard.press('ArrowDown');
   await expect.poll(() => palette.locator('[data-highlighted]').allTextContents()).toEqual(['Repositories']);
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/admin\/repositories$/);
-
-  await page.getByRole('button', { name: 'Open command palette' }).click();
-  await paletteSearch.fill('Add provider account');
-  await expect(palette.getByText('Add provider account', { exact: true })).toBeVisible();
-  await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog', { name: 'Add provider account' })).toBeVisible();
-  await page.keyboard.press('Escape');
-
-  await page.keyboard.press('Control+K');
-  await paletteSearch.fill('Add repositories');
-  await expect(palette.getByText('Add repositories', { exact: true })).toBeVisible();
-  await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog', { name: 'Add repositories' })).toBeVisible();
-  await page.keyboard.press('Escape');
+  await expect(page).toHaveURL(/\/repositories$/);
 
   await page.keyboard.press('Control+K');
   await paletteSearch.fill('flow');
@@ -147,7 +133,7 @@ test('opens globally, restores focus, supports keyboard navigation, and starts e
     .getByRole('option', { name: /tobiaswaelde\/flowpeek/ })
     .first()
     .click();
-  await expect(page).toHaveURL(/\/admin\/repositories\/repository-1$/);
+  await expect(page).toHaveURL(/\/repositories\/repository-1$/);
 
   await page.setViewportSize({ height: 844, width: 390 });
   await page.keyboard.press('Control+K');
@@ -160,6 +146,36 @@ test('opens globally, restores focus, supports keyboard navigation, and starts e
     path: testInfo.outputPath('command-palette-mobile.png'),
     fullPage: true,
   });
+});
+
+test('starts the existing provider creation dialog from an administrative command', async ({ page }) => {
+  await mockCommandPaletteShell(page, 'SYSTEM_ADMIN');
+  await page.goto('/');
+
+  await page.getByRole('button', { name: 'Open command palette' }).click();
+  const palette = page.getByRole('dialog', { name: 'Command palette' });
+  await page.getByPlaceholder('Search or type a command').fill('Add provider account');
+  await palette.getByRole('option', { name: /Add provider account/ }).click();
+
+  const providerDialog = page.getByRole('dialog', { name: 'Add provider account' });
+  await expect(providerDialog).toBeVisible();
+  await expect(providerDialog.getByRole('button', { name: 'Verify and add provider' })).toBeEnabled();
+});
+
+test('starts the existing repository creation dialog from an administrative command', async ({ page }) => {
+  await mockCommandPaletteShell(page, 'SYSTEM_ADMIN');
+  await page.goto('/');
+
+  await page.getByRole('button', { name: 'Open command palette' }).click();
+  const palette = page.getByRole('dialog', { name: 'Command palette' });
+  await page.getByPlaceholder('Search or type a command').fill('Add repositories');
+  await palette.getByRole('option', { name: /Add repositories/ }).click();
+
+  const repositoryDialog = page.getByRole('dialog', { name: 'Add repositories' });
+  await expect(repositoryDialog).toBeVisible();
+  await expect(
+    repositoryDialog.getByText('Add and enable a provider account before adding a repository.'),
+  ).toBeVisible();
 });
 
 test('hides administrative navigation and creation actions from viewers', async ({ page }) => {

@@ -61,11 +61,11 @@ test('repository and user administration render full-page Query Kit tables', asy
     });
   });
 
-  await page.goto('/admin/repositories');
+  await page.goto('/repositories');
 
   const primaryNavigation = page.getByRole('navigation', { name: 'Primary navigation' });
   const repositoryNavigation = primaryNavigation.getByRole('link', { name: 'Repositories' });
-  await expect(repositoryNavigation).toHaveAttribute('href', '/admin/repositories');
+  await expect(repositoryNavigation).toHaveAttribute('href', '/repositories');
   await expect(repositoryNavigation).toHaveAttribute('aria-current', 'page');
   await expect(
     primaryNavigation.getByRole('region', { name: 'Administration' }).getByRole('link', { name: 'Repositories' }),
@@ -209,7 +209,7 @@ test('adds multiple repositories selected from an enabled provider account', asy
     });
   });
 
-  await page.goto('/admin/repositories');
+  await page.goto('/repositories');
   await page.getByRole('button', { name: 'Add repository' }).click();
   await expect(page.getByRole('heading', { name: 'Add repositories' })).toBeVisible();
   await page.getByRole('dialog').getByRole('button', { name: 'Show popup' }).click();
@@ -300,7 +300,7 @@ test('repository settings load retention, filters, and members', async ({ page }
     });
   });
 
-  await page.goto('/admin/repositories/repository-1');
+  await page.goto('/repositories/repository-1');
 
   await expect(
     page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Repositories' }),

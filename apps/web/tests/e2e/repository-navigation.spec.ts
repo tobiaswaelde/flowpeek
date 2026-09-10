@@ -41,11 +41,11 @@ async function mockViewerRepositories(page: Page): Promise<void> {
 
 test('viewer browses assigned repositories without administration actions', async ({ page }, testInfo) => {
   await mockViewerRepositories(page);
-  await page.goto('/admin/repositories');
+  await page.goto('/repositories');
 
   const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
   const repositoriesLink = navigation.getByRole('link', { name: 'Repositories' });
-  await expect(repositoriesLink).toHaveAttribute('href', '/admin/repositories');
+  await expect(repositoriesLink).toHaveAttribute('href', '/repositories');
   await expect(repositoriesLink).toHaveAttribute('aria-current', 'page');
   await expect(navigation.getByText('Administration', { exact: true })).toHaveCount(0);
   await expect(page.getByText('twaelde', { exact: true })).toBeVisible();
@@ -63,17 +63,25 @@ test('viewer browses assigned repositories without administration actions', asyn
   await page.getByRole('button', { name: 'Expand sidebar' }).click();
 
   await page.getByPlaceholder('Search Flowpeek').fill('repositories');
-  await expect(page.getByRole('link', { name: 'Repositories' }).last()).toHaveAttribute('href', '/admin/repositories');
+  await expect(page.getByRole('link', { name: 'Repositories' }).last()).toHaveAttribute('href', '/repositories');
   await page.keyboard.press('Escape');
   await page.getByRole('link', { name: 'Open repository' }).click();
 
-  await expect(page).toHaveURL(/\/admin\/repositories\/repository-1$/);
+  await expect(page).toHaveURL(/\/repositories\/repository-1$/);
   await expect(repositoriesLink).toHaveAttribute('aria-current', 'page');
   await expect(page.getByRole('heading', { level: 1, name: 'twaelde/flowpeek' })).toBeVisible();
   await expect(page.getByText('Enabled', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Save' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Workflow filters' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Members' })).toHaveCount(0);
+  await page.reload();
+  await expect(page).toHaveURL(/\/repositories\/repository-1$/);
+  await expect(repositoriesLink).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('heading', { level: 1, name: 'twaelde/flowpeek' })).toBeVisible();
+
+  await page.goto('/admin/repositories/repository-1?source=legacy#details');
+  await expect(page).toHaveURL(/\/repositories\/repository-1\?source=legacy#details$/);
+  await expect(repositoriesLink).toHaveAttribute('aria-current', 'page');
 
   await page.setViewportSize({ height: 844, width: 390 });
   await expect(page.getByRole('heading', { level: 1, name: 'twaelde/flowpeek' })).toBeVisible();

@@ -144,7 +144,7 @@ test('groups authorized global results and keeps stale responses from replacing 
   await expect(results.getByText('Repositories', { exact: true })).toBeVisible();
   await expect(results.getByRole('option', { name: 'tobiaswaelde/flowpeek', exact: true })).toHaveAttribute(
     'href',
-    '/admin/repositories/repository-1',
+    '/repositories/repository-1',
   );
   await expect(results.getByText('Workflow runs', { exact: true })).toBeVisible();
   await expect(results.getByRole('option', { name: 'Flowpeek deployment, tobiaswaelde/flowpeek' })).toHaveAttribute(

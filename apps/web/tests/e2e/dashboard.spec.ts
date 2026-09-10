@@ -138,7 +138,7 @@ test('renders dashboard values, reloads for range filters, and presents request 
   );
   await expect(latestRunsTable).not.toContainText(/\b(?:AM|PM)\b/);
 
-  await page.getByRole('combobox').click();
+  await page.getByRole('combobox', { name: 'Dashboard period' }).click();
   await page.getByRole('option', { name: 'Last 7 days' }).click();
   await expect.poll(() => trendUrls.some((url) => new URL(url).searchParams.get('bucket') === 'hour')).toBe(true);
   await expect.poll(() => summaryUrls.length).toBe(2);

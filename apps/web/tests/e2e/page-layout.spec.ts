@@ -98,10 +98,10 @@ test('uses the shared page shell, toolbar, breadcrumbs, and introduction on ever
     },
     { bannerId: 'notifications', path: '/notifications', tablePage: false, title: 'Notifications' },
     { bannerId: 'admin-providers', path: '/admin/providers', tablePage: true, title: 'Provider accounts' },
-    { bannerId: 'admin-repositories', path: '/admin/repositories', tablePage: true, title: 'Repositories' },
+    { bannerId: 'admin-repositories', path: '/repositories', tablePage: true, title: 'Repositories' },
     {
       bannerId: 'repository-details',
-      path: '/admin/repositories/repository-1',
+      path: '/repositories/repository-1',
       tablePage: false,
       title: 'tobiaswaelde/flowpeek',
     },
@@ -207,7 +207,7 @@ test('keeps table breadcrumbs, controls, and creation actions in one toolbar row
     { newAction: undefined, path: '/workflow-runs' },
     { newAction: undefined, path: '/workflow-runs/needs-attention' },
     { newAction: 'Add provider', path: '/admin/providers' },
-    { newAction: 'Add repository', path: '/admin/repositories' },
+    { newAction: 'Add repository', path: '/repositories' },
     { newAction: undefined, path: '/admin/users' },
   ];
 

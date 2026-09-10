@@ -72,10 +72,10 @@ export function useNavigationItems(attentionCounts: NavigationAttentionCounts = 
     },
   ]);
   const repositories = computed<AppNavigationItem>(() => ({
-    active: isActive('/admin/repositories'),
+    active: isActive('/repositories'),
     icon: 'i-lucide-git-fork',
     label: t('layout.repositories'),
-    to: '/admin/repositories',
+    to: '/repositories',
   }));
   const notifications = computed<AppNavigationItem>(() => ({
     active: isActive('/notifications'),

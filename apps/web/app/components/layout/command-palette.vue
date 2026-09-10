@@ -136,7 +136,7 @@ const groups = computed<CommandPaletteGroup[]>(() => {
         id: `repository:${repository.id}`,
         label: `${repository.owner}/${repository.name}`,
         onSelect: closePalette,
-        to: `/admin/repositories/${repository.id}`,
+        to: `/repositories/${repository.id}`,
       })),
       label: t('layout.searchRepositories'),
     });
