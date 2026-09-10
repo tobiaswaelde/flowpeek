@@ -24,6 +24,19 @@
     "waitingSince": "Wacht sinds"
   },
   "forms": { "unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze pagina toch verlaten?" },
+  "commandPalette": {
+    "actions": "Acties",
+    "addProvider": "Provideraccount toevoegen",
+    "addProviderDescription": "Koppel een alleen-lezen workflowprovider.",
+    "addRepository": "Repositories toevoegen",
+    "addRepositoryDescription": "Vind repositories via een geconfigureerde provider.",
+    "description": "Navigeer, doorzoek toegestane bronnen of start een veelgebruikte actie.",
+    "noResults": "Geen overeenkomende opdrachten of bronnen gevonden.",
+    "open": "Opdrachtpalet openen",
+    "search": "Opdrachten en bronnen zoeken",
+    "searchPlaceholder": "Zoeken of een opdracht typen",
+    "title": "Opdrachtpalet"
+  },
   "dashboard": {
     "activeRuns": "Actieve uitvoeringen",
     "activeRunsContext": "{running} actief · {queued} in wachtrij",

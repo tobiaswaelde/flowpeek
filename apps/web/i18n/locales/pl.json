@@ -24,6 +24,19 @@
     "waitingSince": "Oczekuje od"
   },
   "forms": { "unsavedChanges": "Masz niezapisane zmiany. Czy mimo to chcesz opuścić tę stronę?" },
+  "commandPalette": {
+    "actions": "Akcje",
+    "addProvider": "Dodaj konto dostawcy",
+    "addProviderDescription": "Połącz dostawcę przepływów pracy tylko do odczytu.",
+    "addRepository": "Dodaj repozytoria",
+    "addRepositoryDescription": "Wyszukaj repozytoria przez skonfigurowanego dostawcę.",
+    "description": "Nawiguj, przeszukuj dozwolone zasoby lub rozpocznij typową akcję.",
+    "noResults": "Nie znaleziono pasujących poleceń ani zasobów.",
+    "open": "Otwórz paletę poleceń",
+    "search": "Szukaj poleceń i zasobów",
+    "searchPlaceholder": "Wyszukaj lub wpisz polecenie",
+    "title": "Paleta poleceń"
+  },
   "dashboard": {
     "activeRuns": "Aktywne uruchomienia",
     "activeRunsContext": "{running} w toku · {queued} w kolejce",

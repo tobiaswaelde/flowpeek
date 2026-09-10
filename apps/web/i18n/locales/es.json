@@ -24,6 +24,19 @@
     "waitingSince": "En espera desde"
   },
   "forms": { "unsavedChanges": "Tienes cambios sin guardar. ¿Quieres salir de esta página de todos modos?" },
+  "commandPalette": {
+    "actions": "Acciones",
+    "addProvider": "Añadir cuenta de proveedor",
+    "addProviderDescription": "Conecta un proveedor de flujos de trabajo de solo lectura.",
+    "addRepository": "Añadir repositorios",
+    "addRepositoryDescription": "Descubre repositorios mediante un proveedor configurado.",
+    "description": "Navega, busca recursos autorizados o inicia una acción habitual.",
+    "noResults": "No se encontraron comandos ni recursos coincidentes.",
+    "open": "Abrir la paleta de comandos",
+    "search": "Buscar comandos y recursos",
+    "searchPlaceholder": "Buscar o escribir un comando",
+    "title": "Paleta de comandos"
+  },
   "dashboard": {
     "activeRuns": "Ejecuciones activas",
     "activeRunsContext": "{running} en curso · {queued} en cola",

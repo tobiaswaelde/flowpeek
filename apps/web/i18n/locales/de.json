@@ -26,6 +26,19 @@
   "forms": {
     "unsavedChanges": "Es gibt ungespeicherte Änderungen. Seite trotzdem verlassen?"
   },
+  "commandPalette": {
+    "actions": "Aktionen",
+    "addProvider": "Anbieter-Konto hinzufügen",
+    "addProviderDescription": "Verbinde einen schreibgeschützten Workflow-Anbieter.",
+    "addRepository": "Repositories hinzufügen",
+    "addRepositoryDescription": "Finde Repositories über einen konfigurierten Anbieter.",
+    "description": "Navigiere, durchsuche erlaubte Ressourcen oder starte eine häufige Aktion.",
+    "noResults": "Keine passenden Befehle oder Ressourcen gefunden.",
+    "open": "Befehlspalette öffnen",
+    "search": "Befehle und Ressourcen durchsuchen",
+    "searchPlaceholder": "Suchen oder Befehl eingeben",
+    "title": "Befehlspalette"
+  },
   "dashboard": {
     "activeRuns": "Aktive Ausführungen",
     "activeRunsContext": "{running} laufend · {queued} wartend",

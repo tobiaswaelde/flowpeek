@@ -26,6 +26,19 @@
   "forms": {
     "unsavedChanges": "You have unsaved changes. Leave this page anyway?"
   },
+  "commandPalette": {
+    "actions": "Actions",
+    "addProvider": "Add provider account",
+    "addProviderDescription": "Connect a read-only workflow provider.",
+    "addRepository": "Add repositories",
+    "addRepositoryDescription": "Discover repositories through a configured provider.",
+    "description": "Navigate, search authorized resources, or start a common action.",
+    "noResults": "No matching commands or resources found.",
+    "open": "Open command palette",
+    "search": "Search commands and resources",
+    "searchPlaceholder": "Search or type a command",
+    "title": "Command palette"
+  },
   "dashboard": {
     "activeRuns": "Active runs",
     "activeRunsContext": "{running} running · {queued} queued",

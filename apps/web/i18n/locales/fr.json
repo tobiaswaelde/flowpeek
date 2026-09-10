@@ -26,6 +26,19 @@
   "forms": {
     "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous quand même quitter cette page ?"
   },
+  "commandPalette": {
+    "actions": "Actions",
+    "addProvider": "Ajouter un compte fournisseur",
+    "addProviderDescription": "Connectez un fournisseur de workflows en lecture seule.",
+    "addRepository": "Ajouter des dépôts",
+    "addRepositoryDescription": "Découvrez des dépôts via un fournisseur configuré.",
+    "description": "Naviguez, recherchez les ressources autorisées ou lancez une action courante.",
+    "noResults": "Aucune commande ni ressource correspondante n’a été trouvée.",
+    "open": "Ouvrir la palette de commandes",
+    "search": "Rechercher des commandes et des ressources",
+    "searchPlaceholder": "Rechercher ou saisir une commande",
+    "title": "Palette de commandes"
+  },
   "dashboard": {
     "activeRuns": "Exécutions actives",
     "activeRunsContext": "{running} en cours · {queued} en attente",

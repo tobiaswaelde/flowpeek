@@ -1,0 +1,185 @@
+import { expect, test, type Page } from '@playwright/test';
+
+const emptyPage = {
+  items: [],
+  meta: { hasNextPage: false, hasPrevPage: false, itemCount: 0, page: 1, pageCount: 0, perPage: 20 },
+};
+const providerAccount = {
+  baseUrl: null,
+  displayName: 'Flowpeek GitHub',
+  enabled: true,
+  id: 'provider-1',
+  lastSyncAt: null,
+  providerType: 'GITHUB',
+};
+const repository = {
+  enabled: true,
+  id: 'repository-1',
+  lastSyncAt: null,
+  name: 'flowpeek',
+  owner: 'tobiaswaelde',
+  providerAccountId: 'provider-1',
+  url: 'https://github.com/tobiaswaelde/flowpeek',
+  workflowRunRetentionDays: null,
+};
+const workflowRun = {
+  completedAt: '2026-09-10T00:01:00.000Z',
+  displayTitle: 'Deploy main',
+  durationMs: 60_000,
+  id: 'workflow-run-1',
+  providerCreatedAt: '2026-09-10T00:00:00.000Z',
+  providerRunId: '42',
+  providerType: 'GITHUB',
+  repositoryId: 'repository-1',
+  repositoryName: 'flowpeek',
+  repositoryOwner: 'tobiaswaelde',
+  startedAt: '2026-09-10T00:00:00.000Z',
+  status: 'SUCCESS',
+  url: 'https://github.com/tobiaswaelde/flowpeek/actions/runs/42',
+  workflowName: 'Flowpeek deployment',
+};
+
+/** Mock the authenticated shell and empty resource endpoints used by command-palette scenarios. */
+async function mockCommandPaletteShell(page: Page, role: 'SYSTEM_ADMIN' | 'VIEWER'): Promise<void> {
+  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.route('**/api/v1/auth/me', (route) =>
+    route.fulfill({ json: { id: `playwright-${role.toLowerCase()}`, role, username: 'playwright' } }),
+  );
+  await page.route('**/api/v1/settings', (route) =>
+    route.fulfill({ json: { dateTimeFormat: 'LOCALE_MEDIUM', workflowRunRetentionDays: 30 } }),
+  );
+  await page.route('**/api/v1/settings/preferences', (route) =>
+    route.fulfill({ json: { dismissedIntroBannerIds: [] } }),
+  );
+  await page.route('**/api/v1/dashboard/awaiting-approval', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/v1/dashboard/failures', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/v1/dashboard/latest-runs', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/v1/dashboard/repositories**', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/v1/dashboard/trend**', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/v1/dashboard/summary**', (route) =>
+    route.fulfill({
+      json: {
+        awaitingApprovalCount: 0,
+        completedCount: 0,
+        medianDurationMs: null,
+        queuedCount: 0,
+        runningCount: 0,
+        statuses: { cancelled: 0, failed: 0, skipped: 0, success: 0, unknown: 0 },
+        successRate: 0,
+      },
+    }),
+  );
+  await page.route('**/api/v1/workflow-runs/needs-attention**', (route) => route.fulfill({ json: emptyPage }));
+  await page.route(/\/api\/v1\/workflow-runs(?:\?.*)?$/, (route) => {
+    const search = new URL(route.request().url()).searchParams.get('search');
+    return route.fulfill({ json: { ...emptyPage, items: search === 'flow' ? [workflowRun] : [] } });
+  });
+  await page.route(/\/api\/v1\/repositories(?:\?.*)?$/, (route) => {
+    const search = new URL(route.request().url()).searchParams.get('search');
+    return route.fulfill({ json: { ...emptyPage, items: search === 'flow' ? [repository] : [] } });
+  });
+  await page.route(/\/api\/v1\/provider-accounts(?:\?.*)?$/, (route) => {
+    const search = new URL(route.request().url()).searchParams.get('search');
+    return route.fulfill({ json: { ...emptyPage, items: search === 'flow' ? [providerAccount] : [] } });
+  });
+  await page.route('**/api/v1/provider-accounts/authentication-options', (route) =>
+    route.fulfill({ json: { oauthProviderTypes: [] } }),
+  );
+}
+
+test('opens globally, restores focus, supports keyboard navigation, and starts existing creation dialogs', async ({
+  page,
+}, testInfo) => {
+  await mockCommandPaletteShell(page, 'SYSTEM_ADMIN');
+  await page.goto('/');
+
+  const trigger = page.getByRole('button', { name: 'Open command palette' });
+  const globalSearch = page.getByRole('combobox', { name: 'Search' });
+  const palette = page.getByRole('dialog', { name: 'Command palette' });
+  const paletteSearch = page.getByPlaceholder('Search or type a command');
+
+  await trigger.click();
+  await expect(palette).toBeVisible();
+  await expect(paletteSearch).toBeFocused();
+  await page.screenshot({
+    animations: 'disabled',
+    path: testInfo.outputPath('command-palette-desktop.png'),
+    fullPage: true,
+  });
+  await page.keyboard.press('Escape');
+  await expect(palette).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+
+  await globalSearch.focus();
+  await page.keyboard.press('Control+K');
+  await expect(palette).not.toBeVisible();
+  await globalSearch.press('Escape');
+
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Control+K');
+  await expect(palette).toBeVisible();
+  await expect(paletteSearch).toBeFocused();
+  await expect(palette.getByRole('option', { name: 'Dashboard', exact: true })).toHaveAttribute('data-highlighted');
+  await page.keyboard.press('ArrowDown');
+  await expect.poll(() => palette.locator('[data-highlighted]').allTextContents()).toEqual(['Repositories']);
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/admin\/repositories$/);
+
+  await page.getByRole('button', { name: 'Open command palette' }).click();
+  await paletteSearch.fill('Add provider account');
+  await expect(palette.getByText('Add provider account', { exact: true })).toBeVisible();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('dialog', { name: 'Add provider account' })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  await page.keyboard.press('Control+K');
+  await paletteSearch.fill('Add repositories');
+  await expect(palette.getByText('Add repositories', { exact: true })).toBeVisible();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('dialog', { name: 'Add repositories' })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  await page.keyboard.press('Control+K');
+  await paletteSearch.fill('flow');
+  await expect(palette.getByRole('option', { name: /Flowpeek GitHub/ })).toBeVisible();
+  await expect(palette.getByRole('option', { name: /Flowpeek deployment/ })).toBeVisible();
+  await palette
+    .getByRole('option', { name: /tobiaswaelde\/flowpeek/ })
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/admin\/repositories\/repository-1$/);
+
+  await page.setViewportSize({ height: 844, width: 390 });
+  await page.keyboard.press('Control+K');
+  await expect(palette).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .toBe(true);
+  await page.screenshot({
+    animations: 'disabled',
+    path: testInfo.outputPath('command-palette-mobile.png'),
+    fullPage: true,
+  });
+});
+
+test('hides administrative navigation and creation actions from viewers', async ({ page }) => {
+  await mockCommandPaletteShell(page, 'VIEWER');
+  let providerSearchRequests = 0;
+  await page.unroute(/\/api\/v1\/provider-accounts(?:\?.*)?$/);
+  await page.route(/\/api\/v1\/provider-accounts(?:\?.*)?$/, (route) => {
+    providerSearchRequests += 1;
+    return route.fulfill({ status: 403 });
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open command palette' }).click();
+  const palette = page.getByRole('dialog', { name: 'Command palette' });
+  await expect(palette).toBeVisible();
+  await expect(palette.getByText('Provider accounts', { exact: true })).toHaveCount(0);
+  await expect(palette.getByText('Add provider account', { exact: true })).toHaveCount(0);
+  await expect(palette.getByText('Add repositories', { exact: true })).toHaveCount(0);
+
+  await page.getByPlaceholder('Search or type a command').fill('provider');
+  await expect(palette.getByText('No matching commands or resources found.')).toBeVisible();
+  expect(providerSearchRequests).toBe(0);
+});

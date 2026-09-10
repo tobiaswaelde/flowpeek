@@ -24,6 +24,19 @@
     "waitingSince": "In attesa da"
   },
   "forms": { "unsavedChanges": "Hai modifiche non salvate. Vuoi comunque uscire da questa pagina?" },
+  "commandPalette": {
+    "actions": "Azioni",
+    "addProvider": "Aggiungi account provider",
+    "addProviderDescription": "Collega un provider di workflow in sola lettura.",
+    "addRepository": "Aggiungi repository",
+    "addRepositoryDescription": "Scopri repository tramite un provider configurato.",
+    "description": "Naviga, cerca le risorse autorizzate o avvia un’azione comune.",
+    "noResults": "Nessun comando o risorsa corrispondente trovato.",
+    "open": "Apri la palette dei comandi",
+    "search": "Cerca comandi e risorse",
+    "searchPlaceholder": "Cerca o digita un comando",
+    "title": "Palette dei comandi"
+  },
   "dashboard": {
     "activeRuns": "Esecuzioni attive",
     "activeRunsContext": "{running} in corso · {queued} in coda",

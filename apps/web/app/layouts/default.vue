@@ -37,6 +37,8 @@
 
       <LayoutApiStatusBar />
     </div>
+
+    <LayoutCommandPalette />
   </UDashboardGroup>
 </template>
 
