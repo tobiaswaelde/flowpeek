@@ -1,11 +1,11 @@
 # Notification configuration
 
-Flowpeek sends repository workflow notifications through [Apprise](https://appriseit.com/). Each channel has a
+ezRepo sends repository workflow notifications through [Apprise](https://appriseit.com/). Each channel has a
 friendly name and exactly one Apprise notification URL, such as a Discord, mail, ntfy, or Gotify URL. Consult the
 [Apprise service documentation](https://appriseit.com/services/) for the URL format supported by the destination.
 
-The complete URL is encrypted with Flowpeek's `TOKEN_ENCRYPTION_KEY` before it is stored. It is write-only in the
-API and never returned to the web application, logs, delivery history, or error messages. Flowpeek retains only the
+The complete URL is encrypted with ezRepo's `TOKEN_ENCRYPTION_KEY` before it is stored. It is write-only in the
+API and never returned to the web application, logs, delivery history, or error messages. ezRepo retains only the
 URL scheme as display metadata. At delivery time, the API creates a short-lived owner-only configuration file for
 the Apprise CLI and removes it after the command exits; URLs are never supplied as process arguments.
 

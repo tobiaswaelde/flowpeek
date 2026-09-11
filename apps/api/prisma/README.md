@@ -1,13 +1,13 @@
-# Flowpeek Prisma Schema
+# ezRepo Prisma Schema
 
 Prisma loads every `.prisma` file in this directory through `prisma.config.ts`.
 Keep the generator and PostgreSQL datasource in `schema.prisma`; place each
 domain's models and enums in its matching file.
 
-Every persisted Flowpeek resource uses a UUID primary key named `id`. Models
+Every persisted ezRepo resource uses a UUID primary key named `id`. Models
 that represent mutable resources also include `createdAt` and `updatedAt` UTC
 timestamps. Provider run timestamps remain explicit so the source event time is
-not confused with Flowpeek's record timestamps.
+not confused with ezRepo's record timestamps.
 
 | File                       | Responsibility                                           |
 | -------------------------- | -------------------------------------------------------- |

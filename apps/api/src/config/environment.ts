@@ -37,7 +37,7 @@ const validators = {
   DATABASE_URL: str({ desc: 'PostgreSQL connection URL' }),
   SHADOW_DATABASE_URL: str({ desc: 'PostgreSQL shadow database URL for migrations' }),
   CORS_ORIGIN: str({ default: 'http://localhost:3000' }),
-  PUBLIC_URL: httpUrl({ default: 'http://localhost:3000', desc: 'Public Flowpeek web URL' }),
+  PUBLIC_URL: httpUrl({ default: 'http://localhost:3000', desc: 'Public ezRepo web URL' }),
   AUTH_JWT_ISSUER: str({ default: 'flowpeek' }),
   AUTH_JWT_SECRET: str({ desc: 'JWT signing secret' }),
   AUTH_JWT_EXPIRATION: str({ default: '7d' }),
@@ -69,12 +69,12 @@ function throwOnInvalidEnvironment<T>({ errors }: ReporterOptions<T>): void {
   );
 
   if (messages.length > 0) {
-    throw new Error(`Invalid Flowpeek environment configuration: ${messages.join(', ')}`);
+    throw new Error(`Invalid ezRepo environment configuration: ${messages.join(', ')}`);
   }
 }
 
 /**
- * Validate Flowpeek environment variables without logging their values.
+ * Validate ezRepo environment variables without logging their values.
  *
  * @param environment - Raw environment variables to validate.
  * @returns A read-only, typed configuration object.

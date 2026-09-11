@@ -104,7 +104,7 @@ test('browses, searches, sorts, filters, refreshes, and paginates the complete n
   await expect(needsAttentionLink).toHaveAttribute('aria-current', 'page');
   await expect(needsAttentionLink.locator('[data-slot="linkTrailingBadge"]')).toHaveText('26');
   await expect(needsAttentionLink.locator('[data-slot="linkTrailingBadge"]')).toHaveClass(/text-error/);
-  await page.getByPlaceholder('Search Flowpeek').fill('approval');
+  await page.getByPlaceholder('Search ezRepo').fill('approval');
   await expect(page.getByRole('link', { name: 'Awaiting approval' }).last()).toHaveAttribute(
     'href',
     '/workflows/awaiting-approval',
@@ -115,7 +115,7 @@ test('browses, searches, sorts, filters, refreshes, and paginates the complete n
   await page.screenshot({ path: testInfo.outputPath('needs-attention-loading.png'), fullPage: true });
   releaseInitialRequest?.();
   await expect(page.getByText('twaelde/flowpeek', { exact: true })).toBeVisible();
-  await expect(page.getByText('GitHub', { exact: true })).toBeVisible();
+  await expect(page.locator('#main-content').getByText('GitHub', { exact: true })).toBeVisible();
   await expect(page.getByText('Failed', { exact: true })).toBeVisible();
   await expect(page.getByText('2m 30s', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Open in provider' })).toHaveAttribute('href', workflowRun.url);

@@ -12,7 +12,7 @@ export class ProviderRepositoryDto {
   name!: string;
   @ApiProperty({ format: 'uri' })
   url!: string;
-  @ApiProperty({ description: 'Whether this provider repository is already tracked by Flowpeek.' })
+  @ApiProperty({ description: 'Whether this provider repository is already tracked by ezRepo.' })
   tracked!: boolean;
 
   /** Map a provider response and local tracking state to a safe API response. */

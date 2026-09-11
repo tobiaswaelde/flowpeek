@@ -1,7 +1,7 @@
-# Flowpeek API Bruno Collection
+# ezRepo API Bruno Collection
 
 This collection contains version-controlled requests for manually verifying the
-Flowpeek API. Open `apps/api/bruno` as a collection in [Bruno](https://www.usebruno.com/).
+ezRepo API. Open `apps/api/bruno` as a collection in [Bruno](https://www.usebruno.com/).
 
 ## Development environment
 

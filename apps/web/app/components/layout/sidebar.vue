@@ -10,20 +10,15 @@
     :ui="{ footer: 'flex-col items-stretch' }"
   >
     <template #header="{ collapsed }">
-      <UButton
-        class="w-full p-0.5"
-        color="neutral"
+      <NuxtLink
         to="/"
-        variant="ghost"
-        :label="collapsed ? undefined : 'Flowpeek'"
-        :square="collapsed"
-        :class="[!collapsed && 'py-2']"
-        :block="collapsed"
+        aria-label="ezRepo"
+        class="font-display text-xl font-bold"
+        :class="collapsed ? 'mx-auto' : undefined"
       >
-        <template #leading>
-          <span class="flex size-7 items-center justify-center rounded-md bg-primary font-bold text-inverted">F</span>
-        </template>
-      </UButton>
+        <span class="text-primary">ez</span>
+        <span v-if="!collapsed" class="tracking-tight text-highlighted">Repo</span>
+      </NuxtLink>
     </template>
 
     <template #default="{ collapsed }">
@@ -38,9 +33,22 @@
     </template>
 
     <template #footer="{ collapsed }">
-      <div class="flex items-center gap-2 px-2 py-1">
-        <p v-if="!collapsed" class="min-w-0 flex-1 text-xs text-muted">{{ t('layout.readOnlyStatus') }}</p>
-        <UDashboardSidebarCollapse class="ml-auto" />
+      <div class="flex w-full flex-col gap-1">
+        <UButton
+          to="https://github.com/tobiaswaelde/ezrepo"
+          target="_blank"
+          color="neutral"
+          variant="ghost"
+          icon="i-tabler-brand-github"
+          aria-label="GitHub"
+          :square="collapsed"
+          :label="collapsed ? undefined : 'GitHub'"
+          :class="collapsed ? 'self-center' : 'w-full justify-start'"
+        />
+        <div class="flex items-center gap-2 px-2 py-1">
+          <p v-if="!collapsed" class="min-w-0 flex-1 text-xs text-muted">{{ t('layout.readOnlyStatus') }}</p>
+          <UDashboardSidebarCollapse class="ml-auto" />
+        </div>
       </div>
     </template>
   </UDashboardSidebar>

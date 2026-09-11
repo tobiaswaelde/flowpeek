@@ -1,3 +1,3 @@
 # Changelog
 
-All notable changes to Flowpeek are documented in this file by Changesets.
+All notable changes to ezRepo are documented in this file by Changesets.

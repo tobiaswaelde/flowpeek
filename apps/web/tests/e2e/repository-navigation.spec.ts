@@ -43,6 +43,14 @@ test('viewer browses assigned repositories without administration actions', asyn
   await mockViewerRepositories(page);
   await page.goto('/repositories');
 
+  await expect(page).toHaveTitle('Repositories · ezRepo');
+  const brandLink = page.getByRole('link', { name: 'ezRepo' });
+  await expect(brandLink).toHaveText('ezRepo');
+  await expect(brandLink).toHaveAttribute('href', '/');
+  await expect(page.getByRole('link', { name: 'GitHub' })).toHaveAttribute(
+    'href',
+    'https://github.com/tobiaswaelde/ezrepo',
+  );
   const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
   const repositoriesLink = navigation.getByRole('link', { name: 'Repositories' });
   await expect(repositoriesLink).toHaveAttribute('href', '/repositories');
@@ -57,12 +65,14 @@ test('viewer browses assigned repositories without administration actions', asyn
 
   await page.getByRole('button', { name: 'Collapse sidebar' }).click();
   await expect(page.getByRole('button', { name: 'Expand sidebar' })).toBeVisible();
+  await expect(brandLink).toHaveText('ez');
   await expect(navigation.getByRole('button', { name: 'Workflow runs' })).toBeVisible();
   await expect(repositoriesLink).toHaveAttribute('aria-current', 'page');
   await page.screenshot({ path: testInfo.outputPath('viewer-repository-navigation-collapsed.png'), fullPage: true });
   await page.getByRole('button', { name: 'Expand sidebar' }).click();
+  await expect(brandLink).toHaveText('ezRepo');
 
-  await page.getByPlaceholder('Search Flowpeek').fill('repositories');
+  await page.getByPlaceholder('Search ezRepo').fill('repositories');
   await expect(page.getByRole('link', { name: 'Repositories' }).last()).toHaveAttribute('href', '/repositories');
   await page.keyboard.press('Escape');
   await page.getByRole('link', { name: 'Open repository' }).click();

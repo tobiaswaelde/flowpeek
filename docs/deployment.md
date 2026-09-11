@@ -1,6 +1,6 @@
-# Deploying Flowpeek
+# Deploying ezRepo
 
-Flowpeek's Compose stack starts PostgreSQL, applies Prisma migrations once, and then starts the API and web
+ezRepo's Compose stack starts PostgreSQL, applies Prisma migrations once, and then starts the API and web
 applications. It does not terminate TLS. Put the web and API services behind a reverse proxy that owns the public
 hostname and certificates.
 
@@ -12,11 +12,11 @@ hostname and certificates.
 - A private server directory readable only by deployment administrators.
 
 The Compose stack persists PostgreSQL data in its named `flowpeek-postgres` volume. Do not delete this volume unless
-you intentionally want to remove all Flowpeek data.
+you intentionally want to remove all ezRepo data.
 
 ## First deployment
 
-1. Check out a released Flowpeek version and create the private environment file:
+1. Check out a released ezRepo version and create the private environment file:
 
    ```bash
    cp .env.example .env
@@ -30,13 +30,13 @@ you intentionally want to remove all Flowpeek data.
    openssl rand -base64 32
    ```
 
-3. Set the externally visible URLs. For a deployment at `https://flowpeek.example.com`, use:
+3. Set the externally visible URLs. For a deployment at `https://ezrepo.example.com`, use:
 
    ```dotenv
-   PUBLIC_URL=https://flowpeek.example.com
-   CORS_ORIGIN=https://flowpeek.example.com
-   NUXT_PUBLIC_API_BASE_URL=https://flowpeek.example.com/api/v1
-   OAUTH_CALLBACK_URL=https://flowpeek.example.com/api/v1/provider-accounts/oauth/callback
+   PUBLIC_URL=https://ezrepo.example.com
+   CORS_ORIGIN=https://ezrepo.example.com
+   NUXT_PUBLIC_API_BASE_URL=https://ezrepo.example.com/api/v1
+   OAUTH_CALLBACK_URL=https://ezrepo.example.com/api/v1/provider-accounts/oauth/callback
    ```
 
 4. Bind the container ports to loopback when the reverse proxy runs on the same host:
@@ -68,7 +68,7 @@ you intentionally want to remove all Flowpeek data.
 Proxy the public web origin to port 3000 and only the API path to port 3001. For example, a Caddy site block can use:
 
 ```caddy
-flowpeek.example.com {
+ezrepo.example.com {
   reverse_proxy /api/* 127.0.0.1:3001
   reverse_proxy 127.0.0.1:3000
 }
@@ -123,7 +123,7 @@ docker compose up --detach --wait
 ```
 
 Afterward, check `docker compose logs migrate` and the API health endpoint. Restore a dump made by a compatible
-Flowpeek version when rolling back across schema changes.
+ezRepo version when rolling back across schema changes.
 
 ## Rollback
 

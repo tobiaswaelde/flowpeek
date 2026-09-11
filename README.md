@@ -1,13 +1,13 @@
-# Flowpeek
+# ezRepo
 
-Flowpeek is a read-only dashboard for GitHub Actions, GitLab pipelines, Forgejo
+ezRepo is a read-only dashboard for GitHub Actions, GitLab pipelines, Forgejo
 Actions, and Gitea Actions. It tracks selected workflow runs, shows failures and trends,
 and sends notifications without modifying provider resources.
 
 ## Status
 
 The repository currently contains the monorepo bootstrap. API and web
-implementation are tracked in [GitHub Issues](https://github.com/tobiaswaelde/flowpeek/issues).
+implementation are tracked in [GitHub Issues](https://github.com/tobiaswaelde/ezrepo/issues).
 
 ## Prerequisites
 
@@ -51,7 +51,7 @@ API accepts the following variables:
 | `DATABASE_URL`                    | Yes      | —                       | PostgreSQL connection URL used by the API.                                                  |
 | `SHADOW_DATABASE_URL`             | Yes      | —                       | PostgreSQL shadow database URL used for Prisma migrations.                                  |
 | `CORS_ORIGIN`                     | No       | `http://localhost:3000` | One origin, comma-separated origins, or `*`.                                                |
-| `PUBLIC_URL`                      | No       | `http://localhost:3000` | Public Flowpeek URL; must use HTTP or HTTPS.                                                |
+| `PUBLIC_URL`                      | No       | `http://localhost:3000` | Public ezRepo URL; must use HTTP or HTTPS.                                                  |
 | `AUTH_JWT_ISSUER`                 | No       | `flowpeek`              | JWT issuer identifier.                                                                      |
 | `AUTH_JWT_SECRET`                 | Yes      | —                       | Long, unique secret used to sign JWTs.                                                      |
 | `AUTH_JWT_EXPIRATION`             | No       | `7d`                    | JWT lifetime accepted by the Nest JWT module.                                               |
@@ -76,7 +76,7 @@ by the Nest API's `envalid` configuration:
 | `FLOWPEEK_VERSION`  | `latest`   | API and web image version selected by Docker Compose. |
 
 Provider access tokens, provider webhook secrets, and notification credentials
-are not environment variables. Flowpeek stores them encrypted in PostgreSQL
+are not environment variables. ezRepo stores them encrypted in PostgreSQL
 through its application configuration. See [notification configuration](docs/notifications.md) for Apprise URL handling and migration guidance.
 
 ## Commands
@@ -94,7 +94,7 @@ implementations so CI and local commands have stable names from the start.
 
 ## Changesets and releases
 
-Flowpeek uses one private root package and Changesets for release management.
+ezRepo uses one private root package and Changesets for release management.
 Add exactly one focused Changeset for every substantive implementation commit:
 
 ```bash
@@ -147,6 +147,6 @@ auditable justification in GitHub.
 - `PLAN.md`: approved architecture and release design.
 - `docs/provider-webhooks.md`: manual read-only webhook setup for each provider.
 - `docs/localization.md`: supported interface locales, fallback behavior, and translation process.
-- [GitHub Issues](https://github.com/tobiaswaelde/flowpeek/issues): ordered
+- [GitHub Issues](https://github.com/tobiaswaelde/ezrepo/issues): ordered
   implementation epics and tasks.
 - `AGENTS.md`: repository-specific instructions for coding agents.

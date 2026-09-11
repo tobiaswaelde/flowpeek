@@ -1,8 +1,8 @@
-# Flowpeek Monorepo and Release Plan
+# ezRepo Monorepo and Release Plan
 
 ## Summary
 
-Build Flowpeek as a pnpm/Nx monorepo with:
+Build ezRepo as a pnpm/Nx monorepo with:
 
 - `apps/api`: NestJS REST API with Prisma, PostgreSQL, CASL, and `@querry-kit/nest`.
 - `apps/web`: Nuxt 4 single-page dashboard with Pinia, Nuxt UI, and `@querry-kit/nuxt`.
@@ -38,7 +38,7 @@ Do not copy Machine Admin domain models or endpoints.
   - DTO mapping with the active CASL ability.
 - Use JWT bearer authentication with local username/password accounts and an initial admin created from environment variables.
 - Define CASL roles and capabilities:
-  - `SYSTEM_ADMIN`: unrestricted Flowpeek administration.
+  - `SYSTEM_ADMIN`: unrestricted ezRepo administration.
   - `VIEWER`: read-only access to explicitly assigned repositories.
   - `MANAGER`: viewer access plus configuration access for assigned repositories.
 - Enforce repository permissions in database queries, not only in DTO serialization.
@@ -67,7 +67,7 @@ Provider integration must be read-only:
 - Never create, modify, start, stop, or rerun provider workflows.
 - Poll tracked repositories on a configurable schedule.
 - Accept manually configured, signature-validated provider webhooks to trigger targeted syncs.
-- Do not create or modify provider webhooks through Flowpeek credentials.
+- Do not create or modify provider webhooks through ezRepo credentials.
 
 Encrypt provider tokens and Gotify/ntfy credentials at rest. Never return secrets from API responses.
 

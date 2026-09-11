@@ -1,4 +1,4 @@
-/** Nuxt configuration for the Flowpeek single-page dashboard. */
+/** Nuxt configuration for the ezRepo single-page dashboard. */
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   css: ['~/assets/css/main.css'],
@@ -15,8 +15,8 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { class: 'h-full' },
       bodyAttrs: { class: 'h-full bg-default' },
-      title: 'Flowpeek',
-      titleTemplate: '%s · Flowpeek',
+      title: 'ezRepo',
+      titleTemplate: '%s · ezRepo',
     },
   },
   colorMode: {

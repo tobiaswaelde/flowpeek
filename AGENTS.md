@@ -1,4 +1,4 @@
-# Flowpeek Agent Guidelines
+# ezRepo Agent Guidelines
 
 ## Working Style
 
@@ -20,12 +20,12 @@
   start later work opportunistically.
 - Preserve unrelated work. Inspect `git status` and the relevant diff before
   every edit, test, and commit.
-- The Flowpeek application is read-only with respect to GitHub, GitLab, and
+- The ezRepo application is read-only with respect to GitHub, GitLab, and
   Forgejo. Never add provider calls that create, modify, dispatch, rerun,
   cancel, or delete provider resources.
 - Agents may create GitHub Issues, sub-issues, and milestones only when the
   user explicitly requests it. This exception applies to agent tooling, not to
-  Flowpeek's provider integrations.
+  ezRepo's provider integrations.
 
 ## Repository conventions
 

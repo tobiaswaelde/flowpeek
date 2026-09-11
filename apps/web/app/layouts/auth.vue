@@ -1,8 +1,8 @@
 <template>
   <div class="flex min-h-screen flex-1 flex-col items-center justify-center gap-4 bg-default p-4">
-    <NuxtLink class="mt-auto flex items-center gap-3 text-xl font-semibold tracking-tight" to="/auth/signin">
-      <span class="flex size-9 items-center justify-center rounded-lg bg-primary font-bold text-inverted">F</span>
-      Flowpeek
+    <NuxtLink aria-label="ezRepo" class="mt-auto font-display text-2xl font-bold" to="/auth/signin">
+      <span class="text-primary">ez</span>
+      <span class="tracking-tight text-highlighted">Repo</span>
     </NuxtLink>
 
     <UPageCard class="w-full max-w-md">
