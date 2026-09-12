@@ -385,6 +385,7 @@
       "providerRunId": "Provider run ID",
       "started": "Started",
       "status": "Status",
+      "title": "Title",
       "workflow": "Workflow"
     },
     "durationValue": "{minutes}m {seconds}s",

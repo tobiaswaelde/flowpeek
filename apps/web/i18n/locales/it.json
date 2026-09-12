@@ -386,6 +386,7 @@
       "providerRunId": "ID esecuzione provider",
       "started": "Avviato",
       "status": "Stato",
+      "title": "Titolo",
       "workflow": "Workflow"
     },
     "durationValue": "{minutes} min {seconds} s",

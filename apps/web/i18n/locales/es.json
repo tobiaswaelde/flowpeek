@@ -386,6 +386,7 @@
       "providerRunId": "ID de ejecución del proveedor",
       "started": "Iniciado",
       "status": "Estado",
+      "title": "Título",
       "workflow": "Flujo"
     },
     "durationValue": "{minutes} min {seconds} s",

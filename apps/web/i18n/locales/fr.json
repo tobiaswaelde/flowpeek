@@ -386,6 +386,7 @@
       "providerRunId": "ID d’exécution fournisseur",
       "started": "Démarré",
       "status": "Statut",
+      "title": "Titre",
       "workflow": "Flux"
     },
     "durationValue": "{minutes} min {seconds} s",

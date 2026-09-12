@@ -386,6 +386,7 @@
       "providerRunId": "Provider-uitvoerings-ID",
       "started": "Gestart",
       "status": "Status",
+      "title": "Titel",
       "workflow": "Workflow"
     },
     "durationValue": "{minutes}m {seconds}s",

@@ -52,6 +52,9 @@
       <template #displayTitle-cell="{ row }">
         <span class="font-medium">{{ row.original.displayTitle }}</span>
       </template>
+      <template #workflowName-cell="{ row }">
+        <span class="text-sm text-muted">{{ row.original.workflowName }}</span>
+      </template>
       <template #repositoryName-cell="{ row }">
         <span>{{ row.original.repositoryOwner }}/{{ row.original.repositoryName }}</span>
       </template>
@@ -161,7 +164,8 @@ const workflowStatuses: WorkflowRunStatus[] = [
   'UNKNOWN',
 ];
 const columnDefinition = computed<WorkflowRunTableColumn[]>(() => [
-  { accessorKey: 'displayTitle', header: t('workflowRuns.columns.workflow'), id: 'displayTitle' },
+  { accessorKey: 'displayTitle', header: t('workflowRuns.columns.title'), id: 'displayTitle' },
+  { accessorKey: 'workflowName', header: t('workflowRuns.columns.workflow'), id: 'workflowName' },
   { accessorKey: 'repositoryName', header: t('repositories.columns.name'), id: 'repositoryName' },
   { accessorKey: 'providerType', header: t('repositories.addSteps.provider'), id: 'providerType' },
   { accessorKey: 'status', header: t('workflowRuns.columns.status'), id: 'status' },
@@ -176,7 +180,8 @@ const columnDefinition = computed<WorkflowRunTableColumn[]>(() => [
   { enableHiding: false, header: t('repositories.columns.actions'), id: 'actions' },
 ]);
 const sortableFields = computed<SortingField[]>(() => [
-  { label: t('workflowRuns.columns.workflow'), value: 'displayTitle' },
+  { label: t('workflowRuns.columns.title'), value: 'displayTitle' },
+  { label: t('workflowRuns.columns.workflow'), value: 'workflowName' },
   { label: t('workflowRuns.columns.status'), value: 'status' },
   ...(props.detailedTimestamps
     ? [

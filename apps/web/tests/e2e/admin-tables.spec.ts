@@ -426,13 +426,14 @@ test('workflow runs render in a filterable and sortable full-page table', async 
     expect(requestUrl).toContain('repositoryName');
     expect(requestUrl).toContain('repositoryOwner');
     expect(requestUrl).toContain('providerType');
+    expect(requestUrl).toContain('workflowName');
     await route.fulfill({
       contentType: 'application/json',
       json: {
         items: [
           {
             completedAt: '2026-09-08T08:02:30.000Z',
-            displayTitle: 'Build',
+            displayTitle: 'Build on main',
             durationMs: 150_000,
             id: 'run-1',
             providerCreatedAt: '2026-09-08T08:00:00.000Z',
@@ -481,7 +482,11 @@ test('workflow runs render in a filterable and sortable full-page table', async 
   await expect(
     navigation.getByRole('region', { name: 'Workflow runs' }).getByRole('link', { name: 'All runs' }),
   ).toHaveAttribute('aria-current', 'page');
-  await expect(page.locator('tbody').getByRole('link', { name: 'Build', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('columnheader', { name: 'Title' })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Workflow' })).toBeVisible();
+  await expect(page.locator('tbody').getByText('Build on main', { exact: true })).toBeVisible();
+  await expect(page.locator('tbody').getByText('Build', { exact: true })).toBeVisible();
+  await expect(page.locator('tbody').getByRole('link', { name: 'Build on main', exact: true })).toHaveCount(0);
   await expect(page.getByText('twaelde/ezrepo', { exact: true })).toBeVisible();
   await expect(page.locator('#main-content').getByText('GitHub', { exact: true })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Provider time' })).toHaveCount(0);
@@ -524,6 +529,11 @@ test('workflow runs render in a filterable and sortable full-page table', async 
   await page.keyboard.press('Shift+F');
   await page.keyboard.press('Shift+O');
   await expect(page.getByText('Table options', { exact: true })).toBeVisible();
+  await expect(page.locator('.qk-table-options-popover').getByText('Workflow', { exact: true })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Sort' }).click();
+  await page.locator('.qk-table-sorting-popover').getByText('Select field', { exact: true }).click();
+  await expect(page.getByRole('option', { name: 'Workflow', exact: true })).toBeVisible();
 
   repositoryFilterRequestFails = true;
   await page.reload();

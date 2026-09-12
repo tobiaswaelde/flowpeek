@@ -136,12 +136,17 @@ test('browses, searches, sorts, filters, refreshes, and paginates the complete n
   await page.screenshot({ path: testInfo.outputPath('needs-attention-loading.png'), fullPage: true });
   releaseInitialRequest?.();
   await expect(page.getByText('twaelde/ezrepo', { exact: true })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Title' })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Workflow' })).toBeVisible();
+  await expect(page.locator('tbody').getByText('Build on main', { exact: true })).toBeVisible();
+  await expect(page.locator('tbody').getByText('Build', { exact: true })).toBeVisible();
   await expect(page.locator('#main-content').getByText('GitHub', { exact: true })).toBeVisible();
   await expect(page.getByText('Failed', { exact: true })).toBeVisible();
   await expect(page.getByText('2m 30s', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Open in provider' })).toHaveAttribute('href', workflowRun.url);
   await expect(page.getByText('Showing 1–25 of 26')).toBeVisible();
   const initialUrl = new URL(requestedUrls.at(-1)!);
+  expect(initialUrl.searchParams.get('fields')).toContain('workflowName');
   expect(initialUrl.searchParams.get('orderBy')).toBe(JSON.stringify([{ completedAt: 'asc' }]));
   expect(initialUrl.searchParams.get('where')).toContain('"repositoryId":{"in":["repository-1"]}');
   expect(initialUrl.searchParams.get('where')).toContain(
@@ -171,20 +176,27 @@ for (const theme of ['light', 'dark'] as const) {
   test(`renders the needs-attention table responsively in ${theme} mode`, async ({ page }, testInfo) => {
     await page.addInitScript((colorMode) => window.localStorage.setItem('nuxt-color-mode', colorMode), theme);
     await mockApplication(page);
-    await page.route('**/api/v1/workflow-runs/needs-attention**', (route) =>
-      route.fulfill({
+    await page.route('**/api/v1/workflow-runs/needs-attention**', (route) => {
+      const requestUrl = new URL(route.request().url());
+      if (requestUrl.searchParams.get('perPage') !== '1')
+        expect(requestUrl.searchParams.get('fields')).toContain('workflowName');
+      return route.fulfill({
         json: {
           items: [workflowRun],
           meta: { hasNextPage: false, hasPrevPage: false, itemCount: 1, page: 1, pageCount: 1, perPage: 25 },
         },
-      }),
-    );
+      });
+    });
     await page.setViewportSize({ height: 844, width: 390 });
 
     await page.goto('/workflow-runs/needs-attention');
 
     await expect(page.locator('html')).toHaveClass(new RegExp(theme));
     await expect(page.getByRole('heading', { name: 'Needs attention' })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Title' })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Workflow' })).toBeVisible();
+    await expect(page.locator('tbody').getByText('Build on main', { exact: true })).toBeVisible();
+    await expect(page.locator('tbody').getByText('Build', { exact: true })).toBeVisible();
     await expect(page.getByPlaceholder('Search workflows or repositories')).toBeVisible();
     const toolbar = page.locator('[data-page-toolbar]');
     await expect(toolbar.getByRole('button', { name: 'Refresh' })).toBeVisible();
