@@ -58,12 +58,19 @@ export class GitHubActionsAdapter implements ProviderAdapter {
 
   async listRepositories(context: ProviderAccountContext): Promise<ProviderRepository[]> {
     const repositories = await this.request<GitHubRepositoryResponse[]>(context, '/user/repos?per_page=100');
-    return repositories.map((repository) => ({
-      providerRepositoryId: String(repository.id),
-      owner: repository.owner.login,
-      name: repository.name,
-      url: repository.html_url,
-    }));
+    return repositories.map((repository) => this.toRepository(repository));
+  }
+
+  async getRepository(
+    context: ProviderAccountContext,
+    repository: ProviderRepositoryReference,
+  ): Promise<ProviderRepository | null> {
+    const response = await this.fetchFn(this.url(context, `/repos/${repository.owner}/${repository.name}`), {
+      headers: this.headers(context),
+    });
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error(`GitHub API request failed with status ${response.status}.`);
+    return this.toRepository((await response.json()) as GitHubRepositoryResponse);
   }
 
   async listWorkflowRuns(
@@ -116,6 +123,14 @@ export class GitHubActionsAdapter implements ProviderAdapter {
       Accept: 'application/vnd.github+json',
       Authorization: `Bearer ${context.accessToken}`,
       'X-GitHub-Api-Version': '2022-11-28',
+    };
+  }
+  private toRepository(repository: GitHubRepositoryResponse): ProviderRepository {
+    return {
+      providerRepositoryId: String(repository.id),
+      owner: repository.owner.login,
+      name: repository.name,
+      url: repository.html_url,
     };
   }
   private url(context: ProviderAccountContext, path: string): string {

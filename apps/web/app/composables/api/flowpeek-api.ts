@@ -108,6 +108,8 @@ export function useFlowpeekApi() {
         api.get(`${apiEndpoints.repositories}/${id}/memberships`),
       listWorkflowFilters: (id: string): Promise<AxiosResponse<WorkflowFilter[]>> =>
         api.get(`${apiEndpoints.repositories}/${id}/workflow-filters`),
+      refresh: (id: string): Promise<AxiosResponse<Repository>> =>
+        api.post(`${apiEndpoints.repositories}/${id}/refresh`),
       update: (
         id: string,
         input: { enabled: boolean; workflowRunRetentionDays: number | null },

@@ -11,6 +11,7 @@ import { SystemStatusService } from '../system-status/system-status.service.js';
 import type { ProviderWorkflowRun } from './provider-adapter.js';
 import { ProviderAdapterRegistry } from './provider-adapter.registry.js';
 import { ProviderCredentialService } from './provider-credential.service.js';
+import { RepositoryMetadataService } from './repository-metadata.service.js';
 
 /** Retries transient provider operations with bounded exponential backoff. */
 export async function withProviderRetries<T>(operation: () => Promise<T>, retries = 3): Promise<T> {
@@ -35,6 +36,7 @@ export class ProviderSyncService {
     private readonly jobs: JobRunnerService,
     private readonly adapters: ProviderAdapterRegistry,
     private readonly credentials: ProviderCredentialService,
+    private readonly metadata: RepositoryMetadataService,
     private readonly filters: WorkflowFilterService,
     private readonly notifications: NotificationsService,
     private readonly status: SystemStatusService,
@@ -121,14 +123,15 @@ export class ProviderSyncService {
       workflowRunsTotal: null,
     });
     try {
-      const adapter = this.adapters.get(repository.providerAccount.providerType);
+      const refreshedRepository = await this.metadata.refresh(repository);
+      const adapter = this.adapters.get(refreshedRepository.providerAccount.providerType);
       const context = {
-        providerAccountId: repository.providerAccount.id,
-        baseUrl: repository.providerAccount.baseUrl,
-        accessToken: this.credentials.decrypt(repository.providerAccount.encryptedAccessToken),
+        providerAccountId: refreshedRepository.providerAccount.id,
+        baseUrl: refreshedRepository.providerAccount.baseUrl,
+        accessToken: this.credentials.decrypt(refreshedRepository.providerAccount.encryptedAccessToken),
       };
       const discoveredRuns = await withProviderRetries(() =>
-        adapter.listWorkflowRuns(context, repository, repository.lastSyncAt ?? undefined),
+        adapter.listWorkflowRuns(context, refreshedRepository, refreshedRepository.lastSyncAt ?? undefined),
       );
       const activeRuns = await this.prisma.workflowRun.findMany({
         select: { providerRunId: true },
@@ -139,7 +142,7 @@ export class ProviderSyncService {
       });
       const refreshedRuns = await Promise.all(
         activeRuns.map(({ providerRunId }) =>
-          withProviderRetries(() => adapter.getWorkflowRun(context, repository, providerRunId)),
+          withProviderRetries(() => adapter.getWorkflowRun(context, refreshedRepository, providerRunId)),
         ),
       );
       const runsByProviderId = new Map(discoveredRuns.map((run) => [run.providerRunId, run]));

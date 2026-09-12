@@ -146,6 +146,7 @@ auditable justification in GitHub.
 - `docs/deployment.md`: production deployment, TLS proxy, backup, restore, and rollback procedures.
 - `PLAN.md`: approved architecture and release design.
 - `docs/provider-webhooks.md`: manual read-only webhook setup for each provider.
+- `docs/repositories.md`: tracked repository identity, rename handling, and metadata refresh behavior.
 - `docs/localization.md`: supported interface locales, fallback behavior, and translation process.
 - [GitHub Issues](https://github.com/tobiaswaelde/ezrepo/issues): ordered
   implementation epics and tasks.

@@ -70,12 +70,19 @@ export class GiteaActionsAdapter implements ProviderAdapter {
 
   async listRepositories(context: ProviderAccountContext): Promise<ProviderRepository[]> {
     const repositories = await this.request<GiteaRepository[]>(context, '/user/repos?limit=100');
-    return repositories.map((repository) => ({
-      name: repository.name,
-      owner: repository.owner.login,
-      providerRepositoryId: String(repository.id),
-      url: repository.html_url,
-    }));
+    return repositories.map((repository) => this.toRepository(repository));
+  }
+
+  async getRepository(
+    context: ProviderAccountContext,
+    repository: ProviderRepositoryReference,
+  ): Promise<ProviderRepository | null> {
+    const response = await this.fetchFn(this.url(context, `/repositories/${repository.providerRepositoryId}`), {
+      headers: this.headers(context),
+    });
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error(`Gitea API request failed with status ${response.status}.`);
+    return this.toRepository((await response.json()) as GiteaRepository);
   }
 
   async listWorkflowRuns(
@@ -131,6 +138,15 @@ export class GiteaActionsAdapter implements ProviderAdapter {
 
   private headers(context: ProviderAccountContext): HeadersInit {
     return { Accept: 'application/json', Authorization: `token ${context.accessToken}` };
+  }
+
+  private toRepository(repository: GiteaRepository): ProviderRepository {
+    return {
+      name: repository.name,
+      owner: repository.owner.login,
+      providerRepositoryId: String(repository.id),
+      url: repository.html_url,
+    };
   }
 
   private url(context: ProviderAccountContext, path: string): string {

@@ -85,6 +85,10 @@ export interface ProviderWebhookRequest {
 export interface ProviderAdapter {
   readonly providerType: ProviderType;
 
+  getRepository(
+    context: ProviderAccountContext,
+    repository: ProviderRepositoryReference,
+  ): Promise<ProviderRepository | null>;
   getWorkflowRun(
     context: ProviderAccountContext,
     repository: ProviderRepositoryReference,

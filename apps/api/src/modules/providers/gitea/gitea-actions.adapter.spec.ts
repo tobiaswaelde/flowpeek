@@ -18,6 +18,8 @@ describe('GiteaActionsAdapter', () => {
     const fetchFn = jest.fn(async (url: string) => {
       if (url.endsWith('/user')) return new Response(JSON.stringify(readFixture('user.json')));
       if (url.includes('/user/repos')) return new Response(JSON.stringify(readFixture('repositories.json')));
+      if (url.endsWith('/repositories/42'))
+        return new Response(JSON.stringify((readFixture('repositories.json') as unknown[])[0]));
       if (url.includes('/actions/runs?')) return new Response(JSON.stringify(readFixture('workflow-runs.json')));
       if (url.endsWith('/actions/runs/7')) return new Response(JSON.stringify(readFixture('workflow-run.json')));
       throw new Error(`Unexpected request: ${url}`);
@@ -33,6 +35,7 @@ describe('GiteaActionsAdapter', () => {
         url: 'https://gitea.example.test/flowpeek/flowpeek',
       },
     ]);
+    await expect(adapter.getRepository(context, repository)).resolves.toMatchObject({ providerRepositoryId: '42' });
     await expect(adapter.listWorkflowRuns(context, repository)).resolves.toMatchObject([
       {
         providerRunId: '7',
@@ -45,7 +48,7 @@ describe('GiteaActionsAdapter', () => {
       providerRunId: '7',
       status: 'SUCCESS',
     });
-    expect(fetchFn).toHaveBeenCalledTimes(4);
+    expect(fetchFn).toHaveBeenCalledTimes(5);
   });
 
   it('reports unsupported Actions servers without attempting a provider write', async () => {

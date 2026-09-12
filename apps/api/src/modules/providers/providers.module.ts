@@ -19,11 +19,13 @@ import { ProviderCredentialService } from './provider-credential.service.js';
 import { ProviderOAuthStateService } from './provider-oauth-state.service.js';
 import { ProviderOAuthController } from './provider-oauth.controller.js';
 import { ProviderOAuthService } from './provider-oauth.service.js';
+import { RepositoryMetadataService } from './repository-metadata.service.js';
+import { RepositoryRefreshController } from './repository-refresh.controller.js';
 import { ProviderSyncService } from './sync.service.js';
 
 @Module({
   imports: [CaslModule, JobsModule, NotificationsModule, RepositoriesModule, SecurityModule, SystemStatusModule],
-  controllers: [ProviderAccountsController, ProviderOAuthController],
+  controllers: [ProviderAccountsController, ProviderOAuthController, RepositoryRefreshController],
   providers: [
     {
       provide: PROVIDER_FETCH,
@@ -34,6 +36,7 @@ import { ProviderSyncService } from './sync.service.js';
     ProviderCredentialService,
     ProviderOAuthService,
     ProviderOAuthStateService,
+    RepositoryMetadataService,
     GitHubActionsAdapter,
     GitLabPipelinesAdapter,
     ForgejoActionsAdapter,

@@ -12,6 +12,15 @@
   >
     <template v-if="repository" #actions>
       <UButton
+        v-if="isAdmin"
+        color="neutral"
+        icon="i-lucide-refresh-cw"
+        variant="soft"
+        :label="$t('repositoryDetails.refresh')"
+        :loading="refreshing"
+        @click="refreshRepository"
+      />
+      <UButton
         color="neutral"
         icon="i-tabler-external-link"
         rel="noreferrer"
@@ -59,6 +68,8 @@ const isAdmin = computed(() => auth.user?.role === 'SYSTEM_ADMIN');
 const repositoryId = computed(() => String(route.params.id));
 const repository = ref<Repository>();
 const loadError = ref(false);
+const refreshing = ref(false);
+const toast = useToast();
 const pageTitle = computed(() =>
   repository.value ? `${repository.value.owner}/${repository.value.name}` : t('repositoryDetails.title'),
 );
@@ -77,4 +88,19 @@ async function load(): Promise<void> {
 }
 
 onMounted(() => void load());
+
+/** Refresh provider-owned repository metadata while preserving the tracked repository identity. */
+async function refreshRepository(): Promise<void> {
+  if (!repository.value || refreshing.value) return;
+  refreshing.value = true;
+  try {
+    const { data } = await api.repositories.refresh(repository.value.id);
+    repository.value = data;
+    toast.add({ color: 'success', title: t('repositoryDetails.refreshSuccess') });
+  } catch {
+    toast.add({ color: 'error', title: t('repositoryDetails.refreshError') });
+  } finally {
+    refreshing.value = false;
+  }
+}
 </script>

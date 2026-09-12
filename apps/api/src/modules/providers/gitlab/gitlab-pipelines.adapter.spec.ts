@@ -44,6 +44,28 @@ describe('GitLabPipelinesAdapter', () => {
     expect(fetchFn).toHaveBeenCalledWith(expect.stringContaining('/api/v4/projects'), expect.anything());
   });
 
+  it('loads current project metadata through the stable GitLab project ID', async () => {
+    const fetchFn = jest.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          id: 1,
+          name: 'renamed',
+          namespace: { full_path: 'new-group' },
+          web_url: 'https://gitlab.example.test/new-group/renamed',
+        }),
+      ),
+    );
+
+    await expect(
+      new GitLabPipelinesAdapter(fetchFn).getRepository(context, {
+        providerRepositoryId: '1',
+        owner: 'group',
+        name: 'flowpeek',
+      }),
+    ).resolves.toMatchObject({ providerRepositoryId: '1', owner: 'new-group', name: 'renamed' });
+    expect(fetchFn).toHaveBeenCalledWith(expect.stringContaining('/api/v4/projects/1'), expect.anything());
+  });
+
   it('verifies current GitLab HMAC signing tokens against the raw delivery body', async () => {
     const adapter = new GitLabPipelinesAdapter();
     const payload = Buffer.from(JSON.stringify(readFixture('webhook.json')));

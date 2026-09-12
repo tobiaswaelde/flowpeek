@@ -52,12 +52,20 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
 
   async listRepositories(context: ProviderAccountContext): Promise<ProviderRepository[]> {
     const projects = await this.request<GitLabProject[]>(context, '/projects?membership=true&simple=true&per_page=100');
-    return projects.map((project) => ({
-      providerRepositoryId: String(project.id),
-      owner: project.namespace.full_path,
-      name: project.name,
-      url: project.web_url,
-    }));
+    return projects.map((project) => this.toRepository(project));
+  }
+
+  async getRepository(
+    context: ProviderAccountContext,
+    repository: ProviderRepositoryReference,
+  ): Promise<ProviderRepository | null> {
+    const response = await this.fetchFn(
+      this.url(context, `/projects/${encodeURIComponent(repository.providerRepositoryId)}`),
+      { headers: this.headers(context) },
+    );
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error(`GitLab API request failed with status ${response.status}.`);
+    return this.toRepository((await response.json()) as GitLabProject);
   }
 
   async listWorkflowRuns(
@@ -103,6 +111,14 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
       token.length === signingSecret.length &&
       timingSafeEqual(Buffer.from(token), Buffer.from(signingSecret))
     );
+  }
+  private toRepository(project: GitLabProject): ProviderRepository {
+    return {
+      providerRepositoryId: String(project.id),
+      owner: project.namespace.full_path,
+      name: project.name,
+      url: project.web_url,
+    };
   }
   private hasValidWebhookSignature(request: ProviderWebhookRequest): boolean {
     const signature = request.headers['webhook-signature'];

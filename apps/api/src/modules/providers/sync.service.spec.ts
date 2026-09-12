@@ -48,6 +48,7 @@ describe('ProviderSyncService', () => {
       {} as JobRunnerService,
       { get: jest.fn().mockReturnValue(mocks.adapter) } as unknown as ProviderAdapterRegistry,
       mocks.credentials as unknown as ProviderCredentialService,
+      { refresh: jest.fn((repository) => Promise.resolve(repository)) } as never,
       mocks.filters as unknown as WorkflowFilterService,
       mocks.notifications as unknown as NotificationsService,
       mocks.status as unknown as SystemStatusService,
@@ -152,6 +153,7 @@ describe('ProviderSyncService', () => {
         }),
       } as unknown as ProviderAdapterRegistry,
       { decrypt: jest.fn().mockReturnValue('access-token') } as unknown as ProviderCredentialService,
+      { refresh: jest.fn((value) => Promise.resolve(value)) } as never,
       { shouldTrack: jest.fn().mockReturnValue(true) } as unknown as WorkflowFilterService,
       { evaluateRulesForRun: jest.fn().mockResolvedValue([]) } as unknown as NotificationsService,
       status as unknown as SystemStatusService,
@@ -172,6 +174,51 @@ describe('ProviderSyncService', () => {
       where: { workflowId: 'legacy-workflow-id' },
     });
     expect(prisma.workflow.delete).toHaveBeenCalledWith({ where: { id: 'legacy-workflow-id' } });
+  });
+
+  it('uses refreshed repository metadata for workflow requests', async () => {
+    const repository = createRepository('repository');
+    const adapter = { getWorkflowRun: jest.fn(), listWorkflowRuns: jest.fn().mockResolvedValue([]) };
+    const metadata = {
+      refresh: jest.fn().mockResolvedValue({
+        ...repository,
+        name: 'renamed',
+        owner: 'new-owner',
+        url: 'https://github.com/new-owner/renamed',
+      }),
+    };
+    const prisma = {
+      providerAccount: { update: jest.fn().mockResolvedValue(undefined) },
+      repository: {
+        findMany: jest.fn().mockResolvedValue([repository]),
+        update: jest.fn().mockResolvedValue(undefined),
+      },
+      workflowRun: { findMany: jest.fn().mockResolvedValue([]) },
+    };
+    const service = new ProviderSyncService(
+      prisma as unknown as PrismaService,
+      {} as JobRunnerService,
+      { get: jest.fn().mockReturnValue(adapter) } as unknown as ProviderAdapterRegistry,
+      { decrypt: jest.fn().mockReturnValue('access-token') } as unknown as ProviderCredentialService,
+      metadata as never,
+      { shouldTrack: jest.fn() } as unknown as WorkflowFilterService,
+      { evaluateRulesForRun: jest.fn() } as unknown as NotificationsService,
+      {
+        beginProviderSync: jest.fn().mockReturnValue('sync-id'),
+        finishProviderSync: jest.fn(),
+        refreshRunningWorkflowCount: jest.fn(),
+        updateProviderSync: jest.fn(),
+      } as unknown as SystemStatusService,
+    );
+
+    await service.syncEnabledRepositories();
+
+    expect(metadata.refresh).toHaveBeenCalledWith(repository);
+    expect(adapter.listWorkflowRuns).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ name: 'renamed', owner: 'new-owner' }),
+      undefined,
+    );
   });
 });
 

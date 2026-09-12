@@ -61,12 +61,18 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
   }
   async listRepositories(context: ProviderAccountContext): Promise<ProviderRepository[]> {
     const repositories = await this.request<ForgejoRepository[]>(context, '/user/repos?limit=100');
-    return repositories.map((repository) => ({
-      providerRepositoryId: String(repository.id),
-      owner: repository.owner.login,
-      name: repository.name,
-      url: repository.html_url,
-    }));
+    return repositories.map((repository) => this.toRepository(repository));
+  }
+  async getRepository(
+    context: ProviderAccountContext,
+    repository: ProviderRepositoryReference,
+  ): Promise<ProviderRepository | null> {
+    const response = await this.fetchFn(this.url(context, `/repositories/${repository.providerRepositoryId}`), {
+      headers: this.headers(context),
+    });
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error(`Forgejo API request failed with status ${response.status}.`);
+    return this.toRepository((await response.json()) as ForgejoRepository);
   }
   async listWorkflowRuns(
     context: ProviderAccountContext,
@@ -117,6 +123,14 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
   }
   private headers(context: ProviderAccountContext): HeadersInit {
     return { Accept: 'application/json', Authorization: `token ${context.accessToken}` };
+  }
+  private toRepository(repository: ForgejoRepository): ProviderRepository {
+    return {
+      providerRepositoryId: String(repository.id),
+      owner: repository.owner.login,
+      name: repository.name,
+      url: repository.html_url,
+    };
   }
   private url(context: ProviderAccountContext, path: string): string {
     const baseUrl = (context.baseUrl ?? '').replace(/\/$/, '');

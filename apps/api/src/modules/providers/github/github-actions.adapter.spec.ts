@@ -44,6 +44,40 @@ describe('GitHubActionsAdapter', () => {
     );
   });
 
+  it('resolves renamed repository metadata through the previous repository path', async () => {
+    const fetchFn = jest.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          id: 1,
+          name: 'renamed',
+          html_url: 'https://github.com/new-owner/renamed',
+          owner: { login: 'new-owner' },
+        }),
+      ),
+    );
+
+    await expect(
+      new GitHubActionsAdapter(fetchFn).getRepository(context, {
+        providerRepositoryId: '1',
+        owner: 'octo',
+        name: 'flowpeek',
+      }),
+    ).resolves.toEqual({
+      providerRepositoryId: '1',
+      owner: 'new-owner',
+      name: 'renamed',
+      url: 'https://github.com/new-owner/renamed',
+    });
+    expect(fetchFn).toHaveBeenCalledWith(expect.stringContaining('/repos/octo/flowpeek'), expect.anything());
+  });
+
+  it('returns null when the tracked GitHub repository is unavailable', async () => {
+    const adapter = new GitHubActionsAdapter(jest.fn().mockResolvedValue(new Response(null, { status: 404 })));
+    await expect(
+      adapter.getRepository(context, { providerRepositoryId: '1', owner: 'octo', name: 'missing' }),
+    ).resolves.toBeNull();
+  });
+
   it('accepts only correctly signed GitHub webhooks', async () => {
     const adapter = new GitHubActionsAdapter();
     const payload = Buffer.from(JSON.stringify(readFixture('webhook.json')));

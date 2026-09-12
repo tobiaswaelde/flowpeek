@@ -19,6 +19,26 @@ describe('ForgejoActionsAdapter', () => {
       }),
     ).resolves.toMatchObject([{ providerRunId: '7', status: 'SUCCESS', durationMs: 120_000 }]);
   });
+  it('loads current repository metadata through the stable Forgejo repository ID', async () => {
+    const fetchFn = jest.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          id: 1,
+          name: 'renamed',
+          html_url: 'https://forgejo.example.test/new-org/renamed',
+          owner: { login: 'new-org' },
+        }),
+      ),
+    );
+    await expect(
+      new ForgejoActionsAdapter(fetchFn).getRepository(context, {
+        providerRepositoryId: '1',
+        owner: 'org',
+        name: 'repo',
+      }),
+    ).resolves.toMatchObject({ providerRepositoryId: '1', owner: 'new-org', name: 'renamed' });
+    expect(fetchFn).toHaveBeenCalledWith(expect.stringContaining('/api/v1/repositories/1'), expect.anything());
+  });
   it('explains when a Forgejo server has no Actions run API', async () => {
     const adapter = new ForgejoActionsAdapter(jest.fn().mockResolvedValue(new Response(null, { status: 404 })));
     await expect(

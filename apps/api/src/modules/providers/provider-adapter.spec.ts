@@ -4,6 +4,7 @@ describe('ProviderAdapter contract', () => {
   it('supports only read-only provider operations', async () => {
     const adapter: ProviderAdapter = {
       providerType: 'GITHUB',
+      getRepository: jest.fn().mockResolvedValue(null),
       getWorkflowRun: jest.fn().mockResolvedValue(null),
       listRepositories: jest.fn().mockResolvedValue([]),
       listWorkflowRuns: jest.fn().mockResolvedValue([]),
