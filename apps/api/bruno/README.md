@@ -29,6 +29,3 @@ Start the API with the required values from `.env.example`, then run
 ```
 
 Add a request to the relevant module folder whenever an endpoint is introduced.
-The settings folder includes requests for reading, dismissing, and restoring
-personal page-introduction preferences. These requests use bearer authentication
-and operate only on the signed-in user.

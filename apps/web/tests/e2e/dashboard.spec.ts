@@ -11,10 +11,10 @@ const dashboardRun = {
   providerCreatedAt: '2026-08-27T10:00:00.000Z',
   providerRunId: '101',
   reviewUrl: null,
-  repository: { id: 'repository-1', name: 'flowpeek', owner: 'flowpeek', url: 'https://github.com/flowpeek/flowpeek' },
+  repository: { id: 'repository-1', name: 'ezrepo', owner: 'ezrepo', url: 'https://github.com/ezrepo/ezrepo' },
   startedAt: '2026-08-27T10:00:00.000Z',
   status: 'FAILED',
-  url: 'https://github.com/flowpeek/flowpeek/actions/runs/101',
+  url: 'https://github.com/ezrepo/ezrepo/actions/runs/101',
   workflowName: 'CI',
 };
 const dashboardSummary = {
@@ -39,7 +39,7 @@ const repositoryHealth = [
 
 /** Configure the current authenticated user and dashboard endpoint responses. */
 async function mockDashboard(page: Page, role: 'SYSTEM_ADMIN' | 'VIEWER'): Promise<void> {
-  await page.addInitScript((token) => window.localStorage.setItem('flowpeek.access-token', token), accessToken);
+  await page.addInitScript((token) => window.localStorage.setItem('ezrepo.access-token', token), accessToken);
   await page.route('**/api/v1/auth/me', async (route) => {
     await route.fulfill({ contentType: 'application/json', json: { id: 'playwright', role, username: 'playwright' } });
   });
@@ -166,7 +166,7 @@ test('renders dashboard values, reloads for range filters, and presents request 
   const latestRunsTable = page.locator('table');
   await expect(latestRunsTable.getByRole('link', { name: 'CI', exact: true })).toHaveCount(0);
   const latestRunLink = latestRunsTable.getByRole('link', { name: 'Open in provider' });
-  await expect(latestRunLink).toHaveAttribute('href', 'https://github.com/flowpeek/flowpeek/actions/runs/101');
+  await expect(latestRunLink).toHaveAttribute('href', 'https://github.com/ezrepo/ezrepo/actions/runs/101');
   await latestRunLink.hover();
   await expect(page.locator('[data-slot="content"][data-side]').filter({ hasText: 'Open in provider' })).toBeVisible();
   await expect(latestRunsTable).not.toContainText(/\b(?:AM|PM)\b/);

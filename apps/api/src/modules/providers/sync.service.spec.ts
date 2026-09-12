@@ -402,8 +402,8 @@ function createRepository(id: string) {
   return {
     id,
     lastSyncAt: null,
-    name: 'flowpeek',
-    owner: 'flowpeek',
+    name: 'ezrepo',
+    owner: 'ezrepo',
     providerRepositoryId: 'repository-id',
     providerAccount: {
       baseUrl: null,
@@ -433,7 +433,7 @@ function createWorkflowRun() {
     scopeKey: 'branch:main',
     startedAt: new Date('2026-08-26T09:09:00.000Z'),
     status: 'SUCCESS',
-    url: 'https://github.com/flowpeek/flowpeek/actions/runs/12345',
+    url: 'https://github.com/ezrepo/ezrepo/actions/runs/12345',
     workflowKind: 'STANDARD',
     workflowName: 'Test',
     workflowPath: '.github/workflows/test.yml',

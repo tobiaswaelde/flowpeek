@@ -32,7 +32,7 @@ export class WebhookService {
    * Verify and record one webhook delivery before scheduling its repository synchronization.
    *
    * @param providerType - Provider that owns the endpoint.
-   * @param providerAccountId - Configured Flowpeek provider account identifier.
+   * @param providerAccountId - Configured ezRepo provider account identifier.
    * @param request - Raw request data required for signature validation.
    * @returns Accepted delivery metadata, including duplicate delivery detection.
    * @throws {UnauthorizedException} When the account or signature cannot be verified.

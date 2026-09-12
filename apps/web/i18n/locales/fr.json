@@ -101,7 +101,10 @@
     "trendDescription": "Les réussites utilisent l’échelle gauche, les échecs l’échelle droite.",
     "viewAwaitingApproval": "Voir les workflows",
     "viewNeedsAttention": "Tout afficher",
-    "workflow": "Flux de travail"
+    "workflow": "Flux de travail",
+    "durationMinutesCompact": "{minutes} min",
+    "totalDuration": "Total runtime",
+    "totalDurationContext": "Across all runs, including retained history"
   },
   "layout": {
     "administration": "Administration",
@@ -162,7 +165,11 @@
     "revokeConfirm": "Révoquer le jeton MCP « {name} » ? Cette action est irréversible.",
     "secretDescription": "Copiez ce jeton maintenant. Il ne sera plus affiché.",
     "secretTitle": "Jeton créé",
-    "status": { "ACTIVE": "Actif", "EXPIRED": "Expiré", "REVOKED": "Révoqué" },
+    "status": {
+      "ACTIVE": "Actif",
+      "EXPIRED": "Expiré",
+      "REVOKED": "Révoqué"
+    },
     "title": "Accès MCP",
     "token": "Jeton bearer"
   },
@@ -171,10 +178,6 @@
     "empty": "Aucun workflow ne requiert actuellement votre attention.",
     "loadError": "Les workflows nécessitant une attention n’ont pas pu être chargés.",
     "title": "Attention requise"
-  },
-  "pageIntro": {
-    "dismiss": "Masquer l’introduction de {title}",
-    "dismissError": "Impossible de masquer l’introduction de la page."
   },
   "settings": {
     "avatar": "Photo de profil",
@@ -200,11 +203,9 @@
     "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
     "avatarZoomIn": "Zoomer",
     "avatarZoomOut": "Dézoomer",
-    "bannersRestored": "Les bannières d’introduction ont été restaurées.",
     "currentPassword": "Mot de passe actuel",
     "currentPasswordHelp": "Requis uniquement lors de la modification du nom d’utilisateur.",
     "currentPasswordInvalid": "Le mot de passe actuel est incorrect.",
-    "dismissedBanners": "Bannières d’introduction masquées : {count}.",
     "firstName": "Prénom",
     "newPassword": "Nouveau mot de passe",
     "passwordChange": "Modifier le mot de passe",
@@ -212,10 +213,6 @@
     "passwordChangeDescription": "Choisissez un nouveau mot de passe. Les autres sessions connectées seront invalidées.",
     "passwordChangeError": "Votre mot de passe n’a pas pu être modifié.",
     "passwordChangeSubmit": "Modifier le mot de passe",
-    "pageIntroductions": "Introductions des pages",
-    "pageIntroductionsDescription": "Restaurez les bannières d’introduction précédemment masquées.",
-    "restoreBanners": "Restaurer toutes les bannières",
-    "restoreBannersError": "Impossible de restaurer les bannières d’introduction.",
     "dateTimeFormat": "Format de date et d'heure par défaut",
     "dateTimeFormatHelp": "Contrôle l'affichage des horodatages dans ezRepo. Toutes les options utilisent le format 24 heures.",
     "dateTimeFormats": {
@@ -251,7 +248,11 @@
     "usernameHelp": "La modification du nom d’utilisateur nécessite votre mot de passe actuel.",
     "title": "Paramètres"
   },
-  "roles": { "MANAGER": "Gestionnaire de dépôts", "SYSTEM_ADMIN": "Administrateur système", "VIEWER": "Lecteur" },
+  "roles": {
+    "MANAGER": "Gestionnaire de dépôts",
+    "SYSTEM_ADMIN": "Administrateur système",
+    "VIEWER": "Lecteur"
+  },
   "providers": {
     "accessToken": "Jeton d’accès personnel",
     "accessTokenPlaceholder": "Collez un jeton en lecture seule",
@@ -294,7 +295,12 @@
     "tableDescription": "Connexions fournisseurs en lecture seule configurées",
     "type": "Type de fournisseur",
     "typePlaceholder": "Sélectionnez un fournisseur",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -314,8 +320,12 @@
         "title": "Options du tableau",
         "visibility": "Basculer la visibilité de la colonne"
       },
-      "pagination": { "summary": "Affichage de {start}–{end} sur {total}" },
-      "search": { "placeholder": "Rechercher" },
+      "pagination": {
+        "summary": "Affichage de {start}–{end} sur {total}"
+      },
+      "search": {
+        "placeholder": "Rechercher"
+      },
       "sorting": {
         "add": "Ajouter un tri",
         "clear": "Effacer les tris",
@@ -333,7 +343,11 @@
       "LOADING_REPOSITORIES": "Chargement des dépôts",
       "PROCESSING_WORKFLOWS": "Traitement des workflows"
     },
-    "connection": { "CONNECTED": "En direct", "CONNECTING": "Connexion", "DISCONNECTED": "Hors ligne" },
+    "connection": {
+      "CONNECTED": "En direct",
+      "CONNECTING": "Connexion",
+      "DISCONNECTED": "Hors ligne"
+    },
     "label": "État de l’API",
     "progress": "{current}/{total}",
     "runningWorkflows": "En cours : {count}"
@@ -399,14 +413,21 @@
     "rules": "Règles",
     "title": "Notifications"
   },
-  "notificationDeliveryStatus": { "DELIVERED": "Livrée", "FAILED": "Échouée", "PENDING": "En attente" },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Livrée",
+    "FAILED": "Échouée",
+    "PENDING": "En attente"
+  },
   "repositories": {
     "add": "Ajouter un dépôt",
     "addDescription": "Choisissez un compte fournisseur activé et un ou plusieurs dépôts à surveiller.",
     "addDialogTitle": "Ajouter des dépôts",
     "addError": "Un ou plusieurs dépôts n'ont pas pu être ajoutés. Vérifiez la sélection restante et réessayez.",
     "addSelected": "Ajouter la sélection ({count})",
-    "addSteps": { "provider": "Fournisseur", "repository": "Dépôt" },
+    "addSteps": {
+      "provider": "Fournisseur",
+      "repository": "Dépôt"
+    },
     "alreadyTracked": "Déjà suivi",
     "available": "Disponible",
     "back": "Retour",
@@ -480,5 +501,21 @@
     "user": "Utilisateur",
     "workflowFilters": "Filtres de flux",
     "workflowFiltersDescription": "Les filtres d’exclusion ont priorité sur les filtres d’autorisation."
+  },
+  "sidebar": {
+    "github": "Open GitHub repository",
+    "githubLabel": "GitHub",
+    "docs": "Open documentation",
+    "docsLabel": "Documentation",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  },
+  "changelog": {
+    "title": "Changelog",
+    "open": "Open changelog",
+    "update": "Update available",
+    "current": "Current version",
+    "empty": "No released changes are available yet.",
+    "viewAll": "View all releases"
   }
 }

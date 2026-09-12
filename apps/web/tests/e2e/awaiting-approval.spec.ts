@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('lists approval-gated workflows with provider and pull-request actions', async ({ page }) => {
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', (route) =>
     route.fulfill({ json: { id: 'playwright', role: 'VIEWER', username: 'playwright' } }),
   );
@@ -19,14 +19,14 @@ test('lists approval-gated workflows with provider and pull-request actions', as
           providerRunId: '42',
           repository: {
             id: 'repository-1',
-            name: 'flowpeek',
+            name: 'ezrepo',
             owner: 'twaelde',
-            url: 'https://github.com/twaelde/flowpeek',
+            url: 'https://github.com/twaelde/ezrepo',
           },
-          reviewUrl: 'https://github.com/twaelde/flowpeek/pull/12',
+          reviewUrl: 'https://github.com/twaelde/ezrepo/pull/12',
           startedAt: '2026-09-09T08:01:00.000Z',
           status: 'QUEUED',
-          url: 'https://github.com/twaelde/flowpeek/actions/runs/42',
+          url: 'https://github.com/twaelde/ezrepo/actions/runs/42',
           workflowName: 'Deploy',
         },
       ],
@@ -76,12 +76,12 @@ test('lists approval-gated workflows with provider and pull-request actions', as
       }),
     )
     .toBe(true);
-  await expect(page.getByText('twaelde/flowpeek', { exact: true })).toBeVisible();
+  await expect(page.getByText('twaelde/ezrepo', { exact: true })).toBeVisible();
   await expect(table.getByText('GitHub', { exact: true })).toBeVisible();
   const approveLink = page.getByRole('link', { name: 'Approve in provider' });
-  await expect(approveLink).toHaveAttribute('href', 'https://github.com/twaelde/flowpeek/actions/runs/42');
+  await expect(approveLink).toHaveAttribute('href', 'https://github.com/twaelde/ezrepo/actions/runs/42');
   const reviewLink = page.getByRole('link', { name: 'Open pull request' });
-  await expect(reviewLink).toHaveAttribute('href', 'https://github.com/twaelde/flowpeek/pull/12');
+  await expect(reviewLink).toHaveAttribute('href', 'https://github.com/twaelde/ezrepo/pull/12');
   await approveLink.hover();
   await expect(
     page.locator('[data-slot="content"][data-side]').filter({ hasText: 'Approve in provider' }),

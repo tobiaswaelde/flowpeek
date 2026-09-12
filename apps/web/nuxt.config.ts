@@ -1,3 +1,5 @@
+import { version as appVersion } from '../../package.json';
+
 /** Nuxt configuration for the ezRepo single-page dashboard. */
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
@@ -7,6 +9,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001/api/v1',
+      appVersion,
     },
   },
   ssr: false,
@@ -25,7 +28,7 @@ export default defineNuxtConfig({
   },
   i18n: {
     detectBrowserLanguage: {
-      cookieKey: 'flowpeek-locale',
+      cookieKey: 'ezrepo-locale',
       fallbackLocale: 'en',
       redirectOn: 'root',
       useCookie: true,

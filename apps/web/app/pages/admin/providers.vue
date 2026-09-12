@@ -1,7 +1,5 @@
 <template>
   <LayoutPage
-    banner-id="admin-providers"
-    icon="i-lucide-plug-zap"
     :breadcrumbs="[
       { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
       { icon: 'i-lucide-plug-zap', label: $t('layout.providers') },
@@ -125,7 +123,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { FilterFieldType, type FilterField, type SortingField } from '@querry-kit/nuxt-ui/types';
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { useTable } from '~/composables/api/table';
 import { useProviderType } from '~/composables/enums/provider-type';
 import { useDateTime } from '~/composables/use-date-time';
@@ -140,7 +138,7 @@ definePageMeta({ fullWidth: true });
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const route = useRoute();
 const dialogOpen = ref(false);
 const { isPending, run: runPendingAction } = usePendingActions();

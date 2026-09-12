@@ -31,7 +31,9 @@
     "title": "Pendiente de aprobación",
     "waitingSince": "En espera desde"
   },
-  "forms": { "unsavedChanges": "Tienes cambios sin guardar. ¿Quieres salir de esta página de todos modos?" },
+  "forms": {
+    "unsavedChanges": "Tienes cambios sin guardar. ¿Quieres salir de esta página de todos modos?"
+  },
   "commandPalette": {
     "actions": "Acciones",
     "addProvider": "Añadir cuenta de proveedor",
@@ -99,7 +101,10 @@
     "trendDescription": "Las correctas usan la escala izquierda; las fallidas, la derecha.",
     "viewAwaitingApproval": "Ver flujos de trabajo",
     "viewNeedsAttention": "Ver todos",
-    "workflow": "Flujo de trabajo"
+    "workflow": "Flujo de trabajo",
+    "durationMinutesCompact": "{minutes} min",
+    "totalDuration": "Total runtime",
+    "totalDurationContext": "Across all runs, including retained history"
   },
   "layout": {
     "administration": "Administración",
@@ -160,7 +165,11 @@
     "revokeConfirm": "¿Revocar el token MCP «{name}»? Esta acción no se puede deshacer.",
     "secretDescription": "Copia este token ahora. No volverá a mostrarse.",
     "secretTitle": "Token creado",
-    "status": { "ACTIVE": "Activo", "EXPIRED": "Caducado", "REVOKED": "Revocado" },
+    "status": {
+      "ACTIVE": "Activo",
+      "EXPIRED": "Caducado",
+      "REVOKED": "Revocado"
+    },
     "title": "Acceso MCP",
     "token": "Token bearer"
   },
@@ -169,10 +178,6 @@
     "empty": "Ningún flujo de trabajo requiere atención actualmente.",
     "loadError": "No se pudieron cargar los flujos que requieren atención.",
     "title": "Requiere atención"
-  },
-  "pageIntro": {
-    "dismiss": "Ocultar la introducción de {title}",
-    "dismissError": "No se pudo ocultar la introducción de la página."
   },
   "settings": {
     "avatar": "Imagen de perfil",
@@ -198,11 +203,9 @@
     "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
     "avatarZoomIn": "Acercar",
     "avatarZoomOut": "Alejar",
-    "bannersRestored": "Se restauraron los banners de introducción.",
     "currentPassword": "Contraseña actual",
     "currentPasswordHelp": "Solo es necesaria al cambiar tu nombre de usuario.",
     "currentPasswordInvalid": "La contraseña actual es incorrecta.",
-    "dismissedBanners": "Banners de introducción ocultos: {count}.",
     "firstName": "Nombre",
     "newPassword": "Nueva contraseña",
     "passwordChange": "Cambiar contraseña",
@@ -210,10 +213,6 @@
     "passwordChangeDescription": "Elige una nueva contraseña para tu cuenta. Las demás sesiones se invalidarán.",
     "passwordChangeError": "No se pudo cambiar tu contraseña.",
     "passwordChangeSubmit": "Cambiar contraseña",
-    "pageIntroductions": "Introducciones de página",
-    "pageIntroductionsDescription": "Restaura los banners de introducción que ocultaste anteriormente.",
-    "restoreBanners": "Restaurar todos los banners",
-    "restoreBannersError": "No se pudieron restaurar los banners de introducción.",
     "dateTimeFormat": "Formato predeterminado de fecha y hora",
     "dateTimeFormatHelp": "Controla cómo se muestran las marcas de tiempo en ezRepo. Todas las opciones usan el formato de 24 horas.",
     "dateTimeFormats": {
@@ -296,7 +295,12 @@
     "tableDescription": "Conexiones de proveedores de solo lectura configuradas",
     "type": "Tipo de proveedor",
     "typePlaceholder": "Selecciona un proveedor",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -316,8 +320,12 @@
         "title": "Opciones de tabla",
         "visibility": "Cambiar visibilidad de columna"
       },
-      "pagination": { "summary": "Mostrando {start}–{end} de {total}" },
-      "search": { "placeholder": "Buscar" },
+      "pagination": {
+        "summary": "Mostrando {start}–{end} de {total}"
+      },
+      "search": {
+        "placeholder": "Buscar"
+      },
       "sorting": {
         "add": "Añadir ordenación",
         "clear": "Borrar ordenaciones",
@@ -335,7 +343,11 @@
       "LOADING_REPOSITORIES": "Cargando repositorios",
       "PROCESSING_WORKFLOWS": "Procesando flujos de trabajo"
     },
-    "connection": { "CONNECTED": "En vivo", "CONNECTING": "Conectando", "DISCONNECTED": "Sin conexión" },
+    "connection": {
+      "CONNECTED": "En vivo",
+      "CONNECTING": "Conectando",
+      "DISCONNECTED": "Sin conexión"
+    },
     "label": "Estado de la API",
     "progress": "{current}/{total}",
     "runningWorkflows": "En ejecución: {count}"
@@ -401,14 +413,21 @@
     "rules": "Reglas",
     "title": "Notificaciones"
   },
-  "notificationDeliveryStatus": { "DELIVERED": "Entregado", "FAILED": "Fallido", "PENDING": "Pendiente" },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Entregado",
+    "FAILED": "Fallido",
+    "PENDING": "Pendiente"
+  },
   "repositories": {
     "add": "Añadir repositorio",
     "addDescription": "Elige una cuenta de proveedor habilitada y uno o varios repositorios para supervisar.",
     "addDialogTitle": "Añadir repositorios",
     "addError": "No se pudieron añadir uno o varios repositorios. Revisa la selección restante e inténtalo de nuevo.",
     "addSelected": "Añadir seleccionados ({count})",
-    "addSteps": { "provider": "Proveedor", "repository": "Repositorio" },
+    "addSteps": {
+      "provider": "Proveedor",
+      "repository": "Repositorio"
+    },
     "alreadyTracked": "Ya supervisado",
     "available": "Disponible",
     "back": "Atrás",
@@ -482,5 +501,21 @@
     "user": "Usuario",
     "workflowFilters": "Filtros de flujo",
     "workflowFiltersDescription": "Los filtros de exclusión tienen prioridad sobre los filtros de permiso."
+  },
+  "sidebar": {
+    "github": "Open GitHub repository",
+    "githubLabel": "GitHub",
+    "docs": "Open documentation",
+    "docsLabel": "Documentation",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  },
+  "changelog": {
+    "title": "Changelog",
+    "open": "Open changelog",
+    "update": "Update available",
+    "current": "Current version",
+    "empty": "No released changes are available yet.",
+    "viewAll": "View all releases"
   }
 }

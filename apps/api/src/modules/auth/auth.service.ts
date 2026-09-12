@@ -105,7 +105,7 @@ export class AuthService {
   /**
    * Validate a bearer token supplied during a non-HTTP transport handshake.
    *
-   * @param accessToken - Encoded Flowpeek access token.
+   * @param accessToken - Encoded ezRepo access token.
    * @returns The current persisted user represented by the token.
    * @throws UnauthorizedException when the token or referenced user is invalid.
    */

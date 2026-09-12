@@ -41,7 +41,7 @@ describe('DashboardController', () => {
         completedCount: 2,
         failedCount: 1,
         medianDurationMs: 120_000,
-        repository: { id: 'repository', name: 'flowpeek', owner: 'flowpeek', url: 'https://example.test' },
+        repository: { id: 'repository', name: 'ezrepo', owner: 'ezrepo', url: 'https://example.test' },
         successRate: 50,
       },
     ];

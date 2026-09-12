@@ -12,6 +12,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { ProvidersModule } from './modules/providers/providers.module.js';
 import { RepositoriesModule } from './modules/repositories/repositories.module.js';
 import { SettingsModule } from './modules/settings/settings.module.js';
+import { VersionModule } from './modules/version/version.module.js';
 import { WebhooksModule } from './modules/webhooks/webhooks.module.js';
 import { WorkflowRunsModule } from './modules/workflow-runs/workflow-runs.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
@@ -31,6 +32,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     DashboardModule,
     HealthModule,
     WebhooksModule,
+    VersionModule,
     WorkflowRunsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

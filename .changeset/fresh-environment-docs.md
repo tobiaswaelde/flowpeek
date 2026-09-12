@@ -1,5 +1,5 @@
 ---
-'flowpeek': patch
+'ezrepo': patch
 ---
 
-Document all Flowpeek API environment variables and their validation constraints.
+Document all ezRepo API environment variables and their validation constraints.

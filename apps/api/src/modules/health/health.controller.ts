@@ -19,7 +19,7 @@ export class HealthController {
         database: 'ok',
         providers: [
           {
-            displayName: 'Flowpeek GitHub',
+            displayName: 'ezRepo GitHub',
             enabled: true,
             id: 'd83a37cd-e664-4dcd-a7f7-c6c61463f625',
             lastSyncAt: '2026-08-26T08:30:00.000Z',

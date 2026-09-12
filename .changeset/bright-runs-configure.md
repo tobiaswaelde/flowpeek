@@ -1,5 +1,5 @@
 ---
-'flowpeek': patch
+'ezrepo': patch
 ---
 
 Add repository workflow configuration and a filterable workflow-runs history view.

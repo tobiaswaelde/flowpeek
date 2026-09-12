@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import type { ProviderRepository } from '../provider-adapter.js';
 
-/** A provider repository that can be added to Flowpeek tracking. */
+/** A provider repository that can be added to ezRepo tracking. */
 export class ProviderRepositoryDto {
   @ApiProperty()
   providerRepositoryId!: string;

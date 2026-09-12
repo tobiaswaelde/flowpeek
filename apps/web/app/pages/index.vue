@@ -1,8 +1,6 @@
 <template>
   <LayoutPage
-    banner-id="dashboard"
     full-width
-    icon="i-lucide-layout-dashboard"
     :breadcrumbs="[{ icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard') }]"
     :description="$t('dashboard.description')"
     :title="$t('dashboard.title')"
@@ -66,7 +64,7 @@
 import { computed, onMounted, reactive, ref } from 'vue';
 
 import TrendChart from '~/components/modules/dashboard/trend-chart.vue';
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import type {
   DashboardPeriodQuery,
   DashboardSummary,
@@ -78,7 +76,7 @@ import type {
 definePageMeta({ fullWidth: true });
 
 const { t } = useI18n();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const failures = ref<DashboardWorkflowRun[]>([]);
 const latestRuns = ref<DashboardWorkflowRun[]>([]);
 const repositoryHealth = ref<RepositoryHealth[]>([]);

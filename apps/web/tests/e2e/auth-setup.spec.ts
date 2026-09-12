@@ -37,7 +37,7 @@ test('creates and signs in the first administrator from the guided setup', async
 
   await expect(page).toHaveURL('/');
   await expect
-    .poll(() => page.evaluate(() => window.localStorage.getItem('flowpeek.access-token')))
+    .poll(() => page.evaluate(() => window.localStorage.getItem('ezrepo.access-token')))
     .toBe('setup-access-token');
 });
 

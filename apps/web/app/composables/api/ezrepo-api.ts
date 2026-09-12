@@ -30,15 +30,14 @@ import type {
   UpdateNotificationRule,
   UpdateProviderAccount,
   User,
-  UserPreferences,
   WorkflowFilter,
   WorkflowRunTrendBucket,
   WorkflowRunTrendQuery,
 } from '~/types/api/resources';
 import { useApi } from './api';
 
-/** Provide typed methods for Flowpeek's non-Query-Kit API endpoints. */
-export function useFlowpeekApi() {
+/** Provide typed methods for ezRepo's non-Query-Kit API endpoints. */
+export function useEzRepoApi() {
   const api = useApi();
 
   return {
@@ -145,13 +144,6 @@ export function useFlowpeekApi() {
       update: (input: UpdateApplicationSettings): Promise<AxiosResponse<ApplicationSettings>> =>
         api.patch(apiEndpoints.settings.base, input),
     },
-    userPreferences: {
-      dismissIntroBanner: (bannerId: string): Promise<AxiosResponse<UserPreferences>> =>
-        api.put(`${apiEndpoints.settings.preferences}/intro-banners/${encodeURIComponent(bannerId)}`),
-      get: (): Promise<AxiosResponse<UserPreferences>> => api.get(apiEndpoints.settings.preferences),
-      restoreIntroBanners: (): Promise<AxiosResponse<UserPreferences>> =>
-        api.delete(`${apiEndpoints.settings.preferences}/intro-banners`),
-    },
     users: {
       delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.users}/${id}`),
       list: (): Promise<AxiosResponse<PaginatedResource<User>>> =>
@@ -163,5 +155,6 @@ export function useFlowpeekApi() {
           },
         }),
     },
+    version: (): Promise<AxiosResponse<{ latest: string | null }>> => api.get(apiEndpoints.version),
   };
 }

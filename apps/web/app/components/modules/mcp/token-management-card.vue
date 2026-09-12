@@ -113,12 +113,12 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
 
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { useDateTime } from '~/composables/use-date-time';
 import type { McpAccessToken, McpAccessTokenStatus } from '~/types/api/resources';
 
 const { t } = useI18n();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const { formatDateTime } = useDateTime();
 const tokens = ref<McpAccessToken[]>([]);
 const loading = ref(false);

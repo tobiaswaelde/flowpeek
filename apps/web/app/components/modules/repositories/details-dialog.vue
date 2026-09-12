@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { useAuthStore } from '~/store/auth';
 import type { Repository } from '~/types/api/resources';
 
@@ -74,7 +74,7 @@ const emit = defineEmits<{
   updated: [repository: Repository];
 }>();
 
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const auth = useAuthStore();
 const { t } = useI18n();
 const repository = ref<Repository>();

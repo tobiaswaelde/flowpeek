@@ -1,10 +1,8 @@
 <template>
   <ModulesWorkflowRunsTablePage
     searchable
-    banner-id="needs-attention"
     detailed-timestamps
     endpoint="workflow-runs/needs-attention"
-    icon="i-lucide-triangle-alert"
     name="workflow-runs-needs-attention"
     :breadcrumbs="[
       { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },

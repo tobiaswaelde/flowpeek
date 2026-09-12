@@ -6,7 +6,7 @@ test('provider account table opens an add dialog with structured native controls
   const authenticationOptionsResponse = new Promise<void>((resolve) => {
     releaseAuthenticationOptions = resolve;
   });
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route(/\/api\/v1\/provider-accounts(?:\?.*)?$/, async (route) => {
     expect(route.request().url()).toContain('fields=');
     await route.fulfill({

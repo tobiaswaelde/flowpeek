@@ -60,14 +60,14 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { useDateTime } from '~/composables/use-date-time';
 import type { McpAccessToken, McpAccessTokenStatus, User } from '~/types/api/resources';
 
 const open = defineModel<boolean>('open', { required: true });
 const props = defineProps<{ user: User | null }>();
 const { t } = useI18n();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const { formatDateTime } = useDateTime();
 const tokens = ref<McpAccessToken[]>([]);
 const loading = ref(false);

@@ -21,7 +21,7 @@ jest.mock('@prisma/adapter-pg', () => ({
 
 jest.mock('../config/env.js', () => ({
   ENV: {
-    DATABASE_URL: 'postgresql://flowpeek:flowpeek@localhost:5432/flowpeek_test',
+    DATABASE_URL: 'postgresql://ezrepo:ezrepo@localhost:5432/ezrepo_test',
   },
 }));
 
@@ -36,7 +36,7 @@ describe('PrismaService', () => {
     new PrismaService();
 
     expect(mockPrismaPg).toHaveBeenCalledWith({
-      connectionString: 'postgresql://flowpeek:flowpeek@localhost:5432/flowpeek_test',
+      connectionString: 'postgresql://ezrepo:ezrepo@localhost:5432/ezrepo_test',
     });
   });
 

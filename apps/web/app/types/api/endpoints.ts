@@ -13,7 +13,7 @@ import type {
   WorkflowRun,
 } from './resources';
 
-/** Relative paths for every Flowpeek endpoint exposed to the web application. */
+/** Relative paths for every ezRepo endpoint exposed to the web application. */
 export const apiEndpoints = {
   auth: {
     currentUser: '/auth/me',
@@ -42,11 +42,9 @@ export const apiEndpoints = {
     base: '/provider-accounts',
   },
   repositories: '/repositories',
-  settings: {
-    base: '/settings',
-    preferences: '/settings/preferences',
-  },
+  settings: { base: '/settings' },
   users: '/users',
+  version: '/version/latest',
   workflowRuns: 'workflow-runs',
 } as const;
 
@@ -90,7 +88,7 @@ type ToQueryKitEndpoint<TEndpoint> = TEndpoint extends {
   ? EndpointDefinition<Item, Create, Update>
   : never;
 
-/** Query Kit-compatible representation of Flowpeek's paginated resource endpoints. */
+/** Query Kit-compatible representation of ezRepo's paginated resource endpoints. */
 export type QueryKitEndpoints = {
   [TEndpoint in Endpoint]: ToQueryKitEndpoint<Endpoints[TEndpoint]>;
 };

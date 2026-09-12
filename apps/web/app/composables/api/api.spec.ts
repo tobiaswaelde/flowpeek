@@ -4,8 +4,8 @@ import { createApiClient } from './api';
 
 describe('createApiClient', () => {
   it('uses the configured API base URL', () => {
-    const client = createApiClient('https://flowpeek.example.test/api/v1', 'access-token');
+    const client = createApiClient('https://ezrepo.example.test/api/v1', 'access-token');
 
-    expect(client.defaults.baseURL).toBe('https://flowpeek.example.test/api/v1');
+    expect(client.defaults.baseURL).toBe('https://ezrepo.example.test/api/v1');
   });
 });

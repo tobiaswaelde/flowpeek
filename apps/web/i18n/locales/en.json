@@ -165,7 +165,11 @@
     "revokeConfirm": "Revoke the MCP token ‘{name}’? This cannot be undone.",
     "secretDescription": "Copy this token now. It will not be shown again.",
     "secretTitle": "Token created",
-    "status": { "ACTIVE": "Active", "EXPIRED": "Expired", "REVOKED": "Revoked" },
+    "status": {
+      "ACTIVE": "Active",
+      "EXPIRED": "Expired",
+      "REVOKED": "Revoked"
+    },
     "title": "MCP access",
     "token": "Bearer token"
   },
@@ -174,10 +178,6 @@
     "empty": "No workflows currently need attention.",
     "loadError": "Workflow runs that need attention could not be loaded.",
     "title": "Needs attention"
-  },
-  "pageIntro": {
-    "dismiss": "Dismiss introduction for {title}",
-    "dismissError": "The page introduction could not be dismissed."
   },
   "settings": {
     "avatar": "Profile picture",
@@ -203,7 +203,6 @@
     "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
     "avatarZoomIn": "Zoom in",
     "avatarZoomOut": "Zoom out",
-    "bannersRestored": "Introductory banners restored.",
     "currentPassword": "Current password",
     "currentPasswordHelp": "Required only when changing your username.",
     "currentPasswordInvalid": "The current password is incorrect.",
@@ -216,7 +215,6 @@
     },
     "days": "days",
     "description": "Manage application defaults and your personal interface preferences.",
-    "dismissedBanners": "Hidden introductory banners: {count}.",
     "firstName": "First name",
     "general": "Global defaults",
     "generalDescription": "These settings apply to every user and repository without an override.",
@@ -228,8 +226,6 @@
     "passwordChangeDescription": "Choose a new password for your account. Other signed-in sessions will be invalidated.",
     "passwordChangeError": "Your password could not be changed.",
     "passwordChangeSubmit": "Change password",
-    "pageIntroductions": "Page introductions",
-    "pageIntroductionsDescription": "Restore the introductory banners you previously dismissed.",
     "preview": "Preview",
     "profile": "Personal details",
     "profileDescription": "Manage the name and login username associated with your account.",
@@ -239,8 +235,6 @@
     "retention": "Workflow run retention",
     "retentionHelp": "Completed workflow runs are deleted after this many days unless a repository has its own retention period.",
     "retry": "Retry",
-    "restoreBanners": "Restore all banners",
-    "restoreBannersError": "The introductory banners could not be restored.",
     "save": "Save settings",
     "saveError": "Global settings could not be saved.",
     "saved": "Global settings saved.",
@@ -301,7 +295,12 @@
     "tableDescription": "Configured read-only provider connections",
     "type": "Provider type",
     "typePlaceholder": "Select a provider",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -321,8 +320,12 @@
         "title": "Table options",
         "visibility": "Toggle column visibility"
       },
-      "pagination": { "summary": "Showing {start}–{end} of {total}" },
-      "search": { "placeholder": "Search" },
+      "pagination": {
+        "summary": "Showing {start}–{end} of {total}"
+      },
+      "search": {
+        "placeholder": "Search"
+      },
       "sorting": {
         "add": "Add sort",
         "clear": "Clear sorting",
@@ -340,7 +343,11 @@
       "LOADING_REPOSITORIES": "Loading repositories",
       "PROCESSING_WORKFLOWS": "Processing workflows"
     },
-    "connection": { "CONNECTED": "Live", "CONNECTING": "Connecting", "DISCONNECTED": "Offline" },
+    "connection": {
+      "CONNECTED": "Live",
+      "CONNECTING": "Connecting",
+      "DISCONNECTED": "Offline"
+    },
     "label": "API status",
     "progress": "{current}/{total}",
     "runningWorkflows": "Running: {count}"
@@ -417,7 +424,10 @@
     "addDialogTitle": "Add repositories",
     "addError": "One or more repositories could not be added. Review the remaining selection and try again.",
     "addSelected": "Add selected ({count})",
-    "addSteps": { "provider": "Provider", "repository": "Repository" },
+    "addSteps": {
+      "provider": "Provider",
+      "repository": "Repository"
+    },
     "alreadyTracked": "Already tracked",
     "available": "Available",
     "back": "Back",
@@ -491,5 +501,21 @@
     "user": "User",
     "workflowFilters": "Workflow filters",
     "workflowFiltersDescription": "Deny filters take precedence over allow filters."
+  },
+  "sidebar": {
+    "github": "Open GitHub repository",
+    "githubLabel": "GitHub",
+    "docs": "Open documentation",
+    "docsLabel": "Documentation",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  },
+  "changelog": {
+    "title": "Changelog",
+    "open": "Open changelog",
+    "update": "Update available",
+    "current": "Current version",
+    "empty": "No released changes are available yet.",
+    "viewAll": "View all releases"
   }
 }

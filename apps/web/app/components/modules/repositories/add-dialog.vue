@@ -109,7 +109,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { useProviderType } from '~/composables/enums/provider-type';
 import type { ProviderAccount, ProviderRepository } from '~/types/api/resources';
 
@@ -119,7 +119,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const { getLabel: getProviderTypeLabel } = useProviderType();
 const providerAccounts = ref<ProviderAccount[]>([]);
 const providerAccountsLoading = ref(false);

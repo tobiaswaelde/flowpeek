@@ -1,12 +1,5 @@
 <template>
-  <LayoutPage
-    :banner-id="bannerId"
-    :breadcrumbs="breadcrumbs"
-    :description="description"
-    :icon="icon"
-    :padded="false"
-    :title="title"
-  >
+  <LayoutPage :breadcrumbs="breadcrumbs" :padded="false" :title="title">
     <template #actions>
       <UInput
         v-if="searchable"
@@ -116,7 +109,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 import { FilterFieldType, type FilterField, type Filtering, type SortingField } from '@querry-kit/nuxt-ui/types';
 import { refDebounced } from '@vueuse/core';
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { useTable } from '~/composables/api/table';
 import { useProviderType } from '~/composables/enums/provider-type';
 import { useDateTime } from '~/composables/use-date-time';
@@ -139,13 +132,10 @@ type WorkflowRunRow = WorkflowRun & Record<string, unknown>;
 type WorkflowRunTableColumn = ColumnDefinition<WorkflowRunRow> & { header: string; id: string };
 
 const props = defineProps<{
-  bannerId: string;
   breadcrumbs: BreadcrumbItem[];
-  description: string;
   detailedTimestamps?: boolean;
   empty: string;
   endpoint: 'workflow-runs' | 'workflow-runs/needs-attention';
-  icon: string;
   loadError: string;
   name: string;
   searchable?: boolean;
@@ -154,7 +144,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const toast = useToast();
 const { getLabel: getProviderTypeLabel } = useProviderType();
 const search = ref('');

@@ -1,5 +1,5 @@
 ---
-'flowpeek': patch
+'ezrepo': patch
 ---
 
 Simplify workflow run tables, show workflow-run counts for repositories, support searchable multi-repository

@@ -16,16 +16,13 @@ async function mockShell(page: Page): Promise<void> {
     items: [],
     meta: { hasNextPage: false, hasPrevPage: false, itemCount: 0, page: 1, pageCount: 0, perPage: 25 },
   };
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', (route) => route.fulfill({ json: admin }));
   await page.route('**/api/v1/health', (route) =>
     route.fulfill({ json: { api: 'ok', database: 'ok', providers: [], status: 'ok' } }),
   );
   await page.route('**/api/v1/settings', (route) =>
     route.fulfill({ json: { dateTimeFormat: 'LOCALE_MEDIUM', workflowRunRetentionDays: 90 } }),
-  );
-  await page.route('**/api/v1/settings/preferences', (route) =>
-    route.fulfill({ json: { dismissedIntroBannerIds: [] } }),
   );
   await page.route('**/api/v1/dashboard/awaiting-approval', (route) => route.fulfill({ json: [] }));
   await page.route(/\/api\/v1\/(?:provider-accounts|repositories|workflow-runs)(?:\?.*)?$/, (route) =>

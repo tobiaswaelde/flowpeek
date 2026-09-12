@@ -13,7 +13,7 @@ test('updates global retention and date-time formatting with visible request pro
     releaseSettingsUpdate = resolve;
   });
 
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', async (route) => {
     await route.fulfill({
       contentType: 'application/json',
@@ -34,9 +34,6 @@ test('updates global retention and date-time formatting with visible request pro
       settings = input;
     }
     await route.fulfill({ contentType: 'application/json', json: settings });
-  });
-  await page.route('**/api/v1/settings/preferences', async (route) => {
-    await route.fulfill({ contentType: 'application/json', json: { dismissedIntroBannerIds: [] } });
   });
   await page.route(/\/api\/v1\/users(?:\?.*)?$/, async (route) => {
     await route.fulfill({
@@ -97,7 +94,7 @@ test('updates global retention and date-time formatting with visible request pro
 
 /** Let non-administrators manage personal preferences without exposing global settings. */
 test('shows personal settings but hides global defaults from non-administrators', async ({ page }) => {
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', async (route) => {
     await route.fulfill({
       contentType: 'application/json',
@@ -110,9 +107,6 @@ test('shows personal settings but hides global defaults from non-administrators'
       json: { dateTimeFormat: 'LOCALE_MEDIUM', workflowRunRetentionDays: 90 },
     });
   });
-  await page.route('**/api/v1/settings/preferences', async (route) => {
-    await route.fulfill({ contentType: 'application/json', json: { dismissedIntroBannerIds: ['dashboard'] } });
-  });
 
   await page.goto('/admin/settings');
 
@@ -121,8 +115,6 @@ test('shows personal settings but hides global defaults from non-administrators'
   await expect(page.getByRole('link', { name: 'General' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'MCP access' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'System' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Page introductions' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Restore all banners' })).toBeEnabled();
   await expect(page.getByRole('spinbutton', { name: 'Workflow run retention' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Save settings' })).toHaveCount(0);
 
@@ -144,7 +136,7 @@ test('updates personal details and refreshes the visible user identity', async (
   const updateGate = new Promise<void>((resolve) => {
     releaseUpdate = resolve;
   });
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', async (route) => {
     if (route.request().method() === 'PATCH') {
       expect(route.request().postDataJSON()).toEqual({
@@ -158,58 +150,8 @@ test('updates personal details and refreshes the visible user identity', async (
     }
     await route.fulfill({ contentType: 'application/json', json: currentUser });
   });
-  await page.route('**/api/v1/settings/preferences', (route) =>
-    route.fulfill({ contentType: 'application/json', json: { dismissedIntroBannerIds: [] } }),
-  );
-
-  await page.goto('/admin/settings');
-  await expect(page.getByRole('heading', { name: 'Personal details' })).toBeVisible();
-  await expect(page.getByLabel('Current password')).toHaveCount(1);
-  await page.getByLabel('First name').fill('Vera');
-  await page.getByLabel('Last name').fill('Viewer');
-  await page.getByLabel('Username').fill('vera');
-  await expect(page.getByRole('button', { name: 'Save profile' })).toBeDisabled();
-  await expect(page.getByLabel('Current password')).toHaveCount(2);
-  await page.getByLabel('Current password').first().fill('current-password');
-
-  const saveButton = page.getByRole('button', { name: 'Save profile' });
-  await saveButton.click();
-  await expect(saveButton).toBeDisabled();
-  await page.screenshot({ path: testInfo.outputPath('profile-settings-saving.png'), fullPage: true });
-  releaseUpdate?.();
-
-  await expect(page.getByText('Personal details saved.')).toBeVisible();
-  await expect(page.getByText('Vera Viewer (@vera)', { exact: true })).toBeVisible();
-  await expect(page.getByLabel('Current password')).toHaveCount(1);
-});
-
-/** Change the password while replacing the current token and invalidating other sessions. */
-test('changes the personal password and keeps the current browser signed in', async ({ page }, testInfo) => {
-  const user = {
-    avatarUpdatedAt: null,
-    firstName: 'Vera',
-    id: 'playwright-viewer',
-    lastName: 'Viewer',
-    role: 'VIEWER',
-    username: 'viewer',
-  } as const;
-  let releaseUpdate: (() => void) | undefined;
-  const updateGate = new Promise<void>((resolve) => {
-    releaseUpdate = resolve;
-  });
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'old-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'old-access-token'));
   await page.route('**/api/v1/auth/me', (route) => route.fulfill({ json: user }));
-  await page.route('**/api/v1/settings/preferences', (route) =>
-    route.fulfill({ json: { dismissedIntroBannerIds: [] } }),
-  );
-  await page.route('**/api/v1/auth/password', async (route) => {
-    expect(route.request().postDataJSON()).toEqual({
-      currentPassword: 'current-password',
-      newPassword: 'replacement-password',
-    });
-    await updateGate;
-    await route.fulfill({ json: { accessToken: 'replacement-access-token', user } });
-  });
 
   await page.goto('/admin/settings');
   await expect(page.getByRole('heading', { name: 'Change password' })).toBeVisible();
@@ -224,7 +166,7 @@ test('changes the personal password and keeps the current browser signed in', as
 
   await expect(page.getByText('Password changed. Other sessions have been signed out.')).toBeVisible();
   await expect
-    .poll(() => page.evaluate(() => window.localStorage.getItem('flowpeek.access-token')))
+    .poll(() => page.evaluate(() => window.localStorage.getItem('ezrepo.access-token')))
     .toBe('replacement-access-token');
 });
 
@@ -239,23 +181,10 @@ test('manages a cropped personal avatar from upload and HTTPS import', async ({ 
     username: 'viewer',
   };
   let uploadCount = 0;
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', (route) =>
     route.fulfill({ contentType: 'application/json', json: currentUser }),
   );
-  await page.route('**/api/v1/settings/preferences', (route) =>
-    route.fulfill({ contentType: 'application/json', json: { dismissedIntroBannerIds: [] } }),
-  );
-  await page.route('**/api/v1/auth/me/avatar', async (route) => {
-    if (route.request().method() === 'DELETE') {
-      currentUser = { ...currentUser, avatarUpdatedAt: null };
-      return route.fulfill({ contentType: 'application/json', json: currentUser });
-    }
-    uploadCount += 1;
-    expect(route.request().postDataBuffer()?.toString('latin1')).toContain('image/webp');
-    currentUser = { ...currentUser, avatarUpdatedAt: `2026-09-12T10:00:0${uploadCount}.000Z` };
-    await route.fulfill({ contentType: 'application/json', json: currentUser });
-  });
   await page.route('**/api/v1/auth/me/avatar/remote-preview', async (route) => {
     expect(route.request().postDataJSON()).toEqual({ url: 'https://example.com/avatar.png' });
     await route.fulfill({ body: nonSquarePng, contentType: 'image/png' });

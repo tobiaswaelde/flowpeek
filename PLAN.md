@@ -133,15 +133,15 @@ Create these GitHub Actions workflows:
   - Run on pushes to `main` and by manual dispatch.
   - Use `changesets/action` to create or update a release pull request.
   - Release only after that Changesets release pull request is merged.
-  - Use one private root package named `flowpeek`; each Changeset increments the single application version.
+  - Use one private root package named `ezrepo`; each Changeset increments the single application version.
   - Create a GitHub release and version tag after the release pull request merge.
   - Build and publish both images to GHCR:
-    - `ghcr.io/<owner>/flowpeek-api`
-    - `ghcr.io/<owner>/flowpeek-web`
+    - `ghcr.io/<owner>/ezrepo-api`
+    - `ghcr.io/<owner>/ezrepo-web`
   - Publish the exact SemVer version and `latest` tags for both images.
   - Grant only `contents: write`, `pull-requests: write`, and `packages: write`.
 
-Use one shared `FLOWPEEK_VERSION` in Docker Compose so API and web always deploy from the same release.
+Use one shared `EZREPO_VERSION` in Docker Compose so API and web always deploy from the same release.
 
 ## Validation
 

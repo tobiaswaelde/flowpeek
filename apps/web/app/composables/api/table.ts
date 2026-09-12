@@ -10,7 +10,7 @@ import { useApi } from './api';
 
 type TableRow<TEndpoint extends Endpoint> = Endpoints[TEndpoint]['dto'] & { id: string } & Record<string, unknown>;
 
-/** Configuration for a typed Flowpeek Query Kit table. */
+/** Configuration for a typed ezRepo Query Kit table. */
 export interface UseTableOptions<TEndpoint extends Endpoint> {
   columnDefinition: Ref<readonly ColumnDefinition<TableRow<TEndpoint>>[]>;
   defaultItemsPerPage?: number;
@@ -58,7 +58,7 @@ export function pinActionsColumnRight(
 }
 
 /**
- * Provide persistent, route-aware Query Kit table state for a Flowpeek resource endpoint.
+ * Provide persistent, route-aware Query Kit table state for a ezRepo resource endpoint.
  *
  * @param options - Endpoint, query configuration, and full renderer column metadata.
  * @returns Query Kit table state plus Nuxt UI-compatible filtering state.

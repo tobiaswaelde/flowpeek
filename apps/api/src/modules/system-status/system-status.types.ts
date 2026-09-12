@@ -14,7 +14,7 @@ export interface ProviderSyncActivity {
   workflowRunsTotal: number | null;
 }
 
-/** Global operational state sent to authenticated Flowpeek clients. */
+/** Global operational state sent to authenticated ezRepo clients. */
 export interface SystemStatusSnapshot {
   activity: ProviderSyncActivity | null;
   runningWorkflowCount: number;

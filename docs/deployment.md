@@ -17,7 +17,7 @@ hostname and certificates.
 - A private server directory readable only by deployment administrators.
 
 The Compose stack persists PostgreSQL data, including normalized user profile pictures, in its named
-`flowpeek-postgres` volume. Do not delete this volume unless you intentionally want to remove all ezRepo data.
+`ezrepo-postgres` volume. Do not delete this volume unless you intentionally want to remove all ezRepo data.
 
 ## First deployment
 
@@ -47,13 +47,13 @@ The Compose stack persists PostgreSQL data, including normalized user profile pi
 4. Bind the container ports to loopback when the reverse proxy runs on the same host:
 
    ```dotenv
-   FLOWPEEK_API_PORT=127.0.0.1:3001
-   FLOWPEEK_WEB_PORT=127.0.0.1:3000
+   EZREPO_API_PORT=127.0.0.1:3001
+   EZREPO_WEB_PORT=127.0.0.1:3000
    ```
 
    Otherwise, restrict access to ports 3000 and 3001 with the host firewall. Never expose the PostgreSQL container.
 
-5. Set `FLOWPEEK_VERSION` in `.env` to an exact released image pair, then start the stack:
+5. Set `EZREPO_VERSION` in `.env` to an exact released image pair, then start the stack:
 
    ```bash
    docker compose pull
@@ -87,8 +87,15 @@ public hostname. Configure OAuth providers with the same HTTPS callback URL set 
 
 ## Upgrading
 
+### Migrating an earlier installation
+
+ezRepo is a clean-cut rename. Before upgrading an earlier installation, create a verified PostgreSQL dump,
+stop the old stack, and retain `TOKEN_ENCRYPTION_KEY`. Configure the new `EZREPO_*` variables, `ezrepo-postgres`
+volume, and ezRepo image names, then restore the dump into the new database before starting ezRepo. The migration
+invalidates browser sessions because the JWT issuer and browser storage keys changed; users must sign in again.
+
 1. Create and verify a database backup before changing images.
-2. Set `FLOWPEEK_VERSION` to the exact release version in `.env`.
+2. Set `EZREPO_VERSION` to the exact release version in `.env`.
 3. Pull and apply the release:
 
    ```bash
@@ -111,7 +118,7 @@ credentials or putting them in the command line:
 
 ```bash
 mkdir -p backups
-backup_file="backups/flowpeek-$(date +%F-%H%M%S).dump"
+backup_file="backups/ezrepo-$(date +%F-%H%M%S).dump"
 docker compose exec -T postgres sh -c 'pg_dump -U "$POSTGRES_USER" -Fc "$POSTGRES_DB"' \
   > "$backup_file"
 pg_restore --list "$backup_file"
@@ -126,7 +133,7 @@ Restoring replaces current database objects. Take a new backup first and schedul
 ```bash
 docker compose stop api web
 docker compose exec -T postgres sh -c 'pg_restore -U "$POSTGRES_USER" --clean --if-exists --no-owner -d "$POSTGRES_DB"' \
-  < backups/flowpeek-YYYY-MM-DD-HHMMSS.dump
+  < backups/ezrepo-YYYY-MM-DD-HHMMSS.dump
 docker compose up --detach --wait
 ```
 
@@ -136,7 +143,7 @@ ezRepo version when rolling back across schema changes.
 ## Rollback
 
 1. Keep the backup made immediately before the failed upgrade.
-2. Set `FLOWPEEK_VERSION` in `.env` to the last known-good image version.
+2. Set `EZREPO_VERSION` in `.env` to the last known-good image version.
 3. Run `docker compose pull` and `docker compose up --detach --wait`.
 4. If the newer release migrated the database incompatibly, stop API and web, restore the compatible backup, and then
    start the previous image version again.

@@ -7,7 +7,7 @@ import type { ProviderRepository } from './provider-adapter.js';
 import { ProviderAdapterRegistry } from './provider-adapter.registry.js';
 import { ProviderCredentialService } from './provider-credential.service.js';
 
-/** Admin-only persistence service for Flowpeek provider accounts. */
+/** Admin-only persistence service for ezRepo provider accounts. */
 @Injectable()
 export class ProviderAccountsService {
   constructor(
@@ -116,7 +116,7 @@ export class ProviderAccountsService {
    *
    * @param user System administrator requesting the provider's read-only repository list.
    * @param providerAccountId Configured provider account to inspect.
-   * @returns Provider repositories and whether each is already tracked by Flowpeek.
+   * @returns Provider repositories and whether each is already tracked by ezRepo.
    */
   async listAvailableRepositories(
     user: AuthenticatedUser,

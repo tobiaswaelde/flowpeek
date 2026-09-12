@@ -31,7 +31,7 @@ type ModuleApi<TEndpoint extends Endpoint> = {
   ): Promise<AxiosResponse<EndpointDto<TEndpoint>>>;
 };
 
-/** Provide a typed Query Kit resource client using Flowpeek's authenticated Axios client. */
+/** Provide a typed Query Kit resource client using ezRepo's authenticated Axios client. */
 export const useModuleApi = <TEndpoint extends Endpoint>(endpoint: TEndpoint): ModuleApi<TEndpoint> => {
   return useQueryKitModuleApi<QueryKitEndpoints, TEndpoint>(useApi(), endpoint) as ModuleApi<TEndpoint>;
 };

@@ -1,7 +1,5 @@
 <template>
   <LayoutPage
-    banner-id="notifications"
-    icon="i-lucide-bell"
     :breadcrumbs="[
       { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
       { icon: 'i-lucide-bell', label: $t('layout.notifications') },
@@ -58,11 +56,11 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import type { NotificationChannel, NotificationDelivery, NotificationRule } from '~/types/api/resources';
 
 const { t } = useI18n();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const channels = ref<NotificationChannel[]>([]);
 const rules = ref<NotificationRule[]>([]);
 const deliveries = ref<NotificationDelivery[]>([]);

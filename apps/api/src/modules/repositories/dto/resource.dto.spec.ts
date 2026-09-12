@@ -66,9 +66,9 @@ describe('resource DTO mappings', () => {
     const dto = RepositoryDto.fromModel({
       id: 'repository',
       providerRepositoryId: '42',
-      owner: 'flowpeek',
-      name: 'flowpeek',
-      url: 'https://example.test/flowpeek',
+      owner: 'ezrepo',
+      name: 'ezrepo',
+      url: 'https://example.test/ezrepo',
       enabled: true,
       lastSyncAt: null,
       retainedRunDurationMs: 0n,
@@ -93,9 +93,9 @@ describe('resource DTO mappings', () => {
     expect(dto).toEqual({
       id: 'repository',
       providerRepositoryId: '42',
-      owner: 'flowpeek',
-      name: 'flowpeek',
-      url: 'https://example.test/flowpeek',
+      owner: 'ezrepo',
+      name: 'ezrepo',
+      url: 'https://example.test/ezrepo',
       enabled: true,
       lastSyncAt: null,
       members: [
@@ -150,7 +150,7 @@ describe('resource DTO mappings', () => {
       rawStatus: 'in_progress',
       repositoryId: 'repo',
       repository: {
-        name: 'flowpeek',
+        name: 'ezrepo',
         owner: 'twaelde',
         providerAccount: { providerType: 'GITHUB' },
       },
@@ -163,7 +163,7 @@ describe('resource DTO mappings', () => {
     expect(dto).toMatchObject({
       displayTitle: 'Build on main',
       providerType: 'GITHUB',
-      repositoryName: 'flowpeek',
+      repositoryName: 'ezrepo',
       repositoryOwner: 'twaelde',
     });
   });

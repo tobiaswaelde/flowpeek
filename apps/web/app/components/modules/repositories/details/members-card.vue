@@ -110,7 +110,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
 
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { usePendingActions } from '~/composables/use-pending-actions';
 import type { RepositoryMembership, RepositoryRole, User } from '~/types/api/resources';
 import { getUserDisplayName, getUserIdentityLabel } from '~/utils/user-identity';
@@ -120,7 +120,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const { isPending, run: runPendingAction } = usePendingActions();
 const memberships = ref<RepositoryMembership[]>([]);
 const users = ref<User[]>([]);

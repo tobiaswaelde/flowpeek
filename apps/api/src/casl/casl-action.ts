@@ -1,4 +1,4 @@
-/** Actions available to Flowpeek authorization policies. */
+/** Actions available to ezRepo authorization policies. */
 export enum CaslAction {
   Manage = 'manage',
   Create = 'create',

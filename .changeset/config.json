@@ -7,7 +7,7 @@
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@flowpeek/api", "@flowpeek/web"],
+  "ignore": ["@ezrepo/api", "@ezrepo/web"],
   "privatePackages": {
     "version": true,
     "tag": true

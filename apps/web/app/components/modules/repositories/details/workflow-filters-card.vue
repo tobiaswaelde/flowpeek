@@ -66,7 +66,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
 
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { usePendingActions } from '~/composables/use-pending-actions';
 import type { WorkflowFilter } from '~/types/api/resources';
 
@@ -75,7 +75,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const { isPending, run: runPendingAction } = usePendingActions();
 const filters = ref<WorkflowFilter[]>([]);
 const loading = ref(true);

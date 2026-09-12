@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { CredentialEncryptionService } from '../../security/credential-encryption.service.js';
 
-/** Encrypts provider credentials at rest using Flowpeek's shared credential service. */
+/** Encrypts provider credentials at rest using ezRepo's shared credential service. */
 @Injectable()
 export class ProviderCredentialService {
   constructor(private readonly credentials: CredentialEncryptionService) {}

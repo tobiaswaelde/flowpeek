@@ -10,7 +10,7 @@ describe('AppriseNotificationAdapter', () => {
         completedAt: null,
         durationMs: null,
         provider: 'GITHUB',
-        repository: 'flowpeek/flowpeek',
+        repository: 'ezrepo/ezrepo',
         runUrl: 'https://example.test/run/1',
         status: 'FAILED',
         workflowName: 'CI',

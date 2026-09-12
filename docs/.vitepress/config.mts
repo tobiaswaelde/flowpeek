@@ -5,6 +5,22 @@ const site = 'https://tobiaswaelde.github.io/ezrepo/';
 
 const sidebar: DefaultTheme.SidebarItem[] = [
   {
+    text: 'Getting started',
+    items: [
+      { text: 'Overview', link: '/getting-started/' },
+      { text: 'Sign in and navigation', link: '/guide/sign-in-navigation' },
+    ],
+  },
+  {
+    text: 'User guide',
+    items: [
+      { text: 'Workflow dashboard', link: '/guide/dashboard' },
+      { text: 'Workflow queues', link: '/guide/workflow-queues' },
+      { text: 'Repositories and notifications', link: '/guide/repositories-notifications' },
+      { text: 'Administration and settings', link: '/guide/administration' },
+    ],
+  },
+  {
     text: 'Operations',
     items: [
       { text: 'Deployment', link: '/deployment' },
@@ -56,6 +72,7 @@ export default defineConfig({
   themeConfig: {
     siteTitle: 'ezRepo',
     nav: [
+      { text: 'User guide', link: '/getting-started/' },
       { text: 'Operations', link: '/deployment' },
       { text: 'Providers', link: '/provider-oauth' },
       { text: 'Reference', link: '/repositories' },

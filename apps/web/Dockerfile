@@ -4,7 +4,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json apps/web/package.json
 RUN corepack enable && pnpm install --frozen-lockfile
 COPY . .
-RUN pnpm --filter @flowpeek/web build
+RUN pnpm --filter @ezrepo/web build
 
 FROM node:24-bookworm-slim AS runtime
 WORKDIR /app

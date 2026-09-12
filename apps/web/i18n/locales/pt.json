@@ -31,7 +31,9 @@
     "title": "A aguardar aprovação",
     "waitingSince": "A aguardar desde"
   },
-  "forms": { "unsavedChanges": "Tem alterações não guardadas. Pretende sair desta página mesmo assim?" },
+  "forms": {
+    "unsavedChanges": "Tem alterações não guardadas. Pretende sair desta página mesmo assim?"
+  },
   "commandPalette": {
     "actions": "Ações",
     "addProvider": "Adicionar conta de fornecedor",
@@ -99,7 +101,10 @@
     "trendDescription": "As execuções com sucesso usam a escala esquerda; as falhas, a direita.",
     "viewAwaitingApproval": "Ver fluxos de trabalho",
     "viewNeedsAttention": "Ver todos",
-    "workflow": "Fluxo de trabalho"
+    "workflow": "Fluxo de trabalho",
+    "durationMinutesCompact": "{minutes} min",
+    "totalDuration": "Total runtime",
+    "totalDurationContext": "Across all runs, including retained history"
   },
   "layout": {
     "administration": "Administração",
@@ -160,7 +165,11 @@
     "revokeConfirm": "Revogar o token MCP «{name}»? Esta ação não pode ser anulada.",
     "secretDescription": "Copie este token agora. Não será mostrado novamente.",
     "secretTitle": "Token criado",
-    "status": { "ACTIVE": "Ativo", "EXPIRED": "Expirado", "REVOKED": "Revogado" },
+    "status": {
+      "ACTIVE": "Ativo",
+      "EXPIRED": "Expirado",
+      "REVOKED": "Revogado"
+    },
     "title": "Acesso MCP",
     "token": "Token bearer"
   },
@@ -169,10 +178,6 @@
     "empty": "Nenhum workflow requer atenção neste momento.",
     "loadError": "Não foi possível carregar os workflows que requerem atenção.",
     "title": "Requer atenção"
-  },
-  "pageIntro": {
-    "dismiss": "Ocultar a introdução de {title}",
-    "dismissError": "Não foi possível ocultar a introdução da página."
   },
   "settings": {
     "avatar": "Imagem de perfil",
@@ -198,11 +203,9 @@
     "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
     "avatarZoomIn": "Ampliar",
     "avatarZoomOut": "Reduzir",
-    "bannersRestored": "Os banners de introdução foram restaurados.",
     "currentPassword": "Palavra-passe atual",
     "currentPasswordHelp": "Necessária apenas ao alterar o nome de utilizador.",
     "currentPasswordInvalid": "A palavra-passe atual está incorreta.",
-    "dismissedBanners": "Banners de introdução ocultos: {count}.",
     "firstName": "Nome",
     "newPassword": "Nova palavra-passe",
     "passwordChange": "Alterar palavra-passe",
@@ -210,10 +213,6 @@
     "passwordChangeDescription": "Escolha uma nova palavra-passe. As outras sessões ativas serão invalidadas.",
     "passwordChangeError": "Não foi possível alterar a sua palavra-passe.",
     "passwordChangeSubmit": "Alterar palavra-passe",
-    "pageIntroductions": "Introduções das páginas",
-    "pageIntroductionsDescription": "Restaure os banners de introdução que ocultou anteriormente.",
-    "restoreBanners": "Restaurar todos os banners",
-    "restoreBannersError": "Não foi possível restaurar os banners de introdução.",
     "dateTimeFormat": "Formato predefinido de data e hora",
     "dateTimeFormatHelp": "Controla como os carimbos de data/hora são apresentados no ezRepo. Todas as opções usam o formato de 24 horas.",
     "dateTimeFormats": {
@@ -249,7 +248,11 @@
     "usernameHelp": "Alterar o nome de utilizador requer a palavra-passe atual.",
     "title": "Definições"
   },
-  "roles": { "MANAGER": "Gestor de repositórios", "SYSTEM_ADMIN": "Administrador do sistema", "VIEWER": "Leitor" },
+  "roles": {
+    "MANAGER": "Gestor de repositórios",
+    "SYSTEM_ADMIN": "Administrador do sistema",
+    "VIEWER": "Leitor"
+  },
   "providers": {
     "accessToken": "Token de acesso pessoal",
     "accessTokenPlaceholder": "Cole um token apenas de leitura",
@@ -292,7 +295,12 @@
     "tableDescription": "Ligações de fornecedores apenas de leitura configuradas",
     "type": "Tipo de fornecedor",
     "typePlaceholder": "Selecione um fornecedor",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -312,8 +320,12 @@
         "title": "Opções da tabela",
         "visibility": "Alternar visibilidade da coluna"
       },
-      "pagination": { "summary": "A mostrar {start}–{end} de {total}" },
-      "search": { "placeholder": "Pesquisar" },
+      "pagination": {
+        "summary": "A mostrar {start}–{end} de {total}"
+      },
+      "search": {
+        "placeholder": "Pesquisar"
+      },
       "sorting": {
         "add": "Adicionar ordenação",
         "clear": "Limpar ordenações",
@@ -331,7 +343,11 @@
       "LOADING_REPOSITORIES": "Carregando repositórios",
       "PROCESSING_WORKFLOWS": "Processando workflows"
     },
-    "connection": { "CONNECTED": "Ao vivo", "CONNECTING": "Conectando", "DISCONNECTED": "Offline" },
+    "connection": {
+      "CONNECTED": "Ao vivo",
+      "CONNECTING": "Conectando",
+      "DISCONNECTED": "Offline"
+    },
     "label": "Status da API",
     "progress": "{current}/{total}",
     "runningWorkflows": "Em execução: {count}"
@@ -397,14 +413,21 @@
     "rules": "Regras",
     "title": "Notificações"
   },
-  "notificationDeliveryStatus": { "DELIVERED": "Entregue", "FAILED": "Com falha", "PENDING": "Pendente" },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Entregue",
+    "FAILED": "Com falha",
+    "PENDING": "Pendente"
+  },
   "repositories": {
     "add": "Adicionar repositório",
     "addDescription": "Escolha uma conta de fornecedor ativada e um ou mais repositórios para monitorizar.",
     "addDialogTitle": "Adicionar repositórios",
     "addError": "Não foi possível adicionar um ou mais repositórios. Reveja a seleção restante e tente novamente.",
     "addSelected": "Adicionar selecionados ({count})",
-    "addSteps": { "provider": "Fornecedor", "repository": "Repositório" },
+    "addSteps": {
+      "provider": "Fornecedor",
+      "repository": "Repositório"
+    },
     "alreadyTracked": "Já monitorizado",
     "available": "Disponível",
     "back": "Voltar",
@@ -478,5 +501,21 @@
     "user": "Utilizador",
     "workflowFilters": "Filtros de workflow",
     "workflowFiltersDescription": "Os filtros de exclusão têm prioridade sobre os filtros de permissão."
+  },
+  "sidebar": {
+    "github": "Open GitHub repository",
+    "githubLabel": "GitHub",
+    "docs": "Open documentation",
+    "docsLabel": "Documentation",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  },
+  "changelog": {
+    "title": "Changelog",
+    "open": "Open changelog",
+    "update": "Update available",
+    "current": "Current version",
+    "empty": "No released changes are available yet.",
+    "viewAll": "View all releases"
   }
 }

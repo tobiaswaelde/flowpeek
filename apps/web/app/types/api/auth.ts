@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-/** Roles that can be returned for an authenticated Flowpeek user. */
+/** Roles that can be returned for an authenticated ezRepo user. */
 export const userRoles = ['SYSTEM_ADMIN', 'VIEWER', 'MANAGER'] as const;
 
 /** Validate local sign-in credentials before submitting them to the API. */
@@ -87,7 +87,7 @@ export interface UpdateProfileRequest {
   username: string;
 }
 
-/** The safe authenticated-user payload returned by Flowpeek's auth endpoints. */
+/** The safe authenticated-user payload returned by ezRepo's auth endpoints. */
 export interface AuthenticatedUser {
   avatarUpdatedAt: string | null;
   firstName: string | null;

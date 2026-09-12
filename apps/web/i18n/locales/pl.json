@@ -31,7 +31,9 @@
     "title": "Oczekuje na zatwierdzenie",
     "waitingSince": "Oczekuje od"
   },
-  "forms": { "unsavedChanges": "Masz niezapisane zmiany. Czy mimo to chcesz opuścić tę stronę?" },
+  "forms": {
+    "unsavedChanges": "Masz niezapisane zmiany. Czy mimo to chcesz opuścić tę stronę?"
+  },
   "commandPalette": {
     "actions": "Akcje",
     "addProvider": "Dodaj konto dostawcy",
@@ -99,7 +101,10 @@
     "trendDescription": "Udane uruchomienia korzystają z lewej skali, błędy z prawej.",
     "viewAwaitingApproval": "Pokaż przepływy",
     "viewNeedsAttention": "Pokaż wszystkie",
-    "workflow": "Przepływ pracy"
+    "workflow": "Przepływ pracy",
+    "durationMinutesCompact": "{minutes} min",
+    "totalDuration": "Total runtime",
+    "totalDurationContext": "Across all runs, including retained history"
   },
   "layout": {
     "administration": "Administracja",
@@ -160,7 +165,11 @@
     "revokeConfirm": "Unieważnić token MCP „{name}”? Tej operacji nie można cofnąć.",
     "secretDescription": "Skopiuj token teraz. Nie zostanie pokazany ponownie.",
     "secretTitle": "Token utworzony",
-    "status": { "ACTIVE": "Aktywny", "EXPIRED": "Wygasł", "REVOKED": "Unieważniony" },
+    "status": {
+      "ACTIVE": "Aktywny",
+      "EXPIRED": "Wygasł",
+      "REVOKED": "Unieważniony"
+    },
     "title": "Dostęp MCP",
     "token": "Token bearer"
   },
@@ -169,10 +178,6 @@
     "empty": "Żaden przepływ pracy nie wymaga obecnie uwagi.",
     "loadError": "Nie można było wczytać przepływów wymagających uwagi.",
     "title": "Wymaga uwagi"
-  },
-  "pageIntro": {
-    "dismiss": "Ukryj wprowadzenie do {title}",
-    "dismissError": "Nie udało się ukryć wprowadzenia do strony."
   },
   "settings": {
     "avatar": "Zdjęcie profilowe",
@@ -198,11 +203,9 @@
     "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
     "avatarZoomIn": "Powiększ",
     "avatarZoomOut": "Pomniejsz",
-    "bannersRestored": "Banery wprowadzające zostały przywrócone.",
     "currentPassword": "Aktualne hasło",
     "currentPasswordHelp": "Wymagane tylko przy zmianie nazwy użytkownika.",
     "currentPasswordInvalid": "Aktualne hasło jest nieprawidłowe.",
-    "dismissedBanners": "Ukryte banery wprowadzające: {count}.",
     "firstName": "Imię",
     "newPassword": "Nowe hasło",
     "passwordChange": "Zmień hasło",
@@ -210,10 +213,6 @@
     "passwordChangeDescription": "Wybierz nowe hasło. Inne aktywne sesje zostaną unieważnione.",
     "passwordChangeError": "Nie udało się zmienić hasła.",
     "passwordChangeSubmit": "Zmień hasło",
-    "pageIntroductions": "Wprowadzenia do stron",
-    "pageIntroductionsDescription": "Przywróć wcześniej ukryte banery wprowadzające.",
-    "restoreBanners": "Przywróć wszystkie banery",
-    "restoreBannersError": "Nie udało się przywrócić banerów wprowadzających.",
     "dateTimeFormat": "Domyślny format daty i czasu",
     "dateTimeFormatHelp": "Określa sposób wyświetlania znaczników czasu w ezRepo. Wszystkie opcje używają zegara 24-godzinnego.",
     "dateTimeFormats": {
@@ -249,7 +248,11 @@
     "usernameHelp": "Zmiana nazwy logowania wymaga podania aktualnego hasła.",
     "title": "Ustawienia"
   },
-  "roles": { "MANAGER": "Menedżer repozytoriów", "SYSTEM_ADMIN": "Administrator systemu", "VIEWER": "Obserwator" },
+  "roles": {
+    "MANAGER": "Menedżer repozytoriów",
+    "SYSTEM_ADMIN": "Administrator systemu",
+    "VIEWER": "Obserwator"
+  },
   "providers": {
     "accessToken": "Osobisty token dostępu",
     "accessTokenPlaceholder": "Wklej token tylko do odczytu",
@@ -292,7 +295,12 @@
     "tableDescription": "Skonfigurowane połączenia dostawców tylko do odczytu",
     "type": "Typ dostawcy",
     "typePlaceholder": "Wybierz dostawcę",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -312,8 +320,12 @@
         "title": "Opcje tabeli",
         "visibility": "Przełącz widoczność kolumny"
       },
-      "pagination": { "summary": "Wyświetlanie {start}–{end} z {total}" },
-      "search": { "placeholder": "Szukaj" },
+      "pagination": {
+        "summary": "Wyświetlanie {start}–{end} z {total}"
+      },
+      "search": {
+        "placeholder": "Szukaj"
+      },
       "sorting": {
         "add": "Dodaj sortowanie",
         "clear": "Wyczyść sortowania",
@@ -331,7 +343,11 @@
       "LOADING_REPOSITORIES": "Ładowanie repozytoriów",
       "PROCESSING_WORKFLOWS": "Przetwarzanie przepływów pracy"
     },
-    "connection": { "CONNECTED": "Na żywo", "CONNECTING": "Łączenie", "DISCONNECTED": "Offline" },
+    "connection": {
+      "CONNECTED": "Na żywo",
+      "CONNECTING": "Łączenie",
+      "DISCONNECTED": "Offline"
+    },
     "label": "Stan API",
     "progress": "{current}/{total}",
     "runningWorkflows": "Uruchomione: {count}"
@@ -397,14 +413,21 @@
     "rules": "Reguły",
     "title": "Powiadomienia"
   },
-  "notificationDeliveryStatus": { "DELIVERED": "Dostarczono", "FAILED": "Nieudane", "PENDING": "Oczekujące" },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Dostarczono",
+    "FAILED": "Nieudane",
+    "PENDING": "Oczekujące"
+  },
   "repositories": {
     "add": "Dodaj repozytorium",
     "addDescription": "Wybierz włączone konto dostawcy oraz jedno lub więcej repozytoriów do monitorowania.",
     "addDialogTitle": "Dodaj repozytoria",
     "addError": "Nie udało się dodać co najmniej jednego repozytorium. Sprawdź pozostały wybór i spróbuj ponownie.",
     "addSelected": "Dodaj wybrane ({count})",
-    "addSteps": { "provider": "Dostawca", "repository": "Repozytorium" },
+    "addSteps": {
+      "provider": "Dostawca",
+      "repository": "Repozytorium"
+    },
     "alreadyTracked": "Już monitorowane",
     "available": "Dostępne",
     "back": "Wstecz",
@@ -478,5 +501,21 @@
     "user": "Użytkownik",
     "workflowFilters": "Filtry workflow",
     "workflowFiltersDescription": "Filtry wykluczające mają pierwszeństwo przed filtrami zezwalającymi."
+  },
+  "sidebar": {
+    "github": "Open GitHub repository",
+    "githubLabel": "GitHub",
+    "docs": "Open documentation",
+    "docsLabel": "Documentation",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  },
+  "changelog": {
+    "title": "Changelog",
+    "open": "Open changelog",
+    "update": "Update available",
+    "current": "Current version",
+    "empty": "No released changes are available yet.",
+    "viewAll": "View all releases"
   }
 }

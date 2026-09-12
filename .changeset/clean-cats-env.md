@@ -1,5 +1,5 @@
 ---
-'flowpeek': patch
+'ezrepo': patch
 ---
 
 Replace usable environment-template secrets with intentionally invalid placeholders.

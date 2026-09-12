@@ -7,8 +7,8 @@ const originalEnv = process.env;
 
 function setRequiredEnvironment(): void {
   process.env.AUTH_JWT_SECRET = 'a-long-test-secret';
-  process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/flowpeek_test';
-  process.env.SHADOW_DATABASE_URL = 'postgresql://test:test@localhost:5432/flowpeek_shadow';
+  process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/ezrepo_test';
+  process.env.SHADOW_DATABASE_URL = 'postgresql://test:test@localhost:5432/ezrepo_shadow';
   process.env.TOKEN_ENCRYPTION_KEY = 'MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=';
 }
 

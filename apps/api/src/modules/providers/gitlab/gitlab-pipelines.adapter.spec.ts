@@ -33,12 +33,12 @@ describe('GitLabPipelinesAdapter', () => {
       {
         providerRepositoryId: '1',
         owner: 'group',
-        name: 'flowpeek',
-        url: 'https://gitlab.example.test/group/flowpeek',
+        name: 'ezrepo',
+        url: 'https://gitlab.example.test/group/ezrepo',
       },
     ]);
     await expect(
-      adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'group', name: 'flowpeek' }),
+      adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'group', name: 'ezrepo' }),
     ).resolves.toMatchObject([
       {
         displayTitle: 'main',
@@ -72,7 +72,7 @@ describe('GitLabPipelinesAdapter', () => {
       new GitLabPipelinesAdapter(fetchFn).getRepository(context, {
         providerRepositoryId: '1',
         owner: 'group',
-        name: 'flowpeek',
+        name: 'ezrepo',
       }),
     ).resolves.toMatchObject({ providerRepositoryId: '1', owner: 'new-group', name: 'renamed' });
     expect(fetchFn).toHaveBeenCalledWith(expect.stringContaining('/api/v4/projects/1'), expect.anything());
@@ -116,7 +116,7 @@ describe('GitLabPipelinesAdapter', () => {
             started_at: null,
             status: 'manual',
             updated_at: '2026-09-09T08:00:00Z',
-            web_url: 'https://gitlab.example.test/group/flowpeek/-/pipelines/8',
+            web_url: 'https://gitlab.example.test/group/ezrepo/-/pipelines/8',
           },
         ]),
       ),
@@ -124,11 +124,11 @@ describe('GitLabPipelinesAdapter', () => {
     const adapter = new GitLabPipelinesAdapter(fetchFn);
 
     await expect(
-      adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'group', name: 'flowpeek' }),
+      adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'group', name: 'ezrepo' }),
     ).resolves.toMatchObject([
       {
         awaitingApproval: true,
-        reviewUrl: 'https://gitlab.example.test/group/flowpeek/-/merge_requests/12',
+        reviewUrl: 'https://gitlab.example.test/group/ezrepo/-/merge_requests/12',
         status: 'QUEUED',
       },
     ]);
@@ -138,7 +138,7 @@ describe('GitLabPipelinesAdapter', () => {
 
 describe('GitLabPipelinesAdapter change requests', () => {
   const context = { accessToken: 'token', baseUrl: 'https://gitlab.example.test', providerAccountId: 'account' };
-  const repository = { name: 'flowpeek', owner: 'octo', providerRepositoryId: '1' };
+  const repository = { name: 'ezrepo', owner: 'octo', providerRepositoryId: '1' };
 
   it.each([
     ['opened', null, 'OPEN'],

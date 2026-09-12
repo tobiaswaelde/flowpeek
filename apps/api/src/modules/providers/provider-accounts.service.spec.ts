@@ -119,11 +119,11 @@ describe('ProviderAccountsService', () => {
     const listRepositories = jest.fn().mockResolvedValue([
       {
         name: 'Existing',
-        owner: 'flowpeek',
+        owner: 'ezrepo',
         providerRepositoryId: 'already-tracked',
         url: 'https://example.test/existing',
       },
-      { name: 'New', owner: 'flowpeek', providerRepositoryId: 'new', url: 'https://example.test/new' },
+      { name: 'New', owner: 'ezrepo', providerRepositoryId: 'new', url: 'https://example.test/new' },
     ]);
     adapters.get.mockReturnValue({ listRepositories } as never);
 
@@ -150,10 +150,10 @@ describe('ProviderAccountsService', () => {
     adapters.get.mockReturnValue({
       listRepositories: jest.fn().mockResolvedValue([
         {
-          name: 'Flowpeek',
-          owner: 'flowpeek',
+          name: 'ezRepo',
+          owner: 'ezrepo',
           providerRepositoryId: 'repository-id',
-          url: 'https://example.test/flowpeek',
+          url: 'https://example.test/ezrepo',
         },
       ]),
     } as never);
@@ -162,11 +162,11 @@ describe('ProviderAccountsService', () => {
 
     expect(prisma.repository.create).toHaveBeenCalledWith({
       data: {
-        name: 'Flowpeek',
-        owner: 'flowpeek',
+        name: 'ezRepo',
+        owner: 'ezrepo',
         providerAccountId: 'provider-id',
         providerRepositoryId: 'repository-id',
-        url: 'https://example.test/flowpeek',
+        url: 'https://example.test/ezrepo',
       },
     });
   });

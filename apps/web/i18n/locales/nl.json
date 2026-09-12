@@ -31,7 +31,9 @@
     "title": "Wacht op goedkeuring",
     "waitingSince": "Wacht sinds"
   },
-  "forms": { "unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze pagina toch verlaten?" },
+  "forms": {
+    "unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze pagina toch verlaten?"
+  },
   "commandPalette": {
     "actions": "Acties",
     "addProvider": "Provideraccount toevoegen",
@@ -99,7 +101,10 @@
     "trendDescription": "Geslaagde uitvoeringen gebruiken de linkerschaal; fouten de rechterschaal.",
     "viewAwaitingApproval": "Workflows bekijken",
     "viewNeedsAttention": "Alles bekijken",
-    "workflow": "Workflow"
+    "workflow": "Workflow",
+    "durationMinutesCompact": "{minutes} min",
+    "totalDuration": "Total runtime",
+    "totalDurationContext": "Across all runs, including retained history"
   },
   "layout": {
     "administration": "Beheer",
@@ -160,7 +165,11 @@
     "revokeConfirm": "MCP-token ‘{name}’ intrekken? Dit kan niet ongedaan worden gemaakt.",
     "secretDescription": "Kopieer dit token nu. Het wordt niet opnieuw getoond.",
     "secretTitle": "Token gemaakt",
-    "status": { "ACTIVE": "Actief", "EXPIRED": "Verlopen", "REVOKED": "Ingetrokken" },
+    "status": {
+      "ACTIVE": "Actief",
+      "EXPIRED": "Verlopen",
+      "REVOKED": "Ingetrokken"
+    },
     "title": "MCP-toegang",
     "token": "Bearer-token"
   },
@@ -169,10 +178,6 @@
     "empty": "Momenteel hebben geen workflows aandacht nodig.",
     "loadError": "Workflows die aandacht nodig hebben konden niet worden geladen.",
     "title": "Aandacht vereist"
-  },
-  "pageIntro": {
-    "dismiss": "Introductie voor {title} verbergen",
-    "dismissError": "De pagina-introductie kon niet worden verborgen."
   },
   "settings": {
     "avatar": "Profielfoto",
@@ -198,11 +203,9 @@
     "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
     "avatarZoomIn": "Inzoomen",
     "avatarZoomOut": "Uitzoomen",
-    "bannersRestored": "De introductiebanners zijn hersteld.",
     "currentPassword": "Huidig wachtwoord",
     "currentPasswordHelp": "Alleen vereist wanneer je je gebruikersnaam wijzigt.",
     "currentPasswordInvalid": "Het huidige wachtwoord is onjuist.",
-    "dismissedBanners": "Verborgen introductiebanners: {count}.",
     "firstName": "Voornaam",
     "newPassword": "Nieuw wachtwoord",
     "passwordChange": "Wachtwoord wijzigen",
@@ -210,10 +213,6 @@
     "passwordChangeDescription": "Kies een nieuw wachtwoord. Andere aangemelde sessies worden ongeldig.",
     "passwordChangeError": "Je wachtwoord kon niet worden gewijzigd.",
     "passwordChangeSubmit": "Wachtwoord wijzigen",
-    "pageIntroductions": "Pagina-introducties",
-    "pageIntroductionsDescription": "Herstel introductiebanners die je eerder hebt verborgen.",
-    "restoreBanners": "Alle banners herstellen",
-    "restoreBannersError": "De introductiebanners konden niet worden hersteld.",
     "dateTimeFormat": "Standaard datum- en tijdnotatie",
     "dateTimeFormatHelp": "Bepaalt hoe tijdstempels in ezRepo worden weergegeven. Alle opties gebruiken een 24-uursklok.",
     "dateTimeFormats": {
@@ -249,7 +248,11 @@
     "usernameHelp": "Voor het wijzigen van je gebruikersnaam is je huidige wachtwoord vereist.",
     "title": "Instellingen"
   },
-  "roles": { "MANAGER": "Repositorybeheerder", "SYSTEM_ADMIN": "Systeembeheerder", "VIEWER": "Lezer" },
+  "roles": {
+    "MANAGER": "Repositorybeheerder",
+    "SYSTEM_ADMIN": "Systeembeheerder",
+    "VIEWER": "Lezer"
+  },
   "providers": {
     "accessToken": "Persoonlijk toegangstoken",
     "accessTokenPlaceholder": "Plak een alleen-lezentoken",
@@ -292,7 +295,12 @@
     "tableDescription": "Geconfigureerde alleen-lezenproviderverbindingen",
     "type": "Providertype",
     "typePlaceholder": "Selecteer een provider",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -312,8 +320,12 @@
         "title": "Tabelopties",
         "visibility": "Kolomzichtbaarheid wisselen"
       },
-      "pagination": { "summary": "Toont {start}–{end} van {total}" },
-      "search": { "placeholder": "Zoeken" },
+      "pagination": {
+        "summary": "Toont {start}–{end} van {total}"
+      },
+      "search": {
+        "placeholder": "Zoeken"
+      },
       "sorting": {
         "add": "Sortering toevoegen",
         "clear": "Sorteringen wissen",
@@ -331,7 +343,11 @@
       "LOADING_REPOSITORIES": "Repositories laden",
       "PROCESSING_WORKFLOWS": "Workflows verwerken"
     },
-    "connection": { "CONNECTED": "Live", "CONNECTING": "Verbinden", "DISCONNECTED": "Offline" },
+    "connection": {
+      "CONNECTED": "Live",
+      "CONNECTING": "Verbinden",
+      "DISCONNECTED": "Offline"
+    },
     "label": "API-status",
     "progress": "{current}/{total}",
     "runningWorkflows": "Actief: {count}"
@@ -397,14 +413,21 @@
     "rules": "Regels",
     "title": "Meldingen"
   },
-  "notificationDeliveryStatus": { "DELIVERED": "Bezorgd", "FAILED": "Mislukt", "PENDING": "In behandeling" },
+  "notificationDeliveryStatus": {
+    "DELIVERED": "Bezorgd",
+    "FAILED": "Mislukt",
+    "PENDING": "In behandeling"
+  },
   "repositories": {
     "add": "Repository toevoegen",
     "addDescription": "Kies een ingeschakeld provideraccount en een of meer repositories om te volgen.",
     "addDialogTitle": "Repositories toevoegen",
     "addError": "Een of meer repositories konden niet worden toegevoegd. Controleer de resterende selectie en probeer het opnieuw.",
     "addSelected": "Selectie toevoegen ({count})",
-    "addSteps": { "provider": "Provider", "repository": "Repository" },
+    "addSteps": {
+      "provider": "Provider",
+      "repository": "Repository"
+    },
     "alreadyTracked": "Al gevolgd",
     "available": "Beschikbaar",
     "back": "Terug",
@@ -478,5 +501,21 @@
     "user": "Gebruiker",
     "workflowFilters": "Workflowfilters",
     "workflowFiltersDescription": "Uitsluitfilters hebben voorrang op toestaanfilters."
+  },
+  "sidebar": {
+    "github": "Open GitHub repository",
+    "githubLabel": "GitHub",
+    "docs": "Open documentation",
+    "docsLabel": "Documentation",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  },
+  "changelog": {
+    "title": "Changelog",
+    "open": "Open changelog",
+    "update": "Update available",
+    "current": "Current version",
+    "empty": "No released changes are available yet.",
+    "viewAll": "View all releases"
   }
 }

@@ -1,5 +1,5 @@
 ---
-'flowpeek': patch
+'ezrepo': patch
 ---
 
 Align the web dashboard layout with the Machine Admin application.

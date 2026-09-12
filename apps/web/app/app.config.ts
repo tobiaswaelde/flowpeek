@@ -1,4 +1,4 @@
-/** Shared Nuxt UI presentation configuration for the Flowpeek web application. */
+/** Shared Nuxt UI presentation configuration for the ezRepo web application. */
 export default defineAppConfig({
   ui: {
     breadcrumb: {

@@ -107,8 +107,8 @@ jobs:
           file: apps/api/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/flowpeek-api:${{ steps.version.outputs.value }}
-            ghcr.io/${{ github.repository_owner }}/flowpeek-api:latest
+            ghcr.io/${{ github.repository_owner }}/ezrepo-api:${{ steps.version.outputs.value }}
+            ghcr.io/${{ github.repository_owner }}/ezrepo-api:latest
 
       - name: Build and push web image
         if: steps.image-inputs.outputs.ready == 'true'
@@ -118,8 +118,8 @@ jobs:
           file: apps/web/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/flowpeek-web:${{ steps.version.outputs.value }}
-            ghcr.io/${{ github.repository_owner }}/flowpeek-web:latest
+            ghcr.io/${{ github.repository_owner }}/ezrepo-web:${{ steps.version.outputs.value }}
+            ghcr.io/${{ github.repository_owner }}/ezrepo-web:latest
 
   smoke-release:
     name: Smoke test release images
@@ -171,17 +171,17 @@ jobs:
       - name: Validate release image tags
         if: steps.compose-inputs.outputs.ready == 'true'
         env:
-          FLOWPEEK_VERSION: ${{ steps.version.outputs.value }}
+          EZREPO_VERSION: ${{ steps.version.outputs.value }}
         run: |
-          expected_api="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/flowpeek-api:${FLOWPEEK_VERSION}"
-          expected_web="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/flowpeek-web:${FLOWPEEK_VERSION}"
+          expected_api="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/ezrepo-api:${EZREPO_VERSION}"
+          expected_web="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/ezrepo-web:${EZREPO_VERSION}"
           docker compose -f compose.yml config --images | grep --fixed-strings --line-regexp "$expected_api"
           docker compose -f compose.yml config --images | grep --fixed-strings --line-regexp "$expected_web"
 
       - name: Start release stack
         if: steps.compose-inputs.outputs.ready == 'true'
         env:
-          FLOWPEEK_VERSION: ${{ steps.version.outputs.value }}
+          EZREPO_VERSION: ${{ steps.version.outputs.value }}
         run: docker compose -f compose.yml up --detach --wait --wait-timeout 120
 
       - name: Check API health

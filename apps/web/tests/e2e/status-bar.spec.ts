@@ -4,7 +4,7 @@ const accessToken = 'playwright-access-token';
 
 /** Configure the authenticated dashboard shell required by the global status bar. */
 async function mockDashboardShell(page: Page): Promise<void> {
-  await page.addInitScript((token) => window.localStorage.setItem('flowpeek.access-token', token), accessToken);
+  await page.addInitScript((token) => window.localStorage.setItem('ezrepo.access-token', token), accessToken);
   await page.route('**/api/v1/auth/me', (route) =>
     route.fulfill({ json: { id: 'playwright', role: 'VIEWER', username: 'playwright' } }),
   );
@@ -55,7 +55,7 @@ test('shows live workflow counts and provider synchronization progress globally'
   const statusBar = page.getByLabel('API status');
   await expect(statusBar).toBeVisible();
   const statusBarBox = await statusBar.boundingBox();
-  const dashboardPanelBox = await page.locator('#flowpeek-panel-main').boundingBox();
+  const dashboardPanelBox = await page.locator('#ezrepo-panel-main').boundingBox();
   const sidebarBox = await page.getByRole('complementary', { name: 'Sidebar navigation' }).boundingBox();
   expect(statusBarBox).not.toBeNull();
   expect(dashboardPanelBox).not.toBeNull();

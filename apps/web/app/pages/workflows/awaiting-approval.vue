@@ -1,7 +1,5 @@
 <template>
   <LayoutPage
-    banner-id="awaiting-approval"
-    icon="i-lucide-shield-alert"
     :breadcrumbs="[
       { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
       { icon: 'i-lucide-list-tree', label: $t('layout.workflowRuns'), to: '/workflow-runs' },
@@ -115,14 +113,14 @@
 import type { TableColumn } from '#ui/types';
 import { computed, onMounted, ref } from 'vue';
 
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { useDateTime } from '~/composables/use-date-time';
 import type { DashboardWorkflowRun } from '~/types/api/resources';
 
 definePageMeta({ fullWidth: true });
 
 const { t } = useI18n();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const { formatDateTime } = useDateTime();
 const loadError = ref(false);
 const loading = ref(true);

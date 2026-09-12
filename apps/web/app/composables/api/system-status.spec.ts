@@ -4,10 +4,10 @@ import { getSystemStatusProgress, getSystemStatusSocketUrl } from './system-stat
 
 describe('system status helpers', () => {
   it('derives the status namespace from absolute and relative API base URLs', () => {
-    expect(getSystemStatusSocketUrl('https://flowpeek.example/api/v1', 'https://web.example')).toBe(
-      'https://flowpeek.example/status',
+    expect(getSystemStatusSocketUrl('https://ezrepo.example/api/v1', 'https://web.example')).toBe(
+      'https://ezrepo.example/status',
     );
-    expect(getSystemStatusSocketUrl('/api/v1', 'https://flowpeek.example')).toBe('https://flowpeek.example/status');
+    expect(getSystemStatusSocketUrl('/api/v1', 'https://ezrepo.example')).toBe('https://ezrepo.example/status');
   });
 
   it('uses workflow progress while processing and repository progress otherwise', () => {

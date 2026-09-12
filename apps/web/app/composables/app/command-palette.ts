@@ -1,6 +1,6 @@
 /** Share command-palette visibility between the global modal and navbar trigger. */
 export function useCommandPalette() {
-  const open = useState<boolean>('flowpeek.command-palette.open', () => false);
+  const open = useState<boolean>('ezrepo.command-palette.open', () => false);
 
   return {
     close: () => {

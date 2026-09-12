@@ -99,7 +99,7 @@
 - Before committing, run `git diff --check`, inspect the staged diff, and
   stage only the files in scope.
 - Every substantive implementation commit requires exactly one focused
-  Changeset for the `flowpeek` package. Do not add Changesets for generated
+  Changeset for the `ezrepo` package. Do not add Changesets for generated
   version-release output.
 - Push the current branch to its configured remote after every commit unless
   the user explicitly requests a local-only commit or a different remote

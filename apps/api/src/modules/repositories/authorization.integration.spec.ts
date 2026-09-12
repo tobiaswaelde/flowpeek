@@ -27,19 +27,19 @@ describe('repository authorization integration', () => {
       prisma.repository.create({
         data: {
           name: 'visible',
-          owner: 'flowpeek',
+          owner: 'ezrepo',
           providerAccountId: providerAccount.id,
           providerRepositoryId: 'visible',
-          url: 'https://github.com/flowpeek/visible',
+          url: 'https://github.com/ezrepo/visible',
         },
       }),
       prisma.repository.create({
         data: {
           name: 'hidden',
-          owner: 'flowpeek',
+          owner: 'ezrepo',
           providerAccountId: providerAccount.id,
           providerRepositoryId: 'hidden',
-          url: 'https://github.com/flowpeek/hidden',
+          url: 'https://github.com/ezrepo/hidden',
         },
       }),
     ]);

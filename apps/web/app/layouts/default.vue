@@ -1,5 +1,5 @@
 <template>
-  <UDashboardGroup storage="local" storage-key="flowpeek" unit="rem">
+  <UDashboardGroup storage="local" storage-key="ezrepo" unit="rem">
     <a
       class="sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-inverted focus:outline-none"
       href="#main-content"
@@ -39,34 +39,21 @@
     </div>
 
     <LayoutCommandPalette />
+    <LayoutChangelogDialog v-model:open="changelogOpen" />
   </UDashboardGroup>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-
-import { useAuthStore } from '~/store/auth';
 import { useSettingsStore } from '~/store/settings';
-import { useUserPreferencesStore } from '~/store/user-preferences';
 
 const { t } = useI18n();
 const route = useRoute();
 const usesFullWidthContent = computed(() => route.meta.fullWidth === true);
-const auth = useAuthStore();
 const settings = useSettingsStore();
-const userPreferences = useUserPreferencesStore();
+const changelogOpen = useState('changelog-open', () => false);
 
 onMounted(() => {
   void settings.load();
-  void userPreferences.load();
 });
-
-watch(
-  () => auth.user?.id,
-  (userId, previousUserId) => {
-    if (userId === previousUserId) return;
-    userPreferences.reset();
-    if (userId) void userPreferences.load(true);
-  },
-);
 </script>

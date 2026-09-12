@@ -7,15 +7,12 @@ const emptyPage = {
 
 /** Mock authenticated shell requests so search behavior can be exercised without a live API. */
 async function mockApplicationShell(page: Page, role: 'SYSTEM_ADMIN' | 'VIEWER'): Promise<void> {
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', (route) =>
     route.fulfill({ json: { id: `playwright-${role.toLowerCase()}`, role, username: 'playwright' } }),
   );
   await page.route('**/api/v1/settings', (route) =>
     route.fulfill({ json: { dateTimeFormat: 'LOCALE_MEDIUM', workflowRunRetentionDays: 30 } }),
-  );
-  await page.route('**/api/v1/settings/preferences', (route) =>
-    route.fulfill({ json: { dismissedIntroBannerIds: [] } }),
   );
   await page.route('**/api/v1/dashboard/awaiting-approval', (route) => route.fulfill({ json: [] }));
   await page.route('**/api/v1/dashboard/failures', (route) => route.fulfill({ json: [] }));
@@ -65,7 +62,7 @@ test('groups authorized global results and keeps stale responses from replacing 
         items: [
           {
             baseUrl: null,
-            displayName: 'Flowpeek GitHub',
+            displayName: 'ezRepo GitHub',
             enabled: true,
             id: 'provider-1',
             lastSyncAt: null,
@@ -89,10 +86,10 @@ test('groups authorized global results and keeps stale responses from replacing 
             enabled: true,
             id: 'repository-1',
             lastSyncAt: null,
-            name: 'flowpeek',
+            name: 'ezrepo',
             owner: 'tobiaswaelde',
             providerAccountId: 'provider-1',
-            url: 'https://github.com/tobiaswaelde/flowpeek',
+            url: 'https://github.com/tobiaswaelde/ezrepo',
             workflowRunRetentionDays: null,
           },
         ],
@@ -117,12 +114,12 @@ test('groups authorized global results and keeps stale responses from replacing 
             providerRunId: '42',
             providerType: 'GITHUB',
             repositoryId: 'repository-1',
-            repositoryName: 'flowpeek',
+            repositoryName: 'ezrepo',
             repositoryOwner: 'tobiaswaelde',
             startedAt: '2026-09-10T00:00:00.000Z',
             status: 'SUCCESS',
-            url: 'https://github.com/tobiaswaelde/flowpeek/actions/runs/42',
-            workflowName: 'Flowpeek deployment',
+            url: 'https://github.com/tobiaswaelde/ezrepo/actions/runs/42',
+            workflowName: 'ezRepo deployment',
           },
         ],
       },
@@ -134,10 +131,10 @@ test('groups authorized global results and keeps stale responses from replacing 
         enabled: true,
         id: 'repository-1',
         lastSyncAt: null,
-        name: 'flowpeek',
+        name: 'ezrepo',
         owner: 'tobiaswaelde',
         providerAccountId: 'provider-1',
-        url: 'https://github.com/tobiaswaelde/flowpeek',
+        url: 'https://github.com/tobiaswaelde/ezrepo',
         workflowRunRetentionDays: null,
       },
     }),
@@ -154,19 +151,19 @@ test('groups authorized global results and keeps stale responses from replacing 
 
   const results = page.getByRole('listbox', { name: 'Search results' });
   await expect(results.getByText('Provider accounts', { exact: true })).toBeVisible();
-  await expect(results.getByRole('option', { name: 'Flowpeek GitHub, GITHUB' })).toHaveAttribute(
+  await expect(results.getByRole('option', { name: 'ezRepo GitHub, GITHUB' })).toHaveAttribute(
     'href',
     '/admin/providers',
   );
   await expect(results.getByText('Repositories', { exact: true })).toBeVisible();
-  await expect(results.getByRole('option', { name: 'tobiaswaelde/flowpeek', exact: true })).toHaveAttribute(
+  await expect(results.getByRole('option', { name: 'tobiaswaelde/ezrepo', exact: true })).toHaveAttribute(
     'href',
     '/repositories?repository=repository-1',
   );
   await expect(results.getByText('Workflow runs', { exact: true })).toBeVisible();
-  await expect(results.getByRole('option', { name: 'Flowpeek deployment, tobiaswaelde/flowpeek' })).toHaveAttribute(
+  await expect(results.getByRole('option', { name: 'ezRepo deployment, tobiaswaelde/ezrepo' })).toHaveAttribute(
     'href',
-    'https://github.com/tobiaswaelde/flowpeek/actions/runs/42',
+    'https://github.com/tobiaswaelde/ezrepo/actions/runs/42',
   );
   await expect(results).not.toContainText('obsolete');
   expect(requestedSearchUrls.filter((url) => url.includes('search=flow'))).toHaveLength(3);
@@ -185,9 +182,9 @@ test('groups authorized global results and keeps stale responses from replacing 
   await expect(search).toBeFocused();
   await page.getByRole('heading', { name: 'Workflow dashboard' }).click();
   await search.click();
-  await results.getByRole('option', { name: 'tobiaswaelde/flowpeek', exact: true }).click();
+  await results.getByRole('option', { name: 'tobiaswaelde/ezrepo', exact: true }).click();
   await expect(page).toHaveURL(/\/repositories\?repository=repository-1$/);
-  await expect(page.getByRole('dialog', { name: 'tobiaswaelde/flowpeek' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'tobiaswaelde/ezrepo' })).toBeVisible();
 });
 
 test('does not request or expose provider accounts to a viewer and preserves successful groups on partial failure', async ({
@@ -208,10 +205,10 @@ test('does not request or expose provider accounts to a viewer and preserves suc
             enabled: true,
             id: 'repository-1',
             lastSyncAt: null,
-            name: 'flowpeek',
+            name: 'ezrepo',
             owner: 'tobiaswaelde',
             providerAccountId: 'provider-1',
-            url: 'https://github.com/tobiaswaelde/flowpeek',
+            url: 'https://github.com/tobiaswaelde/ezrepo',
             workflowRunRetentionDays: null,
           },
         ],
@@ -223,7 +220,7 @@ test('does not request or expose provider accounts to a viewer and preserves suc
   await page.goto('/');
   await page.getByRole('combobox', { name: 'Search' }).fill('flow');
   const results = page.getByRole('listbox', { name: 'Search results' });
-  await expect(results.getByRole('option', { name: 'tobiaswaelde/flowpeek', exact: true })).toBeVisible();
+  await expect(results.getByRole('option', { name: 'tobiaswaelde/ezrepo', exact: true })).toBeVisible();
   await expect(results.getByText('Some result groups could not be loaded.')).toBeVisible();
   await expect(results.getByText('Workflow runs', { exact: true })).toBeVisible();
   expect(providerRequestCount).toBe(0);

@@ -23,7 +23,7 @@ function createSearchGroup<T>(): GlobalSearchGroup<T> {
   return { error: ref(false), items: shallowRef<T[]>([]), loading: ref(false) };
 }
 
-/** Search all permission-aware Flowpeek resource groups with debounce, cancellation, and deterministic ranking. */
+/** Search all permission-aware ezRepo resource groups with debounce, cancellation, and deterministic ranking. */
 export function useGlobalSearch(query: Ref<string>) {
   const api = useApi();
   const auth = useAuthStore();

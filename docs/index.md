@@ -12,8 +12,8 @@ hero:
       text: Deploy ezRepo
       link: /deployment
     - theme: alt
-      text: Configure providers
-      link: /provider-oauth
+      text: Read the user guide
+      link: /getting-started/
 
 features:
   - title: Read-only by design
@@ -22,4 +22,6 @@ features:
     details: Connect GitHub, GitLab, Forgejo, and Gitea through OAuth or personal access tokens.
   - title: Actionable notifications
     details: Route workflow events through encrypted Apprise notification channels.
+  - title: User guide
+    details: Follow the complete day-to-day workflow guide from sign-in through administration.
 ---

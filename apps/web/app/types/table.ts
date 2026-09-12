@@ -1,7 +1,7 @@
 import type { TableColumn } from '#ui/types';
 
 /**
- * Nuxt UI column metadata augmented with the fields required by Flowpeek's Query Kit table adapter.
+ * Nuxt UI column metadata augmented with the fields required by ezRepo's Query Kit table adapter.
  *
  * The full renderer metadata remains available after the adapter derives the fields requested from the API.
  */

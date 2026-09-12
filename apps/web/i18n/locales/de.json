@@ -165,7 +165,11 @@
     "revokeConfirm": "MCP-Token „{name}“ widerrufen? Dies kann nicht rückgängig gemacht werden.",
     "secretDescription": "Kopiere dieses Token jetzt. Es wird nicht erneut angezeigt.",
     "secretTitle": "Token erstellt",
-    "status": { "ACTIVE": "Aktiv", "EXPIRED": "Abgelaufen", "REVOKED": "Widerrufen" },
+    "status": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Abgelaufen",
+      "REVOKED": "Widerrufen"
+    },
     "title": "MCP-Zugriff",
     "token": "Bearer-Token"
   },
@@ -174,10 +178,6 @@
     "empty": "Derzeit benötigt kein Workflow Aufmerksamkeit.",
     "loadError": "Workflows, die Aufmerksamkeit benötigen, konnten nicht geladen werden.",
     "title": "Benötigt Aufmerksamkeit"
-  },
-  "pageIntro": {
-    "dismiss": "Einführung für {title} ausblenden",
-    "dismissError": "Die Seiteneinführung konnte nicht ausgeblendet werden."
   },
   "settings": {
     "avatar": "Profilbild",
@@ -203,7 +203,6 @@
     "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
     "avatarZoomIn": "Vergrößern",
     "avatarZoomOut": "Verkleinern",
-    "bannersRestored": "Einführungsbanner wurden wiederhergestellt.",
     "currentPassword": "Aktuelles Passwort",
     "currentPasswordHelp": "Nur erforderlich, wenn du deinen Benutzernamen änderst.",
     "currentPasswordInvalid": "Das aktuelle Passwort ist falsch.",
@@ -216,7 +215,6 @@
     },
     "days": "Tage",
     "description": "Verwalte Anwendungsstandards und deine persönlichen Oberflächeneinstellungen.",
-    "dismissedBanners": "Ausgeblendete Einführungsbanner: {count}.",
     "firstName": "Vorname",
     "general": "Globale Standards",
     "generalDescription": "Diese Einstellungen gelten für alle Benutzer und Repositories ohne eigene Abweichung.",
@@ -228,8 +226,6 @@
     "passwordChangeDescription": "Lege ein neues Passwort für dein Konto fest. Andere angemeldete Sitzungen werden ungültig.",
     "passwordChangeError": "Dein Passwort konnte nicht geändert werden.",
     "passwordChangeSubmit": "Passwort ändern",
-    "pageIntroductions": "Seiteneinführungen",
-    "pageIntroductionsDescription": "Stelle zuvor ausgeblendete Einführungsbanner wieder her.",
     "preview": "Vorschau",
     "profile": "Persönliche Daten",
     "profileDescription": "Verwalte den Namen und Anmelde-Benutzernamen deines Kontos.",
@@ -239,8 +235,6 @@
     "retention": "Aufbewahrung von Workflow-Ausführungen",
     "retentionHelp": "Abgeschlossene Workflow-Ausführungen werden nach dieser Anzahl an Tagen gelöscht, sofern ein Repository keine eigene Aufbewahrungsdauer hat.",
     "retry": "Erneut versuchen",
-    "restoreBanners": "Alle Banner wiederherstellen",
-    "restoreBannersError": "Die Einführungsbanner konnten nicht wiederhergestellt werden.",
     "save": "Einstellungen speichern",
     "saveError": "Die globalen Einstellungen konnten nicht gespeichert werden.",
     "saved": "Globale Einstellungen gespeichert.",
@@ -301,7 +295,12 @@
     "tableDescription": "Konfigurierte schreibgeschützte Anbieter-Verbindungen",
     "type": "Anbieter-Typ",
     "typePlaceholder": "Anbieter auswählen",
-    "types": { "FORGEJO": "Forgejo", "GITEA": "Gitea", "GITHUB": "GitHub", "GITLAB": "GitLab" }
+    "types": {
+      "FORGEJO": "Forgejo",
+      "GITEA": "Gitea",
+      "GITHUB": "GitHub",
+      "GITLAB": "GitLab"
+    }
   },
   "querrykit": {
     "table": {
@@ -321,8 +320,12 @@
         "title": "Tabellenoptionen",
         "visibility": "Spaltensichtbarkeit umschalten"
       },
-      "pagination": { "summary": "Zeige {start}–{end} von {total}" },
-      "search": { "placeholder": "Suchen" },
+      "pagination": {
+        "summary": "Zeige {start}–{end} von {total}"
+      },
+      "search": {
+        "placeholder": "Suchen"
+      },
       "sorting": {
         "add": "Sortierung hinzufügen",
         "clear": "Sortierungen löschen",
@@ -340,7 +343,11 @@
       "LOADING_REPOSITORIES": "Repositories laden",
       "PROCESSING_WORKFLOWS": "Workflows verarbeiten"
     },
-    "connection": { "CONNECTED": "Live", "CONNECTING": "Verbinden", "DISCONNECTED": "Offline" },
+    "connection": {
+      "CONNECTED": "Live",
+      "CONNECTING": "Verbinden",
+      "DISCONNECTED": "Offline"
+    },
     "label": "API-Status",
     "progress": "{current}/{total}",
     "runningWorkflows": "Laufend: {count}"
@@ -417,7 +424,10 @@
     "addDialogTitle": "Repositories hinzufügen",
     "addError": "Ein oder mehrere Repositories konnten nicht hinzugefügt werden. Prüfe die verbleibende Auswahl und versuche es erneut.",
     "addSelected": "Ausgewählte hinzufügen ({count})",
-    "addSteps": { "provider": "Anbieter", "repository": "Repository" },
+    "addSteps": {
+      "provider": "Anbieter",
+      "repository": "Repository"
+    },
     "alreadyTracked": "Bereits getrackt",
     "available": "Verfügbar",
     "back": "Zurück",
@@ -491,5 +501,21 @@
     "user": "Benutzer",
     "workflowFilters": "Workflow-Filter",
     "workflowFiltersDescription": "Ausschlussfilter haben Vorrang vor Erlaubnisfiltern."
+  },
+  "sidebar": {
+    "github": "GitHub-Repository öffnen",
+    "githubLabel": "GitHub",
+    "docs": "Dokumentation öffnen",
+    "docsLabel": "Dokumentation",
+    "collapse": "Seitenleiste einklappen",
+    "expand": "Seitenleiste ausklappen"
+  },
+  "changelog": {
+    "title": "Änderungsprotokoll",
+    "open": "Änderungsprotokoll öffnen",
+    "update": "Update verfügbar",
+    "current": "Aktuelle Version",
+    "empty": "Noch keine veröffentlichten Änderungen verfügbar.",
+    "viewAll": "Alle Releases anzeigen"
   }
 }

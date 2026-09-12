@@ -54,14 +54,14 @@ API accepts the following variables:
 | `SHADOW_DATABASE_URL`             | Yes      | —                       | PostgreSQL shadow database URL used for Prisma migrations.                                  |
 | `CORS_ORIGIN`                     | No       | `http://localhost:3000` | One origin, comma-separated origins, or `*`.                                                |
 | `PUBLIC_URL`                      | No       | `http://localhost:3000` | Public ezRepo URL; must use HTTP or HTTPS.                                                  |
-| `AUTH_JWT_ISSUER`                 | No       | `flowpeek`              | JWT issuer identifier.                                                                      |
+| `AUTH_JWT_ISSUER`                 | No       | `ezrepo`              | JWT issuer identifier.                                                                      |
 | `AUTH_JWT_SECRET`                 | Yes      | —                       | Long, unique secret used to sign JWTs.                                                      |
 | `AUTH_JWT_EXPIRATION`             | No       | `7d`                    | JWT lifetime accepted by the Nest JWT module.                                               |
 | `TOKEN_ENCRYPTION_KEY`            | Yes      | —                       | Canonical Base64 value decoding to exactly 32 bytes; encrypts provider and webhook secrets. |
 | `SCHEDULER_ENABLED`               | No       | `true`                  | Enables scheduled polling and retention jobs. Set `false` for one-off commands.             |
 | `SCHEDULER_SYNC_INTERVAL_SECONDS` | No       | `1800`                  | Positive integer fallback polling interval in seconds.                                      |
 
-`FLOWPEEK_ENV_FILE` is an optional local loader setting. When set, the API
+`EZREPO_ENV_FILE` is an optional local loader setting. When set, the API
 loads that file after the root `.env` file, allowing a local override without
 changing the shared template.
 
@@ -70,10 +70,10 @@ by the Nest API's `envalid` configuration:
 
 | Variable            | Default    | Purpose                                               |
 | ------------------- | ---------- | ----------------------------------------------------- |
-| `POSTGRES_DB`       | `flowpeek` | PostgreSQL database name.                             |
-| `POSTGRES_USER`     | `flowpeek` | PostgreSQL user.                                      |
+| `POSTGRES_DB`       | `ezrepo` | PostgreSQL database name.                             |
+| `POSTGRES_USER`     | `ezrepo` | PostgreSQL user.                                      |
 | `POSTGRES_PASSWORD` | —          | PostgreSQL password; replace the example value.       |
-| `FLOWPEEK_VERSION`  | `latest`   | API and web image version selected by Docker Compose. |
+| `EZREPO_VERSION`  | `latest`   | API and web image version selected by Docker Compose. |
 
 Provider access tokens, provider webhook secrets, and notification credentials
 are not environment variables. ezRepo stores them encrypted in PostgreSQL

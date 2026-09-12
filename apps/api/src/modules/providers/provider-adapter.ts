@@ -18,7 +18,7 @@ export interface ProviderRepository {
   url: string;
 }
 
-/** Repository identity retained by Flowpeek for provider run requests. */
+/** Repository identity retained by ezRepo for provider run requests. */
 export interface ProviderRepositoryReference {
   name: string;
   owner: string;
@@ -32,7 +32,7 @@ export interface ProviderChangeRequestState {
   targetBranch: string | null;
 }
 
-/** Provider workflow run normalized before persistence in Flowpeek. */
+/** Provider workflow run normalized before persistence in ezRepo. */
 export interface ProviderWorkflowRun {
   awaitingApproval: boolean;
   changeRequestNumber: string | null;
@@ -75,7 +75,7 @@ export interface VerifiedWebhook {
   providerRepositoryId: string | null;
 }
 
-/** Read-only webhook request data received by Flowpeek. */
+/** Read-only webhook request data received by ezRepo. */
 export interface ProviderWebhookRequest {
   headers: Record<string, string | string[] | undefined>;
   payload: Uint8Array;

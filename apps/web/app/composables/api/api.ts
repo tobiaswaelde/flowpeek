@@ -1,9 +1,9 @@
 import axios, { type AxiosInstance } from 'axios';
 
 /** Local-storage key shared by the API client and the future auth store. */
-export const accessTokenStorageKey = 'flowpeek.access-token';
+export const accessTokenStorageKey = 'ezrepo.access-token';
 
-/** Create Flowpeek's authenticated API client for one configured API base URL. */
+/** Create ezRepo's authenticated API client for one configured API base URL. */
 export function createApiClient(baseUrl: string, accessToken?: string | null): AxiosInstance {
   const client = axios.create({ baseURL: baseUrl });
   client.interceptors.request.use((request) => {

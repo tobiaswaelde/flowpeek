@@ -1,7 +1,5 @@
 <template>
   <LayoutPage
-    banner-id="admin-repositories"
-    icon="i-lucide-git-branch"
     :breadcrumbs="[
       { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
       { icon: 'i-lucide-git-branch', label: $t('layout.repositories') },
@@ -143,7 +141,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 
 import { FilterFieldType, type FilterField, type SortingField } from '@querry-kit/nuxt-ui/types';
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { useTable } from '~/composables/api/table';
 import { useDateTime } from '~/composables/use-date-time';
 import { usePendingActions } from '~/composables/use-pending-actions';
@@ -159,7 +157,7 @@ definePageMeta({ fullWidth: true });
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const auth = useAuthStore();
 const route = useRoute();
 const router = useRouter();

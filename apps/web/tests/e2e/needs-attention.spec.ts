@@ -9,18 +9,18 @@ const workflowRun = {
   providerRunId: '42',
   providerType: 'GITHUB',
   repositoryId: 'repository-1',
-  repositoryName: 'flowpeek',
+  repositoryName: 'ezrepo',
   repositoryOwner: 'twaelde',
   startedAt: '2026-09-09T08:00:00.000Z',
   status: 'FAILED',
-  url: 'https://github.com/tobiaswaelde/flowpeek/actions/runs/42',
+  url: 'https://github.com/tobiaswaelde/ezrepo/actions/runs/42',
   workflowName: 'Build',
 };
 
 /** Configure stable authenticated shell resources for needs-attention browser scenarios. */
 async function mockApplication(page: Page): Promise<void> {
   await page.addInitScript(() => {
-    window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token');
+    window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token');
     window.localStorage.setItem(
       'table:workflow-runs-needs-attention:sort',
       JSON.stringify([{ desc: false, id: 'completedAt' }]),
@@ -50,16 +50,13 @@ async function mockApplication(page: Page): Promise<void> {
   await page.route('**/api/v1/settings', (route) =>
     route.fulfill({ json: { dateTimeFormat: 'LOCALE_MEDIUM', workflowRunRetentionDays: 90 } }),
   );
-  await page.route('**/api/v1/settings/preferences', (route) =>
-    route.fulfill({ json: { dismissedIntroBannerIds: [] } }),
-  );
   await page.route('**/api/v1/health', (route) =>
     route.fulfill({ json: { api: 'ok', database: 'ok', providers: [], status: 'ok' } }),
   );
   await page.route(/\/api\/v1\/repositories(?:\?.*)?$/, (route) =>
     route.fulfill({
       json: {
-        items: [{ id: 'repository-1', name: 'flowpeek', owner: 'twaelde' }],
+        items: [{ id: 'repository-1', name: 'ezrepo', owner: 'twaelde' }],
         meta: { hasNextPage: false, hasPrevPage: false, itemCount: 1, page: 1, pageCount: 1, perPage: 1_000 },
       },
     }),
@@ -138,7 +135,7 @@ test('browses, searches, sorts, filters, refreshes, and paginates the complete n
   await expect(page.getByRole('button', { name: 'Refresh' })).toBeDisabled();
   await page.screenshot({ path: testInfo.outputPath('needs-attention-loading.png'), fullPage: true });
   releaseInitialRequest?.();
-  await expect(page.getByText('twaelde/flowpeek', { exact: true })).toBeVisible();
+  await expect(page.getByText('twaelde/ezrepo', { exact: true })).toBeVisible();
   await expect(page.locator('#main-content').getByText('GitHub', { exact: true })).toBeVisible();
   await expect(page.getByText('Failed', { exact: true })).toBeVisible();
   await expect(page.getByText('2m 30s', { exact: true })).toBeVisible();

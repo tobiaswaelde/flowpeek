@@ -24,12 +24,12 @@ describe('RepositoriesController', () => {
           userId: 'member-1',
         },
       ],
-      name: 'flowpeek',
+      name: 'ezrepo',
       owner: 'twaelde',
       providerAccountId: 'provider-1',
       providerRepositoryId: '42',
       updatedAt: new Date('2026-09-09T08:00:00.000Z'),
-      url: 'https://github.com/tobiaswaelde/flowpeek',
+      url: 'https://github.com/tobiaswaelde/ezrepo',
       retainedRunDurationMs: 0n,
       workflowRunRetentionDays: 30,
     } satisfies RepositoryResourceModel;
@@ -75,7 +75,7 @@ describe('RepositoriesController', () => {
             username: 'member',
           },
         ],
-        name: 'flowpeek',
+        name: 'ezrepo',
         workflowRunCount: 12,
       },
     ]);
@@ -87,11 +87,11 @@ describe('RepositoriesController', () => {
       enabled: true,
       id: 'repository-1',
       lastSyncAt: null,
-      name: 'flowpeek',
+      name: 'ezrepo',
       owner: 'twaelde',
       providerAccountId: 'provider-1',
       providerRepositoryId: '42',
-      url: 'https://github.com/tobiaswaelde/flowpeek',
+      url: 'https://github.com/tobiaswaelde/ezrepo',
       workflowRunRetentionDays: null,
     } as RepositoryResourceModel;
     const repositories = {

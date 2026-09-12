@@ -5,7 +5,7 @@ import { env, type PrismaConfig } from 'prisma/config';
 
 dotenv.config({ path: resolve(process.cwd(), '../../.env'), quiet: true });
 dotenv.config({
-  path: resolve(process.cwd(), process.env.FLOWPEEK_ENV_FILE ?? '.env'),
+  path: resolve(process.cwd(), process.env.EZREPO_ENV_FILE ?? '.env'),
   quiet: true,
   override: true,
 });

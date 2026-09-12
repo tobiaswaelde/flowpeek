@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { useUnsavedChangesGuard } from '~/composables/use-unsaved-changes-guard';
 import { providerOAuthFormSchema, providerPatFormSchema, type ProviderType } from '~/types/api/resources';
 
@@ -80,7 +80,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const submitting = ref(false);
 const loadingAuthenticationOptions = ref(false);
 const connectionError = ref(false);

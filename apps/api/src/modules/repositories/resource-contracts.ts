@@ -6,8 +6,8 @@ import {
   type WorkflowRunResourceModel,
 } from './dto/resource.dto.js';
 
-/** API endpoint response mapping for queryable Flowpeek resources. */
-export interface FlowpeekEndpointTypeMap {
+/** API endpoint response mapping for queryable ezRepo resources. */
+export interface EzRepoEndpointTypeMap {
   repositories: RepositoryDto;
   workflowRuns: WorkflowRunDto;
 }

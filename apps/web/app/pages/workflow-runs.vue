@@ -1,8 +1,6 @@
 <template>
   <ModulesWorkflowRunsTablePage
-    banner-id="workflow-runs"
     endpoint="workflow-runs"
-    icon="i-lucide-list-tree"
     name="workflow-runs"
     :breadcrumbs="[
       { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },

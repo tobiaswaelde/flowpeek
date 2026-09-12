@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      DATABASE_URL: postgresql://flowpeek:flowpeek@localhost:5432/flowpeek_lint
-      SHADOW_DATABASE_URL: postgresql://flowpeek:flowpeek@localhost:5432/flowpeek_lint_shadow
+      DATABASE_URL: postgresql://ezrepo:ezrepo@localhost:5432/ezrepo_lint
+      SHADOW_DATABASE_URL: postgresql://ezrepo:ezrepo@localhost:5432/ezrepo_lint_shadow
 
     steps:
       - name: Checkout repository

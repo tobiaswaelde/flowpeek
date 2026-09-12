@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
-import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
+import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { useDateTime } from '~/composables/use-date-time';
 import type { Repository } from '~/types/api/resources';
 
@@ -68,7 +68,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const api = useFlowpeekApi();
+const api = useEzRepoApi();
 const { formatDateTime } = useDateTime();
 const retentionDays = ref('');
 const saving = ref(false);

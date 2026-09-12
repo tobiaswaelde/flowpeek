@@ -1,4 +1,4 @@
-/** Resources protected by Flowpeek authorization policies. */
+/** Resources protected by ezRepo authorization policies. */
 export enum CaslSubject {
   All = 'all',
   User = 'User',

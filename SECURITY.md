@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-ezRepo is currently developed on the `main` branch and released through the current `flowpeek` package line. Security fixes are made for the latest released version and, when necessary, the current development branch. Older releases are not supported unless a maintainer explicitly states otherwise in their release notes.
+ezRepo is currently developed on the `main` branch and released through the current `ezrepo` package line. Security fixes are made for the latest released version and, when necessary, the current development branch. Older releases are not supported unless a maintainer explicitly states otherwise in their release notes.
 
 ## Reporting a vulnerability
 

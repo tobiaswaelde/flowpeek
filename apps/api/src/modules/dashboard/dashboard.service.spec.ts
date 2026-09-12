@@ -83,7 +83,11 @@ describe('DashboardService', () => {
     } as unknown as WorkflowRunsQueryService;
 
     await expect(
-      new DashboardService(workflowRuns, prisma()).getAwaitingApproval({ id: 'viewer', role: 'VIEWER', username: 'viewer' }),
+      new DashboardService(workflowRuns, prisma()).getAwaitingApproval({
+        id: 'viewer',
+        role: 'VIEWER',
+        username: 'viewer',
+      }),
     ).resolves.toHaveLength(1);
     expect(workflowRuns.findCurrent).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -141,10 +145,7 @@ describe('DashboardService', () => {
   });
 
   it('summarizes visible completed and active workflow runs', async () => {
-    const ability = new CaslAbilityFactory().createForUser(
-      { id: 'viewer', role: 'VIEWER', username: 'viewer' },
-      [],
-    );
+    const ability = new CaslAbilityFactory().createForUser({ id: 'viewer', role: 'VIEWER', username: 'viewer' }, []);
     const workflowRuns = {
       findCurrent: jest.fn().mockResolvedValue([
         { awaitingApproval: true, durationMs: null, status: 'QUEUED' },
@@ -186,8 +187,8 @@ describe('DashboardService', () => {
 
   it('ranks visible repository health by failures and success rate', async () => {
     const ability = {};
-    const repositoryA = { id: 'repository-a', name: 'alpha', owner: 'flowpeek', url: 'https://example.test/alpha' };
-    const repositoryB = { id: 'repository-b', name: 'beta', owner: 'flowpeek', url: 'https://example.test/beta' };
+    const repositoryA = { id: 'repository-a', name: 'alpha', owner: 'ezrepo', url: 'https://example.test/alpha' };
+    const repositoryB = { id: 'repository-b', name: 'beta', owner: 'ezrepo', url: 'https://example.test/beta' };
     const workflowRuns = {
       findMany: jest.fn().mockResolvedValue([
         { durationMs: 100_000, repository: repositoryA, status: 'SUCCESS' },

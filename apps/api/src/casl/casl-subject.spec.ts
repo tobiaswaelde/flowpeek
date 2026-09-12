@@ -2,7 +2,7 @@ import { CaslAction } from './casl-action.js';
 import { CaslSubject } from './casl-subject.js';
 
 describe('CASL authorization contract', () => {
-  it('contains every planned protected Flowpeek resource', () => {
+  it('contains every planned protected ezRepo resource', () => {
     expect(Object.values(CaslSubject)).toEqual([
       'all',
       'User',

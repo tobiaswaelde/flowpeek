@@ -4,18 +4,18 @@ const repository = {
   enabled: true,
   id: 'repository-1',
   lastSyncAt: null,
-  name: 'flowpeek',
+  name: 'ezrepo',
   owner: 'twaelde',
   providerAccountId: 'provider-1',
   providerRepositoryId: 'repository-1',
-  url: 'https://github.com/tobiaswaelde/flowpeek',
+  url: 'https://github.com/tobiaswaelde/ezrepo',
   workflowRunCount: 12,
   workflowRunRetentionDays: 30,
 };
 
 /** Configure the assigned repository list and detail for a non-administrative user. */
 async function mockViewerRepositories(page: Page): Promise<void> {
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', (route) =>
     route.fulfill({ json: { id: 'playwright-viewer', role: 'VIEWER', username: 'playwright' } }),
   );
@@ -57,7 +57,7 @@ test('viewer browses assigned repositories without administration actions', asyn
   await expect(repositoriesLink).toHaveAttribute('aria-current', 'page');
   await expect(navigation.getByText('Administration', { exact: true })).toHaveCount(0);
   await expect(page.getByText('twaelde', { exact: true })).toBeVisible();
-  await expect(page.getByText('flowpeek', { exact: true })).toBeVisible();
+  await expect(page.getByText('ezrepo', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Add repository' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Disable' })).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Open in provider' })).toBeVisible();
@@ -78,7 +78,7 @@ test('viewer browses assigned repositories without administration actions', asyn
   await page.getByRole('button', { name: 'Open repository' }).click();
 
   await expect(page).toHaveURL(/\/repositories\?repository=repository-1$/);
-  const repositoryDialog = page.getByRole('dialog', { name: 'twaelde/flowpeek' });
+  const repositoryDialog = page.getByRole('dialog', { name: 'twaelde/ezrepo' });
   await expect(repositoryDialog).toBeVisible();
   await expect(repositoryDialog.getByText('Enabled', { exact: true })).toBeVisible();
   await expect(repositoryDialog.getByRole('button', { name: 'Save' })).toHaveCount(0);
@@ -125,7 +125,7 @@ test('administrator refreshes renamed repository metadata from the provider', as
   const refreshResponse = new Promise<void>((resolve) => {
     releaseRefresh = resolve;
   });
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', (route) =>
     route.fulfill({ json: { id: 'playwright-admin', role: 'SYSTEM_ADMIN', username: 'playwright' } }),
   );

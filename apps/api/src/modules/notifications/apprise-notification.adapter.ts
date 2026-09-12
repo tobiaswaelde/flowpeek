@@ -25,7 +25,7 @@ export class AppriseNotificationAdapter implements NotificationChannelAdapter {
   async send(channel: NotificationChannel, payload: NotificationPayload): Promise<void> {
     if (!channel.encryptedUrl) throw new Error('Apprise notification delivery failed.');
 
-    const directory = await mkdtemp(join(tmpdir(), 'flowpeek-apprise-'));
+    const directory = await mkdtemp(join(tmpdir(), 'ezrepo-apprise-'));
     const configurationPath = join(directory, 'channel.conf');
     try {
       await writeFile(configurationPath, `${this.credentials.decrypt(channel.encryptedUrl)}\n`, { mode: 0o600 });

@@ -6,7 +6,7 @@ const emptyPage = {
 };
 const providerAccount = {
   baseUrl: null,
-  displayName: 'Flowpeek GitHub',
+  displayName: 'ezRepo GitHub',
   enabled: true,
   id: 'provider-1',
   lastSyncAt: null,
@@ -16,10 +16,10 @@ const repository = {
   enabled: true,
   id: 'repository-1',
   lastSyncAt: null,
-  name: 'flowpeek',
+  name: 'ezrepo',
   owner: 'tobiaswaelde',
   providerAccountId: 'provider-1',
-  url: 'https://github.com/tobiaswaelde/flowpeek',
+  url: 'https://github.com/tobiaswaelde/ezrepo',
   workflowRunRetentionDays: null,
 };
 const workflowRun = {
@@ -31,25 +31,22 @@ const workflowRun = {
   providerRunId: '42',
   providerType: 'GITHUB',
   repositoryId: 'repository-1',
-  repositoryName: 'flowpeek',
+  repositoryName: 'ezrepo',
   repositoryOwner: 'tobiaswaelde',
   startedAt: '2026-09-10T00:00:00.000Z',
   status: 'SUCCESS',
-  url: 'https://github.com/tobiaswaelde/flowpeek/actions/runs/42',
-  workflowName: 'Flowpeek deployment',
+  url: 'https://github.com/tobiaswaelde/ezrepo/actions/runs/42',
+  workflowName: 'ezRepo deployment',
 };
 
 /** Mock the authenticated shell and empty resource endpoints used by command-palette scenarios. */
 async function mockCommandPaletteShell(page: Page, role: 'SYSTEM_ADMIN' | 'VIEWER'): Promise<void> {
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', (route) =>
     route.fulfill({ json: { id: `playwright-${role.toLowerCase()}`, role, username: 'playwright' } }),
   );
   await page.route('**/api/v1/settings', (route) =>
     route.fulfill({ json: { dateTimeFormat: 'LOCALE_MEDIUM', workflowRunRetentionDays: 30 } }),
-  );
-  await page.route('**/api/v1/settings/preferences', (route) =>
-    route.fulfill({ json: { dismissedIntroBannerIds: [] } }),
   );
   await page.route('**/api/v1/dashboard/awaiting-approval', (route) => route.fulfill({ json: [] }));
   await page.route('**/api/v1/dashboard/failures', (route) => route.fulfill({ json: [] }));
@@ -131,14 +128,14 @@ test('opens globally, restores focus, supports keyboard navigation, and opens re
 
   await page.keyboard.press('Control+K');
   await paletteSearch.fill('flow');
-  await expect(palette.getByRole('option', { name: /Flowpeek GitHub/ })).toBeVisible();
-  await expect(palette.getByRole('option', { name: /Flowpeek deployment/ })).toBeVisible();
+  await expect(palette.getByRole('option', { name: /ezRepo GitHub/ })).toBeVisible();
+  await expect(palette.getByRole('option', { name: /ezRepo deployment/ })).toBeVisible();
   await palette
-    .getByRole('option', { name: /tobiaswaelde\/flowpeek/ })
+    .getByRole('option', { name: /tobiaswaelde\/ezrepo/ })
     .first()
     .click();
   await expect(page).toHaveURL(/\/repositories\?repository=repository-1$/);
-  const repositoryDialog = page.getByRole('dialog', { name: 'tobiaswaelde/flowpeek' });
+  const repositoryDialog = page.getByRole('dialog', { name: 'tobiaswaelde/ezrepo' });
   await expect(repositoryDialog).toBeVisible();
   await repositoryDialog.getByRole('button', { name: 'Close' }).click();
   await expect(repositoryDialog).not.toBeVisible();

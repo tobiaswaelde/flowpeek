@@ -1,10 +1,10 @@
 [
   {
     "id": 42,
-    "name": "flowpeek",
-    "html_url": "https://gitea.example.test/flowpeek/flowpeek",
+    "name": "ezrepo",
+    "html_url": "https://gitea.example.test/ezrepo/ezrepo",
     "owner": {
-      "login": "flowpeek"
+      "login": "ezrepo"
     }
   }
 ]

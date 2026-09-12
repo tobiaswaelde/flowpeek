@@ -13,11 +13,11 @@ services:
       retries: 12
       start_period: 5s
     volumes:
-      - flowpeek-postgres:/var/lib/postgresql/data
+      - ezrepo-postgres:/var/lib/postgresql/data
       - ./docker/postgres-init:/docker-entrypoint-initdb.d:ro
 
   migrate:
-    image: ghcr.io/tobiaswaelde/flowpeek-api:${FLOWPEEK_VERSION:-latest}
+    image: ghcr.io/tobiaswaelde/ezrepo-api:${EZREPO_VERSION:-latest}
     restart: 'no'
     env_file: .env
     command: ['node_modules/.bin/prisma', 'migrate', 'deploy', '--config', 'prisma.config.ts']
@@ -31,7 +31,7 @@ services:
         condition: service_healthy
 
   api:
-    image: ghcr.io/tobiaswaelde/flowpeek-api:${FLOWPEEK_VERSION:-latest}
+    image: ghcr.io/tobiaswaelde/ezrepo-api:${EZREPO_VERSION:-latest}
     restart: unless-stopped
     env_file: .env
     environment: *api-environment
@@ -39,7 +39,7 @@ services:
       migrate:
         condition: service_completed_successfully
     ports:
-      - '${FLOWPEEK_API_PORT:-3001}:3001'
+      - '${EZREPO_API_PORT:-3001}:3001'
     healthcheck:
       test:
         - CMD-SHELL
@@ -51,7 +51,7 @@ services:
       start_period: 15s
 
   web:
-    image: ghcr.io/tobiaswaelde/flowpeek-web:${FLOWPEEK_VERSION:-latest}
+    image: ghcr.io/tobiaswaelde/ezrepo-web:${EZREPO_VERSION:-latest}
     restart: unless-stopped
     env_file: .env
     environment:
@@ -61,7 +61,7 @@ services:
       api:
         condition: service_healthy
     ports:
-      - '${FLOWPEEK_WEB_PORT:-3000}:3000'
+      - '${EZREPO_WEB_PORT:-3000}:3000'
     healthcheck:
       test:
         - CMD-SHELL
@@ -73,4 +73,4 @@ services:
       start_period: 10s
 
 volumes:
-  flowpeek-postgres:
+  ezrepo-postgres:

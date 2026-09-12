@@ -38,7 +38,7 @@ const validators = {
   SHADOW_DATABASE_URL: str({ desc: 'PostgreSQL shadow database URL for migrations' }),
   CORS_ORIGIN: str({ default: 'http://localhost:3000' }),
   PUBLIC_URL: httpUrl({ default: 'http://localhost:3000', desc: 'Public ezRepo web URL' }),
-  AUTH_JWT_ISSUER: str({ default: 'flowpeek' }),
+  AUTH_JWT_ISSUER: str({ default: 'ezrepo' }),
   AUTH_JWT_SECRET: str({ desc: 'JWT signing secret' }),
   AUTH_JWT_EXPIRATION: str({ default: '7d' }),
   TOKEN_ENCRYPTION_KEY: base64Key({ desc: 'Base64-encoded 32-byte encryption key' }),
@@ -59,7 +59,7 @@ const validators = {
 };
 
 /** The validated API runtime configuration. */
-export type FlowpeekEnvironment = CleanedEnv<typeof validators>;
+export type EzRepoEnvironment = CleanedEnv<typeof validators>;
 
 function throwOnInvalidEnvironment<T>({ errors }: ReporterOptions<T>): void {
   const messages = Object.entries(errors as Record<string, Error | undefined>).map(
@@ -78,7 +78,7 @@ function throwOnInvalidEnvironment<T>({ errors }: ReporterOptions<T>): void {
  * @returns A read-only, typed configuration object.
  * @throws {Error} When required values are missing or cross-field validation fails.
  */
-export function loadEnvironment(environment: NodeJS.ProcessEnv): FlowpeekEnvironment {
+export function loadEnvironment(environment: NodeJS.ProcessEnv): EzRepoEnvironment {
   const config = cleanEnv(environment, validators, { reporter: throwOnInvalidEnvironment });
 
   const oauthClients = [

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-/** ISO-8601 timestamp returned by the Flowpeek HTTP API. */
+/** ISO-8601 timestamp returned by the ezRepo HTTP API. */
 export type ApiTimestamp = string;
 
 /** Application-wide date and time presentation supported by the API. */
@@ -17,11 +17,6 @@ export interface ApplicationSettings {
 
 /** Complete mutable global settings payload accepted from a system administrator. */
 export type UpdateApplicationSettings = ApplicationSettings;
-
-/** Personal interface preferences persisted for the authenticated user. */
-export interface UserPreferences {
-  dismissedIntroBannerIds: string[];
-}
 
 /** Current lifecycle state of one MCP bearer token. */
 export type McpAccessTokenStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED';
@@ -135,7 +130,7 @@ export interface ProviderOAuthAuthorization {
   authorizationUrl: string;
 }
 
-/** Safe provider authentication capabilities for the current Flowpeek installation. */
+/** Safe provider authentication capabilities for the current ezRepo installation. */
 export interface ProviderAuthenticationOptions {
   oauthProviderTypes: ProviderType[];
 }

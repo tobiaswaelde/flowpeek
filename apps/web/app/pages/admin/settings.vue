@@ -1,8 +1,6 @@
 <template>
   <LayoutPage
-    banner-id="settings"
     full-width
-    icon="i-lucide-settings"
     :breadcrumbs="[
       { icon: 'i-lucide-layout-dashboard', label: $t('layout.dashboard'), to: '/' },
       { icon: 'i-lucide-settings', label: $t('layout.settings') },

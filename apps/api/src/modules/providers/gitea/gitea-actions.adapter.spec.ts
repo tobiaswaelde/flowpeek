@@ -12,7 +12,7 @@ function readFixture(name: string): unknown {
 
 describe('GiteaActionsAdapter', () => {
   const context = { accessToken: 'token', baseUrl: 'https://gitea.example.test', providerAccountId: 'account' };
-  const repository = { providerRepositoryId: '42', owner: 'flowpeek', name: 'flowpeek' };
+  const repository = { providerRepositoryId: '42', owner: 'ezrepo', name: 'ezrepo' };
 
   it('retains Gitea rate-limit timing without exposing the response body', async () => {
     const adapter = new GiteaActionsAdapter(
@@ -38,13 +38,13 @@ describe('GiteaActionsAdapter', () => {
     });
     const adapter = new GiteaActionsAdapter(fetchFn);
 
-    await expect(adapter.validateAccount(context)).resolves.toEqual({ displayName: 'flowpeek-bot', valid: true });
+    await expect(adapter.validateAccount(context)).resolves.toEqual({ displayName: 'ezrepo-bot', valid: true });
     await expect(adapter.listRepositories(context)).resolves.toEqual([
       {
         providerRepositoryId: '42',
-        owner: 'flowpeek',
-        name: 'flowpeek',
-        url: 'https://gitea.example.test/flowpeek/flowpeek',
+        owner: 'ezrepo',
+        name: 'ezrepo',
+        url: 'https://gitea.example.test/ezrepo/ezrepo',
       },
     ]);
     await expect(adapter.getRepository(context, repository)).resolves.toMatchObject({ providerRepositoryId: '42' });
@@ -85,7 +85,7 @@ describe('GiteaActionsAdapter', () => {
 
 describe('GiteaActionsAdapter change requests', () => {
   const context = { accessToken: 'token', baseUrl: 'https://gitea.example.test', providerAccountId: 'account' };
-  const repository = { name: 'flowpeek', owner: 'octo', providerRepositoryId: '1' };
+  const repository = { name: 'ezrepo', owner: 'octo', providerRepositoryId: '1' };
 
   it.each([
     ['open', false, null, 'OPEN'],

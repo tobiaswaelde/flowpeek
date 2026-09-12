@@ -7,9 +7,9 @@ RUN corepack enable && pnpm install --frozen-lockfile
 COPY . .
 RUN DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder \
   SHADOW_DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder_shadow \
-  pnpm --filter @flowpeek/api db:generate \
-  && pnpm --filter @flowpeek/api build
-RUN pnpm --filter @flowpeek/api deploy --legacy --prod /production
+  pnpm --filter @ezrepo/api db:generate \
+  && pnpm --filter @ezrepo/api build
+RUN pnpm --filter @ezrepo/api deploy --legacy --prod /production
 
 FROM node:24-bookworm-slim AS runtime
 WORKDIR /app

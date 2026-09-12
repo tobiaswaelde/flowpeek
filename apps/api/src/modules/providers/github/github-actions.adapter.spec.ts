@@ -30,10 +30,10 @@ describe('GitHubActionsAdapter', () => {
     const adapter = new GitHubActionsAdapter(fetchFn);
 
     await expect(adapter.listRepositories(context)).resolves.toEqual([
-      { providerRepositoryId: '1', owner: 'octo', name: 'flowpeek', url: 'https://github.com/octo/flowpeek' },
+      { providerRepositoryId: '1', owner: 'octo', name: 'ezrepo', url: 'https://github.com/octo/ezrepo' },
     ]);
     await expect(
-      adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'octo', name: 'flowpeek' }),
+      adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'octo', name: 'ezrepo' }),
     ).resolves.toMatchObject([
       {
         displayTitle: 'CI',
@@ -72,7 +72,7 @@ describe('GitHubActionsAdapter', () => {
       new GitHubActionsAdapter(fetchFn).getRepository(context, {
         providerRepositoryId: '1',
         owner: 'octo',
-        name: 'flowpeek',
+        name: 'ezrepo',
       }),
     ).resolves.toEqual({
       providerRepositoryId: '1',
@@ -80,7 +80,7 @@ describe('GitHubActionsAdapter', () => {
       name: 'renamed',
       url: 'https://github.com/new-owner/renamed',
     });
-    expect(fetchFn).toHaveBeenCalledWith(expect.stringContaining('/repos/octo/flowpeek'), expect.anything());
+    expect(fetchFn).toHaveBeenCalledWith(expect.stringContaining('/repos/octo/ezrepo'), expect.anything());
   });
 
   it('returns null when the tracked GitHub repository is unavailable', async () => {
@@ -112,7 +112,7 @@ describe('GitHubActionsAdapter', () => {
             {
               conclusion: null,
               created_at: '2026-09-09T08:00:00Z',
-              html_url: 'https://github.com/octo/flowpeek/actions/runs/8',
+              html_url: 'https://github.com/octo/ezrepo/actions/runs/8',
               id: 8,
               name: 'Deploy',
               workflow_id: 18,
@@ -133,13 +133,13 @@ describe('GitHubActionsAdapter', () => {
     const adapter = new GitHubActionsAdapter(fetchFn);
 
     await expect(
-      adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'octo', name: 'flowpeek' }),
+      adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'octo', name: 'ezrepo' }),
     ).resolves.toMatchObject([
       {
         awaitingApproval: true,
         changeRequestNumber: '42',
         displayTitle: 'Deploy pull request',
-        reviewUrl: 'https://github.com/octo/flowpeek/pull/42',
+        reviewUrl: 'https://github.com/octo/ezrepo/pull/42',
         scopeKey: 'change-request:42',
         status: 'QUEUED',
       },
@@ -159,7 +159,7 @@ describe('GitHubActionsAdapter', () => {
               event: 'dynamic',
               head_branch: 'main',
               head_sha: '3ba01f8e',
-              html_url: 'https://github.com/octo/flowpeek/actions/runs/34353631785',
+              html_url: 'https://github.com/octo/ezrepo/actions/runs/34353631785',
               id: 34353631785,
               name: 'npm_and_yarn in /. for brace-expansion - Update #1566127419',
               path: 'dynamic/dependabot/dependabot-updates',
@@ -176,7 +176,7 @@ describe('GitHubActionsAdapter', () => {
               event: 'dynamic',
               head_branch: 'main',
               head_sha: '53df4d60',
-              html_url: 'https://github.com/octo/flowpeek/actions/runs/34350764213',
+              html_url: 'https://github.com/octo/ezrepo/actions/runs/34350764213',
               id: 34350764213,
               name: 'npm_and_yarn in /. for brace-expansion - Update #1566075990',
               path: 'dynamic/dependabot/dependabot-updates',
@@ -192,7 +192,7 @@ describe('GitHubActionsAdapter', () => {
     );
 
     const runs = await new GitHubActionsAdapter(fetchFn).listWorkflowRuns(context, {
-      name: 'flowpeek',
+      name: 'ezrepo',
       owner: 'octo',
       providerRepositoryId: '1',
     });
@@ -210,7 +210,7 @@ describe('GitHubActionsAdapter', () => {
 
 describe('GitHubActionsAdapter change requests', () => {
   const context = { accessToken: 'token', baseUrl: null, providerAccountId: 'account' };
-  const repository = { name: 'flowpeek', owner: 'octo', providerRepositoryId: '1' };
+  const repository = { name: 'ezrepo', owner: 'octo', providerRepositoryId: '1' };
 
   it.each([
     ['open', null, 'OPEN'],

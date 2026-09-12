@@ -1,5 +1,5 @@
 {
-  "name": "flowpeek",
+  "name": "ezrepo",
   "version": "0.1.1",
   "private": true,
   "description": "Read-only workflow status dashboard for GitHub, GitLab, Forgejo, and Gitea.",
@@ -10,23 +10,23 @@
     "pnpm": "11.x"
   },
   "scripts": {
-    "build": "nx run-many -t build --all --exclude=flowpeek --parallel=2",
+    "build": "nx run-many -t build --all --exclude=ezrepo --parallel=2",
     "changeset": "changeset",
     "db:generate": "nx run api:db:generate",
-    "dev": "nx run-many -t dev --all --exclude=flowpeek --parallel=2",
-    "docker:build": "nx run-many -t docker:build --all --exclude=flowpeek --parallel=2",
+    "dev": "nx run-many -t dev --all --exclude=ezrepo --parallel=2",
+    "docker:build": "nx run-many -t docker:build --all --exclude=ezrepo --parallel=2",
     "docs:build": "vitepress build docs",
     "docs:check": "tsx scripts/check-docs.ts",
     "docs:dev": "vitepress dev docs",
     "docs:preview": "vitepress preview docs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "nx run-many -t lint --all --exclude=flowpeek --parallel=2",
+    "lint": "nx run-many -t lint --all --exclude=ezrepo --parallel=2",
     "nx": "nx",
     "release": "changeset tag",
-    "test": "nx run-many -t test --all --exclude=flowpeek --parallel=2",
+    "test": "nx run-many -t test --all --exclude=ezrepo --parallel=2",
     "test:docs:e2e": "playwright test --config playwright.docs.config.ts",
-    "typecheck": "nx run-many -t typecheck --all --exclude=flowpeek --parallel=2",
+    "typecheck": "nx run-many -t typecheck --all --exclude=ezrepo --parallel=2",
     "version-packages": "changeset version"
   },
   "devDependencies": {
