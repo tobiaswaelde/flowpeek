@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+
+### Patch Changes
+
+- f29c7f9: Queue an initial workflow synchronization for newly tracked repositories and add a manual workflow retrieval action.
+
 ## 0.2.2
 
 ### Patch Changes
