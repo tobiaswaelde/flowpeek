@@ -140,18 +140,24 @@ export class AvatarService {
   }
 
   private async downloadRedirect(url: URL, redirectCount: number): Promise<AvatarSource> {
-    if (url.protocol !== 'https:' || url.username || url.password) {
-      throw new BadRequestException('Avatar URLs must use HTTPS and may not contain credentials.');
+    if (url.protocol !== 'https:' || url.port || url.username || url.password) {
+      throw new BadRequestException('Avatar URLs must use HTTPS on port 443 and may not contain credentials.');
     }
     if (redirectCount > maximumRedirects) throw new BadRequestException('The avatar URL redirected too many times.');
 
     const address = await this.resolvePublicAddress(url.hostname);
     return new Promise<AvatarSource>((resolve, reject) => {
       const remoteRequest = request(
-        url,
         {
-          headers: { Accept: 'image/jpeg, image/png, image/webp', 'User-Agent': 'ezRepo-avatar-import/1.0' },
-          lookup: (_hostname, _options, callback) => callback(null, address.address, address.family),
+          hostname: address.address,
+          path: `${url.pathname}${url.search}`,
+          protocol: 'https:',
+          servername: url.hostname,
+          headers: {
+            Accept: 'image/jpeg, image/png, image/webp',
+            Host: url.host,
+            'User-Agent': 'ezRepo-avatar-import/1.0',
+          },
         },
         (response) => {
           const statusCode = response.statusCode ?? 0;

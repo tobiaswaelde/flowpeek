@@ -50,6 +50,7 @@ describe('AvatarService', () => {
 
   it('blocks insecure and private remote avatar targets', async () => {
     await expect(service.download('http://example.com/avatar.png')).rejects.toBeInstanceOf(BadRequestException);
+    await expect(service.download('https://example.com:8443/avatar.png')).rejects.toBeInstanceOf(BadRequestException);
     await expect(service.download('https://127.0.0.1/avatar.png')).rejects.toBeInstanceOf(BadRequestException);
     await expect(service.download('https://[::1]/avatar.png')).rejects.toBeInstanceOf(BadRequestException);
   });

@@ -19,13 +19,13 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^12.0.0",
-    "@nestjs/schematics": "^12.0.0",
+    "@nestjs/schematics": "^12.0.1",
     "@nestjs/testing": "^11.2.3",
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
-    "@types/multer": "^2.0.0",
-    "@types/node": "^24.13.3",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^24.13.4",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/pg": "^8.23.1",
@@ -52,7 +52,7 @@
     "@nestjs/websockets": "^11.2.3",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
-    "@querry-kit/nest": "^1.0.3",
+    "@querry-kit/nest": "^1.0.4",
     "@scalar/nestjs-api-reference": "^1.2.18",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
@@ -69,6 +69,6 @@
     "rxjs": "^7.8.2",
     "sharp": "^0.35.4",
     "socket.io": "^4.8.3",
-    "zod": "^4.5.4"
+    "zod": "^4.6.2"
   }
 }
