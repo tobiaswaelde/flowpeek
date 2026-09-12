@@ -148,7 +148,7 @@ export class ProviderSyncService {
       const currentRuns = await this.prisma.workflowRun.findMany({
         distinct: ['workflowId', 'scopeKey'],
         orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
-        select: { awaitingApproval: true, providerRunId: true, status: true },
+        select: { awaitingApproval: true, changeRequestNumber: true, event: true, providerRunId: true, status: true },
         where: {
           repositoryId: repository.id,
         },
@@ -156,8 +156,11 @@ export class ProviderSyncService {
       const activeRuns = currentRuns.filter(
         (run) => run.awaitingApproval || run.status === 'QUEUED' || run.status === 'RUNNING',
       );
+      const failedPullRequestRunsWithoutContext = currentRuns.filter(
+        (run) => run.status === 'FAILED' && run.event === 'pull_request' && !run.changeRequestNumber,
+      );
       const refreshedRuns: (ProviderWorkflowRun | null)[] = [];
-      for (const { providerRunId } of activeRuns)
+      for (const { providerRunId } of [...activeRuns, ...failedPullRequestRunsWithoutContext])
         refreshedRuns.push(await adapter.getWorkflowRun(context, refreshedRepository, providerRunId));
       const runsByProviderId = new Map(discoveredRuns.map((run) => [run.providerRunId, run]));
       for (const run of refreshedRuns) if (run) runsByProviderId.set(run.providerRunId, run);

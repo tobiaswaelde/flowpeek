@@ -147,6 +147,51 @@ describe('GitHubActionsAdapter', () => {
     expect(fetchFn).toHaveBeenCalledTimes(1);
   });
 
+  it('resolves a pull request from its head commit when GitHub omits it from a workflow run', async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            workflow_runs: [
+              {
+                conclusion: 'failure',
+                created_at: '2026-09-01T08:19:23Z',
+                display_title: 'Update Jest',
+                event: 'pull_request',
+                head_branch: 'dependabot/npm_and_yarn/jest-30.5.0',
+                head_sha: '3ad072db',
+                html_url: 'https://github.com/octo/ezrepo/actions/runs/9',
+                id: 9,
+                name: 'CI',
+                run_started_at: '2026-09-01T08:19:25Z',
+                status: 'completed',
+                updated_at: '2026-09-01T08:20:00Z',
+                workflow_id: 17,
+              },
+            ],
+          }),
+        ),
+      )
+      .mockResolvedValueOnce(new Response(JSON.stringify([{ number: 14 }])));
+    const adapter = new GitHubActionsAdapter(fetchFn);
+
+    await expect(
+      adapter.listWorkflowRuns(context, { providerRepositoryId: '1', owner: 'octo', name: 'ezrepo' }),
+    ).resolves.toMatchObject([
+      {
+        changeRequestNumber: '14',
+        reviewUrl: 'https://github.com/octo/ezrepo/pull/14',
+        scopeKey: 'change-request:14',
+      },
+    ]);
+    expect(fetchFn).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('/repos/octo/ezrepo/commits/3ad072db/pulls?per_page=1'),
+      expect.objectContaining({ headers: expect.objectContaining({ Authorization: 'Bearer token' }) }),
+    );
+  });
+
   it('classifies dynamic Dependabot updates under one stable internal workflow', async () => {
     const fetchFn = jest.fn().mockResolvedValue(
       new Response(

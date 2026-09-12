@@ -46,6 +46,7 @@ interface GitHubWorkflowRunResponse {
 interface GitHubPullRequestResponse {
   base?: { ref?: string };
   merged_at?: string | null;
+  number: number;
   state: string;
 }
 
@@ -111,7 +112,7 @@ export class GitHubActionsAdapter implements ProviderAdapter {
       context,
       `/repos/${repository.owner}/${repository.name}/actions/runs?${query}`,
     );
-    return response.workflow_runs.map((run) => this.toWorkflowRun(run, repository));
+    return Promise.all(response.workflow_runs.map((run) => this.resolveWorkflowRun(context, repository, run)));
   }
 
   async getWorkflowRun(
@@ -125,7 +126,7 @@ export class GitHubActionsAdapter implements ProviderAdapter {
     );
     if (response.status === 404) return null;
     if (!response.ok) throw providerRequestError('GitHub', response);
-    return this.toWorkflowRun((await response.json()) as GitHubWorkflowRunResponse, repository);
+    return this.resolveWorkflowRun(context, repository, (await response.json()) as GitHubWorkflowRunResponse);
   }
 
   async verifyWebhook(request: ProviderWebhookRequest): Promise<VerifiedWebhook | null> {
@@ -163,6 +164,35 @@ export class GitHubActionsAdapter implements ProviderAdapter {
   private url(context: ProviderAccountContext, path: string): string {
     return `${(context.baseUrl ?? 'https://api.github.com').replace(/\/$/, '')}${path}`;
   }
+
+  /**
+   * Preserve the pull-request execution context when GitHub omits it from the Actions run payload.
+   *
+   * GitHub can return an empty `pull_requests` array for historical pull-request runs after their branch is merged.
+   * Looking up pull requests associated with the immutable head commit keeps the lookup read-only and lets a later
+   * successful validation on the target branch retire the stale failure.
+   */
+  private async resolveWorkflowRun(
+    context: ProviderAccountContext,
+    repository: ProviderRepositoryReference,
+    run: GitHubWorkflowRunResponse,
+  ): Promise<ProviderWorkflowRun> {
+    if (
+      run.event === 'pull_request' &&
+      normalizeWorkflowRunStatus('GITHUB', run.status, run.conclusion) === 'FAILED' &&
+      !run.pull_requests?.length &&
+      run.head_sha
+    ) {
+      const pullRequests = await this.request<GitHubPullRequestResponse[]>(
+        context,
+        `/repos/${repository.owner}/${repository.name}/commits/${run.head_sha}/pulls?per_page=1`,
+      );
+      const pullRequest = pullRequests[0];
+      if (pullRequest) run = { ...run, pull_requests: [{ number: pullRequest.number }] };
+    }
+    return this.toWorkflowRun(run, repository);
+  }
+
   private toWorkflowRun(run: GitHubWorkflowRunResponse, repository: ProviderRepositoryReference): ProviderWorkflowRun {
     const startedAt = run.run_started_at ? new Date(run.run_started_at) : null;
     const completedAt = run.status === 'completed' ? new Date(run.updated_at) : null;
