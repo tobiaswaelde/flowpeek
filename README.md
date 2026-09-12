@@ -146,8 +146,9 @@ auditable justification in GitHub.
 ## Architecture
 
 - `apps/api`: NestJS, Prisma, PostgreSQL, CASL, and `@querry-kit/nest`.
+- `/mcp`: permission-aware, read-only MCP v2 endpoint using user-owned bearer tokens.
 - `apps/web`: Nuxt 4 SPA, Pinia, Nuxt UI, and `@querry-kit/nuxt`.
-- [Documentation](https://tobiaswaelde.github.io/ezrepo/): deployment, providers, notifications, repositories, and localization.
+- [Documentation](https://tobiaswaelde.github.io/ezrepo/): deployment, MCP access, providers, notifications, repositories, and localization.
 - `PLAN.md`: approved architecture and release design.
 - [GitHub Issues](https://github.com/tobiaswaelde/ezrepo/issues): ordered
   implementation epics and tasks.

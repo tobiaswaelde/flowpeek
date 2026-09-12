@@ -8,6 +8,7 @@ import { DashboardService } from './dashboard.service.js';
 @Module({
   imports: [CaslModule, WorkflowRunsModule],
   controllers: [DashboardController],
+  exports: [DashboardService],
   providers: [DashboardService],
 })
 export class DashboardModule {}

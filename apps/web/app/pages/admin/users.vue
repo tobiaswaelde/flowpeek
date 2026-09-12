@@ -57,6 +57,15 @@
       </template>
       <template #actions-cell="{ row }">
         <div class="flex justify-end">
+          <UTooltip :text="$t('mcp.manageUserTokens')">
+            <UButton
+              color="neutral"
+              icon="i-lucide-key-round"
+              variant="ghost"
+              :aria-label="$t('mcp.manageUserTokens')"
+              @click="manageTokens(row.original)"
+            />
+          </UTooltip>
           <UTooltip :text="$t('users.delete')">
             <span class="inline-flex">
               <UButton
@@ -81,10 +90,12 @@
       shortcuts
     />
   </LayoutPage>
+
+  <ModulesMcpUserTokenDialog v-model:open="tokenDialogOpen" :user="selectedUser" />
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import { FilterFieldType, type FilterField, type SortingField } from '@querry-kit/nuxt-ui/types';
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
@@ -105,6 +116,8 @@ const { t } = useI18n();
 const { formatDateTime } = useDateTime();
 const api = useFlowpeekApi();
 const auth = useAuthStore();
+const selectedUser = ref<User | null>(null);
+const tokenDialogOpen = ref(false);
 const { isPending, run: runPendingAction } = usePendingActions();
 const userRoleOptions = computed<Array<{ label: string; value: UserRole }>>(() =>
   (['SYSTEM_ADMIN', 'MANAGER', 'VIEWER'] as UserRole[]).map((role) => ({ label: t(`roles.${role}`), value: role })),
@@ -158,6 +171,11 @@ const columnPinning = computed({
 });
 
 useHead({ title: computed(() => t('users.title')) });
+
+function manageTokens(user: User): void {
+  selectedUser.value = user;
+  tokenDialogOpen.value = true;
+}
 
 /** Format an account timestamp in the active interface locale. */
 function formatTimestamp(timestamp: string): string {

@@ -3,6 +3,8 @@ import type { AxiosResponse } from 'axios';
 import { apiEndpoints } from '~/types/api/endpoints';
 import type {
   ApplicationSettings,
+  CreatedMcpAccessToken,
+  CreateMcpAccessToken,
   CreateNotificationChannel,
   CreateNotificationRule,
   CreateProviderAccount,
@@ -10,6 +12,7 @@ import type {
   DashboardSummary,
   DashboardWorkflowRun,
   HealthResponse,
+  McpAccessToken,
   NotificationChannel,
   NotificationDelivery,
   NotificationRule,
@@ -52,6 +55,13 @@ export function useFlowpeekApi() {
         api.get(apiEndpoints.dashboard.trend, { params: query }),
     },
     health: (): Promise<AxiosResponse<HealthResponse>> => api.get(apiEndpoints.health),
+    mcpTokens: {
+      create: (input: CreateMcpAccessToken): Promise<AxiosResponse<CreatedMcpAccessToken>> =>
+        api.post(apiEndpoints.mcpTokens, input),
+      list: (userId?: string): Promise<AxiosResponse<McpAccessToken[]>> =>
+        api.get(apiEndpoints.mcpTokens, { params: { userId } }),
+      revoke: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.mcpTokens}/${id}`),
+    },
     notificationChannels: {
       create: (input: CreateNotificationChannel): Promise<AxiosResponse<NotificationChannel>> =>
         api.post(apiEndpoints.notificationChannels, input),

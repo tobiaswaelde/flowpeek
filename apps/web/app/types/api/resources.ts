@@ -23,6 +23,33 @@ export interface UserPreferences {
   dismissedIntroBannerIds: string[];
 }
 
+/** Current lifecycle state of one MCP bearer token. */
+export type McpAccessTokenStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED';
+
+/** Safe MCP token metadata returned after its one-time creation response. */
+export interface McpAccessToken {
+  createdAt: ApiTimestamp;
+  expiresAt: ApiTimestamp | null;
+  id: string;
+  lastUsedAt: ApiTimestamp | null;
+  name: string;
+  revokedAt: ApiTimestamp | null;
+  status: McpAccessTokenStatus;
+  tokenPrefix: string;
+  userId: string;
+}
+
+/** One-time MCP token response containing the newly generated bearer secret. */
+export interface CreatedMcpAccessToken extends McpAccessToken {
+  token: string;
+}
+
+/** Input for creating a user-owned MCP bearer token. */
+export interface CreateMcpAccessToken {
+  expiresAt?: ApiTimestamp | null;
+  name: string;
+}
+
 /** Validate global settings before sending an administrative update. */
 export const applicationSettingsSchema = z.object({
   dateTimeFormat: z.enum(defaultDateTimeFormats),

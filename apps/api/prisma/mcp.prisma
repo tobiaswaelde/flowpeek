@@ -1,0 +1,18 @@
+model McpAccessToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name       String    @db.VarChar(100)
+  tokenHash  String    @unique @db.Char(64)
+  tokenPrefix String   @db.VarChar(24)
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  revokedAt  DateTime?
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("mcp_access_tokens")
+}

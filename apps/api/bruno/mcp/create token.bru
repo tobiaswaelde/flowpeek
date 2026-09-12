@@ -1,0 +1,27 @@
+meta {
+  name: create MCP token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/api/v1/mcp-tokens
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Bruno MCP client",
+    "expiresAt": null
+  }
+}
+
+script:post-response {
+  bru.setEnvVar('mcpToken', res.body.token);
+  bru.setEnvVar('mcpTokenId', res.body.id);
+}

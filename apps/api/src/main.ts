@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { ClassSerializerInterceptor, ValidationPipe, VersioningType } from '@nestjs/common';
+import { ClassSerializerInterceptor, RequestMethod, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
@@ -18,7 +18,7 @@ export async function bootstrap(): Promise<void> {
     type: VersioningType.URI,
     defaultVersion: '1',
   });
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', { exclude: [{ path: 'mcp', method: RequestMethod.POST }] });
   app.enableShutdownHooks();
   app.enableCors({ origin: getCorsOrigins(ENV.CORS_ORIGIN) });
   app.useGlobalPipes(new ValidationPipe(validationOptions));

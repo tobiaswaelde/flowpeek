@@ -30,6 +30,7 @@ export const apiEndpoints = {
     trend: '/dashboard/trend',
   },
   health: '/health',
+  mcpTokens: '/mcp-tokens',
   notificationChannels: '/notification-channels',
   notificationDeliveries: '/notification-deliveries',
   notificationRules: '/notification-rules',

@@ -13,6 +13,7 @@ model User {
   passwordHash            String                 @db.VarChar(255)
   role                    UserRole               @default(VIEWER)
   dismissedIntroBannerIds String[]               @default([])
+  mcpAccessTokens         McpAccessToken[]
   repositoryMemberships   RepositoryMembership[]
 
   @@map("users")

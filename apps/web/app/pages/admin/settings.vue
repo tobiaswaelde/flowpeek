@@ -140,6 +140,8 @@
         />
       </div>
     </UCard>
+
+    <ModulesMcpTokenManagementCard />
   </LayoutPage>
 </template>
 
