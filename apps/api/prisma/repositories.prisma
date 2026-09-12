@@ -10,6 +10,7 @@ model Repository {
   enabled              Boolean  @default(true)
   lastSyncAt           DateTime?
   workflowRunRetentionDays Int?
+  retainedRunDurationMs BigInt @default(0)
 
   providerAccountId String          @db.Uuid
   providerAccount   ProviderAccount @relation(fields: [providerAccountId], references: [id], onDelete: Cascade)

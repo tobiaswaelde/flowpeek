@@ -1,7 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import type { QueryOptionsMap } from '@querry-kit/nest';
 
+import { CaslAction } from '../../casl/casl-action.js';
+import { accessibleBy } from '../../casl/casl-prisma.js';
+import { CaslSubject } from '../../casl/casl-subject.js';
 import type { Prisma } from '../../generated/prisma/client.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
 import type { AuthenticatedUser } from '../auth/types.js';
 import { WorkflowRunsQueryService, type WorkflowRunTypeMap } from '../workflow-runs/workflow-runs-query.service.js';
 import type { DashboardStatusDistributionDto, DashboardSummaryDto } from './dto/dashboard-summary.dto.js';
@@ -50,7 +54,10 @@ export interface WorkflowRunTrendBucket {
 /** Reads dashboard aggregates from only the workflow runs visible to the authenticated user. */
 @Injectable()
 export class DashboardService {
-  constructor(private readonly workflowRuns: WorkflowRunsQueryService) {}
+  constructor(
+    private readonly workflowRuns: WorkflowRunsQueryService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   /**
    * Return the 15 newest visible workflow contexts whose latest terminal run failed.
@@ -113,7 +120,13 @@ export class DashboardService {
   async getSummary(user: AuthenticatedUser, query: DashboardPeriodQueryDto): Promise<DashboardSummaryDto> {
     const { from, to } = this.parsePeriod(query);
     const ability = await this.workflowRuns.getReadAbility(user);
-    const [completedRuns, activeRuns] = await Promise.all([
+    const visibleRunWhere = accessibleBy(ability, CaslAction.Read).ofType(
+      CaslSubject.WorkflowRun as never,
+    ) as Prisma.WorkflowRunWhereInput;
+    const visibleRepositoryWhere = accessibleBy(ability, CaslAction.Read).ofType(
+      CaslSubject.Repository as never,
+    ) as Prisma.RepositoryWhereInput;
+    const [completedRuns, activeRuns, currentDuration, retainedDuration] = await Promise.all([
       this.workflowRuns.findMany<DashboardSummaryRun>(
         {
           select: dashboardSummarySelect,
@@ -128,6 +141,8 @@ export class DashboardService {
         { select: dashboardSummarySelect, where: { status: { in: ['QUEUED', 'RUNNING'] } } },
         ability,
       ),
+      this.prisma.workflowRun.aggregate({ _sum: { durationMs: true }, where: visibleRunWhere }),
+      this.prisma.repository.aggregate({ _sum: { retainedRunDurationMs: true }, where: visibleRepositoryWhere }),
     ]);
     const statuses = this.countStatuses(completedRuns);
     const decidedCount = statuses.success + statuses.failed;
@@ -140,6 +155,8 @@ export class DashboardService {
       runningCount: activeRuns.filter((run) => run.status === 'RUNNING').length,
       statuses,
       successRate: decidedCount === 0 ? 0 : this.roundPercentage((statuses.success / decidedCount) * 100),
+      totalRunDurationMs:
+        Number(currentDuration._sum.durationMs ?? 0) + Number(retainedDuration._sum.retainedRunDurationMs ?? 0n),
     };
   }
 

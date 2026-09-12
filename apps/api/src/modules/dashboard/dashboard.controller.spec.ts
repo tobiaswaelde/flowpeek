@@ -25,6 +25,7 @@ describe('DashboardController', () => {
       runningCount: 1,
       statuses: { cancelled: 0, failed: 1, skipped: 0, success: 1, unknown: 0 },
       successRate: 50,
+      totalRunDurationMs: 240_000,
     };
     const dashboard = { getSummary: jest.fn().mockResolvedValue(summary) };
 

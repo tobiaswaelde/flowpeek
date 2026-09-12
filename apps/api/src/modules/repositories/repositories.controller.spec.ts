@@ -30,6 +30,7 @@ describe('RepositoriesController', () => {
       providerRepositoryId: '42',
       updatedAt: new Date('2026-09-09T08:00:00.000Z'),
       url: 'https://github.com/tobiaswaelde/flowpeek',
+      retainedRunDurationMs: 0n,
       workflowRunRetentionDays: 30,
     } satisfies RepositoryResourceModel;
     const query = {

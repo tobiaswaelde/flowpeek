@@ -71,6 +71,7 @@ describe('resource DTO mappings', () => {
       url: 'https://example.test/flowpeek',
       enabled: true,
       lastSyncAt: null,
+      retainedRunDurationMs: 0n,
       workflowRunRetentionDays: 30,
       memberships: [
         {

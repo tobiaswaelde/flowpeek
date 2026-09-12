@@ -19,9 +19,15 @@ describe('workflow run retention', () => {
       applicationSettings: { findUnique: jest.fn().mockResolvedValue({ workflowRunRetentionDays: 30 }) },
       repository: {
         findMany: jest.fn().mockResolvedValue([{ id: 'repository-override', workflowRunRetentionDays: 7 }]),
+        update: jest.fn(),
       },
-      workflowRun: { deleteMany: jest.fn().mockResolvedValue({ count: 0 }) },
+      workflowRun: {
+        deleteMany: jest.fn().mockResolvedValue({ count: 0 }),
+        groupBy: jest.fn().mockResolvedValue([]),
+      },
+      $transaction: jest.fn(),
     };
+    prisma.$transaction = jest.fn().mockImplementation(async (callback) => callback(prisma));
     const service = new WorkflowRunRetentionService(prisma as unknown as PrismaService, {} as JobRunnerService);
     const now = new Date('2026-08-26T12:00:00.000Z');
 
@@ -37,6 +43,48 @@ describe('workflow run retention', () => {
       where: {
         completedAt: { lt: new Date('2026-08-19T12:00:00.000Z') },
         repositoryId: 'repository-override',
+      },
+    });
+    expect(prisma.workflowRun.groupBy).toHaveBeenNthCalledWith(1, {
+      _sum: { durationMs: true },
+      by: ['repositoryId'],
+      where: {
+        completedAt: { lt: new Date('2026-07-27T12:00:00.000Z') },
+        repository: { workflowRunRetentionDays: null },
+      },
+    });
+  });
+
+  it('adds expired run durations to the matching repository before deletion', async () => {
+    const prisma = {
+      applicationSettings: { findUnique: jest.fn().mockResolvedValue({ workflowRunRetentionDays: 30 }) },
+      repository: {
+        findMany: jest.fn().mockResolvedValue([]),
+        update: jest.fn().mockResolvedValue({}),
+      },
+      workflowRun: {
+        deleteMany: jest.fn().mockResolvedValue({ count: 2 }),
+        groupBy: jest.fn().mockResolvedValue([
+          { _sum: { durationMs: 120_000 }, repositoryId: 'repository-a' },
+          { _sum: { durationMs: null }, repositoryId: 'repository-b' },
+        ]),
+      },
+      $transaction: jest.fn(),
+    };
+    prisma.$transaction = jest.fn().mockImplementation(async (callback) => callback(prisma));
+
+    await new WorkflowRunRetentionService(prisma as unknown as PrismaService, {} as JobRunnerService).deleteExpiredRuns(
+      new Date('2026-08-26T12:00:00.000Z'),
+    );
+
+    expect(prisma.repository.update).toHaveBeenCalledWith({
+      data: { retainedRunDurationMs: { increment: 120_000n } },
+      where: { id: 'repository-a' },
+    });
+    expect(prisma.workflowRun.deleteMany).toHaveBeenCalledWith({
+      where: {
+        completedAt: { lt: new Date('2026-07-27T12:00:00.000Z') },
+        repository: { workflowRunRetentionDays: null },
       },
     });
   });

@@ -32,6 +32,9 @@ export class DashboardSummaryDto {
   @ApiProperty({ description: 'Median persisted duration of completed runs in milliseconds.', nullable: true })
   medianDurationMs!: number | null;
 
+  @ApiProperty({ description: 'Total duration of all visible runs, including retained history, in milliseconds.' })
+  totalRunDurationMs!: number;
+
   @ApiProperty({ description: 'Number of currently queued visible runs.' })
   queuedCount!: number;
 

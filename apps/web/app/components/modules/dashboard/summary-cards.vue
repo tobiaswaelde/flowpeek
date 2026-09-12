@@ -1,5 +1,5 @@
 <template>
-  <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5" :aria-label="$t('dashboard.summary')">
+  <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-6" :aria-label="$t('dashboard.summary')">
     <UCard
       v-for="metric in metrics"
       :key="metric.key"
@@ -83,6 +83,13 @@ const metrics = computed<SummaryMetric[]>(() => {
       value: summary ? formatDuration(summary.medianDurationMs) : '—',
     },
     {
+      context: t('dashboard.totalDurationContext'),
+      icon: 'i-lucide-timer-reset',
+      key: 'total-duration',
+      label: t('dashboard.totalDuration'),
+      value: summary ? formatTotalDuration(summary.totalRunDurationMs) : '—',
+    },
+    {
       context: t('dashboard.activeRunsContext', {
         queued: formatNumber(summary?.queuedCount ?? 0),
         running: formatNumber(summary?.runningCount ?? 0),
@@ -108,5 +115,17 @@ function formatDuration(durationMs: number | null): string {
     minutes: formatNumber(Math.floor(seconds / 60)),
     seconds: formatNumber(seconds % 60),
   });
+}
+
+/** Format the all-time duration as compact minutes. */
+function formatTotalDuration(durationMs: number): string {
+  const minutes = Math.round(durationMs / 60_000);
+  const compactMinutes =
+    minutes >= 1_000_000
+      ? `${formatNumber(minutes / 1_000_000, 3)}M`
+      : minutes >= 1_000
+        ? `${formatNumber(minutes / 1_000, 3)}K`
+        : formatNumber(minutes);
+  return t('dashboard.durationMinutesCompact', { minutes: compactMinutes });
 }
 </script>

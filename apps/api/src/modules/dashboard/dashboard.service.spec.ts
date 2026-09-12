@@ -6,6 +6,13 @@ import type { PrismaService } from '../../prisma/prisma.service.js';
 import { WorkflowRunsQueryService } from '../workflow-runs/workflow-runs-query.service.js';
 import { DashboardService } from './dashboard.service.js';
 
+function prisma(retainedRunDurationMs = 0n, currentRunDurationMs = 0): PrismaService {
+  return {
+    repository: { aggregate: jest.fn().mockResolvedValue({ _sum: { retainedRunDurationMs } }) },
+    workflowRun: { aggregate: jest.fn().mockResolvedValue({ _sum: { durationMs: currentRunDurationMs } }) },
+  } as unknown as PrismaService;
+}
+
 describe('DashboardService', () => {
   it('limits the needs-attention dashboard preview to 15 newest visible runs', async () => {
     const ability = {};
@@ -21,7 +28,7 @@ describe('DashboardService', () => {
       findNeedsAttention: jest.fn().mockResolvedValue(failures),
       getReadAbility: jest.fn().mockResolvedValue(ability),
     } as unknown as WorkflowRunsQueryService;
-    const service = new DashboardService(workflowRuns);
+    const service = new DashboardService(workflowRuns, prisma());
 
     await expect(service.getLatestFailures({ id: 'viewer', role: 'VIEWER', username: 'viewer' })).resolves.toEqual(
       failures,
@@ -48,7 +55,7 @@ describe('DashboardService', () => {
       ]),
       getReadAbility: jest.fn().mockResolvedValue(ability),
     } as unknown as WorkflowRunsQueryService;
-    const service = new DashboardService(workflowRuns);
+    const service = new DashboardService(workflowRuns, prisma());
 
     await expect(service.getLatestRuns({ id: 'viewer', role: 'VIEWER', username: 'viewer' })).resolves.toHaveLength(1);
     expect(workflowRuns.findMany).toHaveBeenCalledWith(
@@ -76,7 +83,7 @@ describe('DashboardService', () => {
     } as unknown as WorkflowRunsQueryService;
 
     await expect(
-      new DashboardService(workflowRuns).getAwaitingApproval({ id: 'viewer', role: 'VIEWER', username: 'viewer' }),
+      new DashboardService(workflowRuns, prisma()).getAwaitingApproval({ id: 'viewer', role: 'VIEWER', username: 'viewer' }),
     ).resolves.toHaveLength(1);
     expect(workflowRuns.findCurrent).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -107,7 +114,7 @@ describe('DashboardService', () => {
       ]),
       getReadAbility: jest.fn().mockResolvedValue(ability),
     } as unknown as WorkflowRunsQueryService;
-    const service = new DashboardService(workflowRuns);
+    const service = new DashboardService(workflowRuns, prisma());
 
     await expect(
       service.getTrend(
@@ -134,7 +141,10 @@ describe('DashboardService', () => {
   });
 
   it('summarizes visible completed and active workflow runs', async () => {
-    const ability = {};
+    const ability = new CaslAbilityFactory().createForUser(
+      { id: 'viewer', role: 'VIEWER', username: 'viewer' },
+      [],
+    );
     const workflowRuns = {
       findCurrent: jest.fn().mockResolvedValue([
         { awaitingApproval: true, durationMs: null, status: 'QUEUED' },
@@ -149,7 +159,7 @@ describe('DashboardService', () => {
     } as unknown as WorkflowRunsQueryService;
 
     await expect(
-      new DashboardService(workflowRuns).getSummary(
+      new DashboardService(workflowRuns, prisma(600_000n, 400_000)).getSummary(
         { id: 'viewer', role: 'VIEWER', username: 'viewer' },
         { from: '2026-08-01T00:00:00.000Z', to: '2026-08-31T23:59:59.999Z' },
       ),
@@ -161,6 +171,7 @@ describe('DashboardService', () => {
       runningCount: 1,
       statuses: { cancelled: 0, failed: 1, skipped: 1, success: 1, unknown: 0 },
       successRate: 50,
+      totalRunDurationMs: 1_000_000,
     });
     expect(workflowRuns.getReadAbility).toHaveBeenCalledTimes(1);
     expect(workflowRuns.findMany).toHaveBeenCalledTimes(1);
@@ -189,7 +200,7 @@ describe('DashboardService', () => {
     } as unknown as WorkflowRunsQueryService;
 
     await expect(
-      new DashboardService(workflowRuns).getRepositoryHealth(
+      new DashboardService(workflowRuns, prisma()).getRepositoryHealth(
         { id: 'viewer', role: 'VIEWER', username: 'viewer' },
         { from: '2026-08-01T00:00:00.000Z', to: '2026-08-31T23:59:59.999Z' },
       ),
@@ -224,7 +235,7 @@ describe('DashboardService', () => {
     const workflowRuns = { getReadAbility: jest.fn() } as unknown as WorkflowRunsQueryService;
 
     await expect(
-      new DashboardService(workflowRuns).getTrend(
+      new DashboardService(workflowRuns, prisma()).getTrend(
         { id: 'viewer', role: 'VIEWER', username: 'viewer' },
         { bucket: 'hour', from: '2026-08-27T00:00:00.000Z', to: '2026-08-26T00:00:00.000Z' },
       ),
@@ -261,7 +272,7 @@ describe('DashboardService', () => {
         }),
       },
     } as unknown as PrismaService;
-    const dashboard = new DashboardService(new WorkflowRunsQueryService(prisma, new CaslAbilityFactory()));
+    const dashboard = new DashboardService(new WorkflowRunsQueryService(prisma, new CaslAbilityFactory()), prisma);
     const user = { id: 'viewer', role: 'VIEWER' as const, username: 'viewer' };
 
     await expect(dashboard.getLatestFailures(user)).resolves.toEqual([

@@ -25,6 +25,7 @@ const dashboardSummary = {
   runningCount: 1,
   statuses: { cancelled: 0, failed: 1, skipped: 0, success: 1, unknown: 0 },
   successRate: 50,
+  totalRunDurationMs: 5_400_000,
 };
 const repositoryHealth = [
   {
@@ -67,6 +68,7 @@ test('hides system administration navigation from viewers', async ({ page }) => 
         runningCount: 0,
         statuses: { cancelled: 0, failed: 0, skipped: 0, success: 0, unknown: 0 },
         successRate: 0,
+        totalRunDurationMs: 0,
       },
     }),
   );
@@ -127,6 +129,8 @@ test('renders dashboard values, reloads for range filters, and presents request 
     '/workflows/awaiting-approval',
   );
   await expect(page.getByRole('region', { name: 'Workflow health summary' }).getByText('50 %')).toBeVisible();
+  await expect(page.getByText('Total runtime')).toBeVisible();
+  await expect(page.getByText('90 min', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Status distribution' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Repository health' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'View all' })).toHaveAttribute('href', '/workflow-runs/needs-attention');

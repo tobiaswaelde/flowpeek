@@ -14,7 +14,7 @@ describe('MCP tool authorization integration', () => {
   const abilityFactory = new CaslAbilityFactory();
   const repositories = new RepositoriesQueryService(prisma, abilityFactory);
   const workflowRuns = new WorkflowRunsQueryService(prisma, abilityFactory);
-  const tools = new McpToolsService(new DashboardService(workflowRuns), repositories, workflowRuns);
+  const tools = new McpToolsService(new DashboardService(workflowRuns, prisma), repositories, workflowRuns);
   let users: Record<'admin' | 'manager' | 'viewer', AuthenticatedUser>;
   let visibleRepositoryId: string;
 

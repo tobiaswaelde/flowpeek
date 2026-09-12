@@ -106,6 +106,7 @@ const dashboardSummarySchema = z.object({
     unknown: z.number(),
   }),
   successRate: z.number(),
+  totalRunDurationMs: z.number(),
 });
 const trendSchema = z.object({
   buckets: z.array(z.object({ bucketStart: z.string(), errorCount: z.number(), successCount: z.number() })),

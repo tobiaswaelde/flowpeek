@@ -259,6 +259,7 @@ export interface DashboardSummary {
   runningCount: number;
   statuses: DashboardStatusDistribution;
   successRate: number;
+  totalRunDurationMs: number;
 }
 
 /** Permission-aware workflow health aggregates for one visible repository. */

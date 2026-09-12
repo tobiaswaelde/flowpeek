@@ -10,7 +10,7 @@ describe('workflow-run authorization integration', () => {
   const prisma = new PrismaService();
   const database = new TestDatabaseService(prisma);
   const runs = new WorkflowRunsQueryService(prisma, new CaslAbilityFactory());
-  const dashboard = new DashboardService(runs);
+  const dashboard = new DashboardService(runs, prisma);
 
   let users: Record<'admin' | 'manager' | 'viewer' | 'outsider', AuthenticatedUser>;
   let visibleRunId: string;

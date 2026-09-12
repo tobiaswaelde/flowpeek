@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
+import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { JobRunnerService } from './job-runner.service.js';
 
@@ -35,11 +36,9 @@ export class WorkflowRunRetentionService {
     const defaultRetentionDays = settings?.workflowRunRetentionDays ?? DEFAULT_WORKFLOW_RUN_RETENTION_DAYS;
     const defaultCutoff = getWorkflowRunRetentionCutoff(defaultRetentionDays, now);
 
-    await this.prisma.workflowRun.deleteMany({
-      where: {
-        completedAt: { lt: defaultCutoff },
-        repository: { workflowRunRetentionDays: null },
-      },
+    await this.archiveDurationsAndDeleteRuns({
+      completedAt: { lt: defaultCutoff },
+      repository: { workflowRunRetentionDays: null },
     });
 
     const repositories = await this.prisma.repository.findMany({
@@ -51,12 +50,35 @@ export class WorkflowRunRetentionService {
       const retentionDays = repository.workflowRunRetentionDays;
       if (retentionDays === null) continue;
 
-      await this.prisma.workflowRun.deleteMany({
-        where: {
-          completedAt: { lt: getWorkflowRunRetentionCutoff(retentionDays, now) },
-          repositoryId: repository.id,
-        },
+      await this.archiveDurationsAndDeleteRuns({
+        completedAt: { lt: getWorkflowRunRetentionCutoff(retentionDays, now) },
+        repositoryId: repository.id,
       });
     }
+  }
+
+  /** Persist deleted run durations by repository before removing the expired records. */
+  private async archiveDurationsAndDeleteRuns(where: Prisma.WorkflowRunWhereInput): Promise<void> {
+    await this.prisma.$transaction(async (transaction) => {
+      const durations = await transaction.workflowRun.groupBy({
+        by: ['repositoryId'],
+        where,
+        _sum: { durationMs: true },
+      });
+
+      await Promise.all(
+        durations.flatMap(({ _sum, repositoryId }) => {
+          if (_sum.durationMs === null) return [];
+          return [
+            transaction.repository.update({
+              data: { retainedRunDurationMs: { increment: BigInt(_sum.durationMs) } },
+              where: { id: repositoryId },
+            }),
+          ];
+        }),
+      );
+
+      await transaction.workflowRun.deleteMany({ where });
+    });
   }
 }
