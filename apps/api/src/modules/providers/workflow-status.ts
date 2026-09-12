@@ -20,7 +20,19 @@ export function normalizeWorkflowRunStatus(
 ): WorkflowRunStatus {
   const state = lifecycle.toLowerCase();
   if (['in_progress', 'running'].includes(state)) return 'RUNNING';
-  if (['queued', 'pending', 'created', 'waiting', 'waiting_for_resource', 'preparing', 'scheduled'].includes(state))
+  if (
+    [
+      'blocked',
+      'queued',
+      'pending',
+      'requested',
+      'created',
+      'waiting',
+      'waiting_for_resource',
+      'preparing',
+      'scheduled',
+    ].includes(state)
+  )
     return 'QUEUED';
   const normalized: Record<string, WorkflowRunStatus> = {
     success: 'SUCCESS',

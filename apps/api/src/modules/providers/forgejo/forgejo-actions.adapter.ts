@@ -13,31 +13,50 @@ import type {
   VerifiedWebhook,
 } from '../provider-adapter.js';
 import { buildWorkflowRunScopeKey, PROVIDER_FETCH } from '../provider-adapter.js';
-import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
+import { normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
+const FORGEJO_PAGE_SIZE = 100;
+
 interface ForgejoRepository {
   id: number;
   name: string;
   html_url: string;
   owner: { login: string };
 }
+
 interface ForgejoRun {
+  approved_by?: number;
+  commit_sha?: string;
+  created: string;
+  duration?: number;
   event?: string;
-  head_branch?: string | null;
-  head_sha?: string | null;
-  id: number;
-  name?: string;
-  path?: string;
-  pull_requests?: { number: number }[];
-  workflow_name?: string;
-  workflow_id?: number | string;
+  event_payload?: string;
   html_url: string;
-  created_at: string;
-  run_started_at?: string | null;
-  updated_at: string;
+  id: number;
+  need_approval?: boolean;
+  prettyref?: string;
+  started?: string | null;
   status: string;
-  conclusion?: string | null;
+  stopped?: string | null;
+  title?: string;
+  trigger_event?: string;
+  updated: string;
+  workflow_id?: string;
+}
+
+interface ForgejoRunEventPayload {
+  number?: number;
+  pull_request?: {
+    head?: { ref?: string };
+    html_url?: string;
+    number?: number;
+  };
+}
+
+interface ForgejoWorkflowRunsResponse {
+  total_count?: number;
+  workflow_runs?: ForgejoRun[];
 }
 
 /** Raised when a Forgejo instance predates the read-only Actions run API. */
@@ -53,16 +72,19 @@ export class ForgejoActionsUnsupportedError extends Error {
 @Injectable()
 export class ForgejoActionsAdapter implements ProviderAdapter {
   readonly providerType = 'FORGEJO' as const;
+
   constructor(@Inject(PROVIDER_FETCH) private readonly fetchFn: FetchLike = fetch) {}
 
   async validateAccount(context: ProviderAccountContext): Promise<ProviderAccountValidation> {
     const user = await this.request<{ login: string }>(context, '/user');
     return { displayName: user.login, valid: true };
   }
+
   async listRepositories(context: ProviderAccountContext): Promise<ProviderRepository[]> {
-    const repositories = await this.request<ForgejoRepository[]>(context, '/user/repos?limit=100');
+    const repositories = await this.request<ForgejoRepository[]>(context, '/user/repos?page=1&limit=100');
     return repositories.map((repository) => this.toRepository(repository));
   }
+
   async getRepository(
     context: ProviderAccountContext,
     repository: ProviderRepositoryReference,
@@ -74,19 +96,40 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
     if (!response.ok) throw new Error(`Forgejo API request failed with status ${response.status}.`);
     return this.toRepository((await response.json()) as ForgejoRepository);
   }
+
   async listWorkflowRuns(
     context: ProviderAccountContext,
     repository: ProviderRepositoryReference,
     updatedAfter?: Date,
   ): Promise<ProviderWorkflowRun[]> {
-    const query = new URLSearchParams({ limit: '100' });
-    if (updatedAfter) query.set('created_after', updatedAfter.toISOString());
-    const data = await this.actionsRequest<{ workflow_runs?: ForgejoRun[] } | ForgejoRun[]>(
-      context,
-      `/repos/${repository.owner}/${repository.name}/actions/runs?${query}`,
-    );
-    return (Array.isArray(data) ? data : (data.workflow_runs ?? [])).map((run) => this.toWorkflowRun(run));
+    const runs: ForgejoRun[] = [];
+    let page = 1;
+    let hasMoreRecentRuns: boolean;
+
+    do {
+      const query = new URLSearchParams({ page: String(page), limit: String(FORGEJO_PAGE_SIZE) });
+      const data = await this.actionsRequest<ForgejoWorkflowRunsResponse>(
+        context,
+        `/repos/${repository.owner}/${repository.name}/actions/runs?${query}`,
+      );
+      const pageRuns = data.workflow_runs ?? [];
+      const recentRuns = updatedAfter
+        ? pageRuns.filter((run) => new Date(run.updated ?? run.created) >= updatedAfter)
+        : pageRuns;
+      runs.push(...recentRuns);
+
+      const totalCountAllowsAnotherPage = data.total_count === undefined || page * FORGEJO_PAGE_SIZE < data.total_count;
+      hasMoreRecentRuns =
+        Boolean(updatedAfter) &&
+        pageRuns.length === FORGEJO_PAGE_SIZE &&
+        recentRuns.length > 0 &&
+        totalCountAllowsAnotherPage;
+      page += 1;
+    } while (hasMoreRecentRuns);
+
+    return runs.map((run) => this.toWorkflowRun(run));
   }
+
   async getWorkflowRun(
     context: ProviderAccountContext,
     repository: ProviderRepositoryReference,
@@ -100,6 +143,7 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
     if (!response.ok) throw new Error(`Forgejo API request failed with status ${response.status}.`);
     return this.toWorkflowRun((await response.json()) as ForgejoRun);
   }
+
   async verifyWebhook(request: ProviderWebhookRequest): Promise<VerifiedWebhook | null> {
     const signature = request.headers['x-forgejo-signature'] ?? request.headers['x-gitea-signature'];
     const event = request.headers['x-forgejo-event'] ?? request.headers['x-gitea-event'];
@@ -110,20 +154,24 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
     const payload = JSON.parse(Buffer.from(request.payload).toString('utf8')) as { repository?: { id?: number } };
     return { event, providerRepositoryId: payload.repository?.id ? String(payload.repository.id) : null };
   }
+
   private async request<T>(context: ProviderAccountContext, path: string): Promise<T> {
     const response = await this.fetchFn(this.url(context, path), { headers: this.headers(context) });
     if (!response.ok) throw new Error(`Forgejo API request failed with status ${response.status}.`);
     return (await response.json()) as T;
   }
+
   private async actionsRequest<T>(context: ProviderAccountContext, path: string): Promise<T> {
     const response = await this.fetchFn(this.url(context, path), { headers: this.headers(context) });
     if (response.status === 404) throw new ForgejoActionsUnsupportedError();
     if (!response.ok) throw new Error(`Forgejo API request failed with status ${response.status}.`);
     return (await response.json()) as T;
   }
+
   private headers(context: ProviderAccountContext): HeadersInit {
     return { Accept: 'application/json', Authorization: `token ${context.accessToken}` };
   }
+
   private toRepository(repository: ForgejoRepository): ProviderRepository {
     return {
       providerRepositoryId: String(repository.id),
@@ -132,38 +180,60 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
       url: repository.html_url,
     };
   }
+
   private url(context: ProviderAccountContext, path: string): string {
     const baseUrl = (context.baseUrl ?? '').replace(/\/$/, '');
     return `${baseUrl.endsWith('/api/v1') ? baseUrl : `${baseUrl}/api/v1`}${path}`;
   }
+
   private toWorkflowRun(run: ForgejoRun): ProviderWorkflowRun {
-    const startedAt = run.run_started_at ? new Date(run.run_started_at) : null;
-    const completedAt = run.status === 'completed' ? new Date(run.updated_at) : null;
-    const changeRequestNumber = run.pull_requests?.[0]?.number?.toString() ?? null;
-    const headBranch = run.head_branch ?? null;
-    const workflowName = run.workflow_name ?? run.name ?? 'Workflow';
-    const workflowPath = run.path ?? null;
+    const payload = this.parseEventPayload(run.event_payload);
+    const event = run.trigger_event ?? run.event ?? null;
+    const startedAt = run.started ? new Date(run.started) : null;
+    const completedAt = run.stopped ? new Date(run.stopped) : null;
+    const changeRequestNumber =
+      (payload.pull_request?.number ?? (event?.startsWith('pull_request') ? payload.number : undefined))?.toString() ??
+      null;
+    const headBranch = payload.pull_request?.head?.ref ?? run.prettyref ?? null;
+    const workflowId = run.workflow_id ?? 'unknown-workflow';
+    const workflowName = workflowId.replace(/\.ya?ml$/i, '') || 'Workflow';
+    const workflowPath = `.forgejo/workflows/${workflowId}`;
+    const awaitingApproval = run.need_approval === true;
     return {
-      awaitingApproval: isWorkflowRunAwaitingApproval('FORGEJO', run.status, run.conclusion ?? null),
+      awaitingApproval,
       changeRequestNumber,
-      displayTitle: run.name ?? workflowName,
-      event: run.event ?? null,
+      displayTitle: run.title ?? workflowName,
+      event,
       headBranch,
-      headSha: run.head_sha ?? null,
+      headSha: run.commit_sha ?? null,
       providerRunId: String(run.id),
-      providerWorkflowId: run.workflow_id ? String(run.workflow_id) : (workflowPath ?? `name:${workflowName}`),
+      providerWorkflowId: workflowId,
       url: run.html_url,
-      providerCreatedAt: new Date(run.created_at),
+      providerCreatedAt: new Date(run.created),
       startedAt,
       completedAt,
-      durationMs: startedAt && completedAt ? completedAt.getTime() - startedAt.getTime() : null,
-      status: normalizeWorkflowRunStatus('FORGEJO', run.status, run.conclusion ?? null),
-      rawStatus: run.conclusion ?? run.status,
-      reviewUrl: null,
+      durationMs:
+        startedAt && completedAt
+          ? completedAt.getTime() - startedAt.getTime()
+          : run.duration === undefined
+            ? null
+            : run.duration / 1_000_000,
+      status: normalizeWorkflowRunStatus('FORGEJO', run.status),
+      rawStatus: run.status,
+      reviewUrl: awaitingApproval ? run.html_url : null,
       scopeKey: buildWorkflowRunScopeKey(changeRequestNumber, headBranch),
       workflowKind: 'STANDARD',
       workflowName,
       workflowPath,
     };
+  }
+
+  private parseEventPayload(value: string | undefined): ForgejoRunEventPayload {
+    if (!value) return {};
+    try {
+      return JSON.parse(value) as ForgejoRunEventPayload;
+    } catch {
+      return {};
+    }
   }
 }
