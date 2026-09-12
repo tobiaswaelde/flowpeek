@@ -48,7 +48,7 @@ jobs:
         id: changesets
         uses: changesets/action@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.CHANGESETS_PR_TOKEN }}
           version-script: pnpm version-packages
           publish-script: pnpm release
           create-github-releases: true
