@@ -114,6 +114,15 @@ export function useFlowpeekApi() {
       deleteWorkflowFilter: (id: string, filterId: string): Promise<AxiosResponse<void>> =>
         api.delete(`${apiEndpoints.repositories}/${id}/workflow-filters/${filterId}`),
       get: (id: string): Promise<AxiosResponse<Repository>> => api.get(`${apiEndpoints.repositories}/${id}`),
+      list: (page: number): Promise<AxiosResponse<PaginatedResource<Pick<Repository, 'id' | 'name' | 'owner'>>>> =>
+        api.get(apiEndpoints.repositories, {
+          params: {
+            fields: 'id,name,owner',
+            orderBy: JSON.stringify([{ owner: 'asc' }, { name: 'asc' }, { id: 'asc' }]),
+            page,
+            perPage: 1_000,
+          },
+        }),
       listMemberships: (id: string): Promise<AxiosResponse<RepositoryMembership[]>> =>
         api.get(`${apiEndpoints.repositories}/${id}/memberships`),
       listWorkflowFilters: (id: string): Promise<AxiosResponse<WorkflowFilter[]>> =>

@@ -363,8 +363,14 @@
     },
     "durationValue": "{minutes} min {seconds} s",
     "empty": "Brak dostępnych wykonań workflow.",
+    "filters": {
+      "durationSeconds": "Czas trwania (sekundy)",
+      "provider": "Dostawca",
+      "repository": "Repozytorium"
+    },
     "loadError": "Nie można było wczytać wykonań workflow.",
     "notAvailable": "—",
+    "repositoryFilterLoadError": "Nie udało się załadować opcji filtra repozytoriów.",
     "search": "Szukaj wykonań workflow",
     "searchPlaceholder": "Szukaj przepływów lub repozytoriów"
   },

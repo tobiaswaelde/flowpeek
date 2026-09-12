@@ -367,8 +367,14 @@
     },
     "durationValue": "{minutes} min {seconds} s",
     "empty": "No hay ejecuciones de flujo disponibles.",
+    "filters": {
+      "durationSeconds": "Duración (segundos)",
+      "provider": "Proveedor",
+      "repository": "Repositorio"
+    },
     "loadError": "No se pudieron cargar las ejecuciones de flujo.",
     "notAvailable": "—",
+    "repositoryFilterLoadError": "No se pudieron cargar las opciones del filtro de repositorios.",
     "search": "Buscar ejecuciones de flujo",
     "searchPlaceholder": "Buscar flujos o repositorios"
   },

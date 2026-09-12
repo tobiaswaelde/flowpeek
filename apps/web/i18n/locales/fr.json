@@ -365,8 +365,14 @@
     },
     "durationValue": "{minutes} min {seconds} s",
     "empty": "Aucune exécution de flux n’est disponible.",
+    "filters": {
+      "durationSeconds": "Durée (secondes)",
+      "provider": "Fournisseur",
+      "repository": "Dépôt"
+    },
     "loadError": "Les exécutions de flux n’ont pas pu être chargées.",
     "notAvailable": "—",
+    "repositoryFilterLoadError": "Impossible de charger les options du filtre de dépôts.",
     "search": "Rechercher des exécutions",
     "searchPlaceholder": "Rechercher des workflows ou des dépôts"
   },

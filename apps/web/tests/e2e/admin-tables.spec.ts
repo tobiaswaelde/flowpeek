@@ -389,10 +389,39 @@ test('repository dialog loads retention, filters, and members', async ({ page })
 });
 
 /** Verify that workflow-run history is available as a child of the workflow-runs navigation group. */
-test('workflow runs render in a filterable and sortable full-page table', async ({ page }) => {
-  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+test('workflow runs render in a filterable and sortable full-page table', async ({ page }, testInfo) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token');
+    window.localStorage.setItem(
+      'table:workflow-runs:filtering',
+      JSON.stringify({
+        filters: [
+          {
+            field: 'repositoryId',
+            id: 'repository-filter',
+            operator: 'in',
+            type: 'enum',
+            value: ['repository-1'],
+          },
+          {
+            field: 'repository.providerAccount.providerType',
+            id: 'provider-filter',
+            operator: 'in',
+            type: 'enum',
+            value: ['GITHUB'],
+          },
+          { field: 'durationMs', id: 'duration-filter', operator: 'gte', type: 'number', value: 90_000 },
+          { field: 'status', id: 'status-filter', operator: 'in', type: 'enum', value: ['SUCCESS'] },
+        ],
+        operator: 'AND',
+      }),
+    );
+  });
+  const workflowRunRequestUrls: string[] = [];
+  let repositoryFilterRequestFails = false;
   await page.route(/\/api\/v1\/workflow-runs(?:\?.*)?$/, async (route) => {
     const requestUrl = route.request().url();
+    workflowRunRequestUrls.push(requestUrl);
     expect(requestUrl).toContain('fields=');
     expect(requestUrl).toContain('repositoryName');
     expect(requestUrl).toContain('repositoryOwner');
@@ -419,6 +448,19 @@ test('workflow runs render in a filterable and sortable full-page table', async 
           },
         ],
         meta: { hasNextPage: false, hasPrevPage: false, itemCount: 1, page: 1, pageCount: 1, perPage: 25 },
+      },
+    });
+  });
+  await page.route(/\/api\/v1\/repositories(?:\?.*)?$/, async (route) => {
+    if (repositoryFilterRequestFails) return route.abort('failed');
+    const requestUrl = new URL(route.request().url());
+    expect(requestUrl.searchParams.get('fields')).toBe('id,name,owner');
+    expect(requestUrl.searchParams.get('perPage')).toBe('1000');
+    await route.fulfill({
+      contentType: 'application/json',
+      json: {
+        items: [{ id: 'repository-1', name: 'flowpeek', owner: 'twaelde' }],
+        meta: { hasNextPage: false, hasPrevPage: false, itemCount: 1, page: 1, pageCount: 1, perPage: 1_000 },
       },
     });
   });
@@ -453,6 +495,38 @@ test('workflow runs render in a filterable and sortable full-page table', async 
   await expect(externalLink.locator('[aria-hidden="true"]')).toBeVisible();
   await expectActionTooltip(page, externalLink, 'Open in provider');
   await expect(page.getByText('Success', { exact: true })).toBeVisible();
+  const where = JSON.parse(new URL(workflowRunRequestUrls.at(-1)!).searchParams.get('where')!) as Record<
+    string,
+    unknown
+  >;
+  expect(where).toEqual({
+    AND: [
+      { repositoryId: { in: ['repository-1'] } },
+      { repository: { providerAccount: { providerType: { in: ['GITHUB'] } } } },
+      { durationMs: { gte: 90_000 } },
+      { status: { in: ['SUCCESS'] } },
+    ],
+  });
+  await page.keyboard.press('Shift+F');
+  const filteringPopover = page.locator('.qk-table-filtering-popover');
+  await expect(filteringPopover.getByText('Repository', { exact: true })).toBeVisible();
+  await expect(filteringPopover.getByText('Provider', { exact: true })).toBeVisible();
+  await expect(filteringPopover.getByText('Duration (seconds)', { exact: true })).toBeVisible();
+  await expect(filteringPopover.getByText('Status', { exact: true })).toBeVisible();
+  await expect(filteringPopover.getByRole('spinbutton')).toHaveValue('90');
+  await expect.poll(() => filteringPopover.evaluate((element) => window.getComputedStyle(element).opacity)).toBe('1');
+  await page.screenshot({ path: testInfo.outputPath('workflow-run-filters.png'), fullPage: true });
+  await filteringPopover.getByRole('spinbutton').fill('120');
+  await filteringPopover.getByRole('spinbutton').press('Tab');
+  await expect
+    .poll(() => new URL(workflowRunRequestUrls.at(-1)!).searchParams.get('where'))
+    .toContain('"durationMs":{"gte":120000}');
+  await page.keyboard.press('Shift+F');
   await page.keyboard.press('Shift+O');
   await expect(page.getByText('Table options', { exact: true })).toBeVisible();
+
+  repositoryFilterRequestFails = true;
+  await page.reload();
+  await expect(page.getByText('Repository filter options could not be loaded.', { exact: true })).toBeVisible();
+  await expect(page.getByText('twaelde/flowpeek', { exact: true })).toBeVisible();
 });

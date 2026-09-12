@@ -363,8 +363,14 @@
     },
     "durationValue": "{minutes}m {seconds}s",
     "empty": "Er zijn geen workflowuitvoeringen beschikbaar.",
+    "filters": {
+      "durationSeconds": "Duur (seconden)",
+      "provider": "Provider",
+      "repository": "Repository"
+    },
     "loadError": "Workflowuitvoeringen konden niet worden geladen.",
     "notAvailable": "—",
+    "repositoryFilterLoadError": "Repositoryfilteropties konden niet worden geladen.",
     "search": "Workflowuitvoeringen zoeken",
     "searchPlaceholder": "Workflows of repositories zoeken"
   },

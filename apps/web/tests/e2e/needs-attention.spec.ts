@@ -28,7 +28,18 @@ async function mockApplication(page: Page): Promise<void> {
     window.localStorage.setItem(
       'table:workflow-runs-needs-attention:filtering',
       JSON.stringify({
-        filters: [{ field: 'status', id: 'status-filter', operator: 'in', type: 'enum', value: ['FAILED'] }],
+        filters: [
+          { field: 'repositoryId', id: 'repository-filter', operator: 'in', type: 'enum', value: ['repository-1'] },
+          {
+            field: 'repository.providerAccount.providerType',
+            id: 'provider-filter',
+            operator: 'in',
+            type: 'enum',
+            value: ['GITHUB'],
+          },
+          { field: 'durationMs', id: 'duration-filter', operator: 'gte', type: 'number', value: 90_000 },
+          { field: 'status', id: 'status-filter', operator: 'in', type: 'enum', value: ['FAILED'] },
+        ],
         operator: 'AND',
       }),
     );
@@ -44,6 +55,14 @@ async function mockApplication(page: Page): Promise<void> {
   );
   await page.route('**/api/v1/health', (route) =>
     route.fulfill({ json: { api: 'ok', database: 'ok', providers: [], status: 'ok' } }),
+  );
+  await page.route(/\/api\/v1\/repositories(?:\?.*)?$/, (route) =>
+    route.fulfill({
+      json: {
+        items: [{ id: 'repository-1', name: 'flowpeek', owner: 'twaelde' }],
+        meta: { hasNextPage: false, hasPrevPage: false, itemCount: 1, page: 1, pageCount: 1, perPage: 1_000 },
+      },
+    }),
   );
   await page.route('**/api/v1/dashboard/awaiting-approval', (route) =>
     route.fulfill({ json: Array.from({ length: 7 }, (_, index) => ({ id: `approval-${index}` })) }),
@@ -127,6 +146,11 @@ test('browses, searches, sorts, filters, refreshes, and paginates the complete n
   await expect(page.getByText('Showing 1–25 of 26')).toBeVisible();
   const initialUrl = new URL(requestedUrls.at(-1)!);
   expect(initialUrl.searchParams.get('orderBy')).toBe(JSON.stringify([{ completedAt: 'asc' }]));
+  expect(initialUrl.searchParams.get('where')).toContain('"repositoryId":{"in":["repository-1"]}');
+  expect(initialUrl.searchParams.get('where')).toContain(
+    '"repository":{"providerAccount":{"providerType":{"in":["GITHUB"]}}}',
+  );
+  expect(initialUrl.searchParams.get('where')).toContain('"durationMs":{"gte":90000}');
   expect(initialUrl.searchParams.get('where')).toContain('"status":{"in":["FAILED"]}');
 
   await page.keyboard.press('Shift+ArrowRight');

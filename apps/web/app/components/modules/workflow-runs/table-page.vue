@@ -114,12 +114,20 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 
-import { FilterFieldType, type FilterField, type SortingField } from '@querry-kit/nuxt-ui/types';
+import { FilterFieldType, type FilterField, type Filtering, type SortingField } from '@querry-kit/nuxt-ui/types';
 import { refDebounced } from '@vueuse/core';
+import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
 import { useTable } from '~/composables/api/table';
+import { useProviderType } from '~/composables/enums/provider-type';
 import { useDateTime } from '~/composables/use-date-time';
-import type { WorkflowRun, WorkflowRunStatus } from '~/types/api/resources';
+import { providerTypes, type WorkflowRun, type WorkflowRunStatus } from '~/types/api/resources';
 import type { ColumnDefinition } from '~/types/table';
+import {
+  durationFilteringToMilliseconds,
+  durationFilteringToSeconds,
+  loadWorkflowRunRepositoryFilterOptions,
+  type WorkflowRunRepositoryFilterOption,
+} from '~/utils/workflow-run-filtering';
 
 interface BreadcrumbItem {
   icon: string;
@@ -146,8 +154,13 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
+const api = useFlowpeekApi();
+const toast = useToast();
+const { getLabel: getProviderTypeLabel } = useProviderType();
 const search = ref('');
 const debouncedSearch = refDebounced(search, 250);
+const repositoryFilterLoading = ref(true);
+const repositoryFilterOptions = ref<WorkflowRunRepositoryFilterOption[]>([]);
 const workflowStatuses: WorkflowRunStatus[] = [
   'QUEUED',
   'RUNNING',
@@ -191,6 +204,24 @@ const filterFields = computed<FilterField[]>(() => [
     value: 'status',
     values: workflowStatuses.map((status) => ({ label: t(`workflowStatus.${status}`), value: status })),
   },
+  {
+    disabled: repositoryFilterLoading.value || repositoryFilterOptions.value.length === 0,
+    label: t('workflowRuns.filters.repository'),
+    type: FilterFieldType.Enum,
+    value: 'repositoryId',
+    values: repositoryFilterOptions.value,
+  },
+  {
+    label: t('workflowRuns.filters.provider'),
+    type: FilterFieldType.Enum,
+    value: 'repository.providerAccount.providerType',
+    values: providerTypes.map((providerType) => ({ label: getProviderTypeLabel(providerType), value: providerType })),
+  },
+  {
+    label: t('workflowRuns.filters.durationSeconds'),
+    type: FilterFieldType.Number,
+    value: 'durationMs',
+  },
 ]);
 const staticFilter = computed(() => {
   const value = debouncedSearch.value.trim();
@@ -218,7 +249,7 @@ const {
   columnVisibility,
   columns,
   error: tableError,
-  filtering,
+  filtering: queryFiltering,
   items,
   itemsPerPage,
   loading,
@@ -227,6 +258,12 @@ const {
   sorting,
   totalItems,
 } = workflowRunTable;
+const filtering = computed<Filtering>({
+  get: () => durationFilteringToSeconds(queryFiltering.value),
+  set: (value) => {
+    queryFiltering.value = durationFilteringToMilliseconds(value);
+  },
+});
 const columnPinning = computed({
   get: () => ({ left: workflowRunTable.columnPinning.value.left, right: workflowRunTable.columnPinning.value.right }),
   set: (value: { left?: string[]; right?: string[] }) => {
@@ -237,6 +274,29 @@ const columnPinning = computed({
 watch(debouncedSearch, () => {
   page.value = 1;
 });
+watch(
+  queryFiltering,
+  () => {
+    page.value = 1;
+  },
+  { deep: true },
+);
+
+/** Load all repositories visible to the current user for the repository filter. */
+async function loadRepositoryFilterOptions(): Promise<void> {
+  repositoryFilterLoading.value = true;
+  try {
+    repositoryFilterOptions.value = await loadWorkflowRunRepositoryFilterOptions(async (repositoryPage) => {
+      const response = await api.repositories.list(repositoryPage);
+      return response.data;
+    });
+  } catch {
+    repositoryFilterOptions.value = [];
+    toast.add({ color: 'error', title: t('workflowRuns.repositoryFilterLoadError') });
+  } finally {
+    repositoryFilterLoading.value = false;
+  }
+}
 
 /** Format a provider timestamp in the active interface locale. */
 function formatTimestamp(timestamp: string | null): string {
@@ -260,5 +320,8 @@ function statusColor(status: WorkflowRunStatus): 'error' | 'info' | 'neutral' | 
   return 'neutral';
 }
 
-onMounted(() => void workflowRunTable.initialize());
+onMounted(() => {
+  void workflowRunTable.initialize();
+  void loadRepositoryFilterOptions();
+});
 </script>

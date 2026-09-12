@@ -368,8 +368,14 @@
     },
     "durationValue": "{minutes}m {seconds}s",
     "empty": "No workflow runs are available.",
+    "filters": {
+      "durationSeconds": "Duration (seconds)",
+      "provider": "Provider",
+      "repository": "Repository"
+    },
     "loadError": "Workflow runs could not be loaded.",
     "notAvailable": "—",
+    "repositoryFilterLoadError": "Repository filter options could not be loaded.",
     "search": "Search workflow runs",
     "searchPlaceholder": "Search workflows or repositories",
     "title": "Workflow runs"

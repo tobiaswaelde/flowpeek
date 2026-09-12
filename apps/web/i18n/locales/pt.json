@@ -363,8 +363,14 @@
     },
     "durationValue": "{minutes} min {seconds} s",
     "empty": "Não estão disponíveis execuções de workflow.",
+    "filters": {
+      "durationSeconds": "Duração (segundos)",
+      "provider": "Fornecedor",
+      "repository": "Repositório"
+    },
     "loadError": "Não foi possível carregar as execuções de workflow.",
     "notAvailable": "—",
+    "repositoryFilterLoadError": "Não foi possível carregar as opções do filtro de repositórios.",
     "search": "Pesquisar execuções de workflow",
     "searchPlaceholder": "Pesquisar workflows ou repositórios"
   },

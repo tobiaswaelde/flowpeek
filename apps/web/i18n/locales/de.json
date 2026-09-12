@@ -368,8 +368,14 @@
     },
     "durationValue": "{minutes} Min. {seconds} Sek.",
     "empty": "Es sind keine Workflow-Ausführungen verfügbar.",
+    "filters": {
+      "durationSeconds": "Dauer (Sekunden)",
+      "provider": "Anbieter",
+      "repository": "Repository"
+    },
     "loadError": "Workflow-Ausführungen konnten nicht geladen werden.",
     "notAvailable": "—",
+    "repositoryFilterLoadError": "Repository-Filteroptionen konnten nicht geladen werden.",
     "search": "Workflow-Ausführungen durchsuchen",
     "searchPlaceholder": "Workflows oder Repositories durchsuchen",
     "title": "Workflow-Ausführungen"
