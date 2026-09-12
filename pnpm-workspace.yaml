@@ -18,6 +18,8 @@ overrides:
   'js-yaml@>=3.0.0 <3.15.2': 3.15.2
   'multer@<2.3.0': 2.3.0
   'mysql2@<=3.23.0': 3.23.1
+  'nx>smol-toml': 1.7.1
+  'vitepress>vite': 6.4.3
 
 allowBuilds:
   '@parcel/watcher': false
