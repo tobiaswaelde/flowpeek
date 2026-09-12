@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.4
+
+### Patch Changes
+
+- 27e9cce: Show workflow names alongside run titles in workflow-run tables.
+- 6841b37: Resolve GitHub pull-request workflow failures whose Action payload omits the associated pull request.
+
 ## 0.2.3
 
 ### Patch Changes
