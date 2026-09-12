@@ -145,6 +145,30 @@ export class WorkflowRunsQueryService extends QueryService<
     );
   }
 
+  /**
+   * Read the newest visible run for every workflow execution context.
+   *
+   * The latest IDs are resolved before caller predicates are applied so superseded active states cannot leak into
+   * approval queues or dashboard counts.
+   *
+   * @param options - Prisma-compatible selection, relations, ordering, and filters for the current runs.
+   * @param ability - Repository-scoped read ability.
+   * @returns Visible current workflow runs matching the requested filters.
+   */
+  async findCurrent<T = unknown>(
+    options: QueryOptionsMap<WorkflowRunTypeMap>['findMany'],
+    ability: AppAbility,
+  ): Promise<T[]> {
+    return this.findMany<T>(
+      {
+        ...options,
+        orderBy: options.orderBy ?? [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+        where: this.combineWhere(await this.getCurrentWhere(ability), options.where),
+      },
+      ability,
+    );
+  }
+
   /** Resolve authorized IDs whose newest completed run failed without exposing inaccessible workflow contexts. */
   private async getNeedsAttentionWhere(ability: AppAbility): Promise<Prisma.WorkflowRunWhereInput> {
     const latestTerminalRuns = await this.findMany<LatestTerminalWorkflowRun>(
@@ -158,6 +182,20 @@ export class WorkflowRunsQueryService extends QueryService<
     );
 
     return { id: { in: latestTerminalRuns.filter((run) => run.status === 'FAILED').map((run) => run.id) } };
+  }
+
+  /** Resolve authorized IDs for the newest run of every workflow and PR, branch, or repository context. */
+  private async getCurrentWhere(ability: AppAbility): Promise<Prisma.WorkflowRunWhereInput> {
+    const currentRuns = await this.findMany<Pick<WorkflowRun, 'id'>>(
+      {
+        distinct: ['workflowId', 'scopeKey'],
+        orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+        select: { id: true },
+      },
+      ability,
+    );
+
+    return { id: { in: currentRuns.map((run) => run.id) } };
   }
 
   /** Combine an invariant resource predicate with an optional public Query Kit predicate. */

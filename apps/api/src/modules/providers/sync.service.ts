@@ -133,13 +133,17 @@ export class ProviderSyncService {
       const discoveredRuns = await withProviderRetries(() =>
         adapter.listWorkflowRuns(context, refreshedRepository, refreshedRepository.lastSyncAt ?? undefined),
       );
-      const activeRuns = await this.prisma.workflowRun.findMany({
-        select: { providerRunId: true },
+      const currentRuns = await this.prisma.workflowRun.findMany({
+        distinct: ['workflowId', 'scopeKey'],
+        orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+        select: { awaitingApproval: true, providerRunId: true, status: true },
         where: {
           repositoryId: repository.id,
-          OR: [{ awaitingApproval: true }, { status: { in: ['QUEUED', 'RUNNING'] } }],
         },
       });
+      const activeRuns = currentRuns.filter(
+        (run) => run.awaitingApproval || run.status === 'QUEUED' || run.status === 'RUNNING',
+      );
       const refreshedRuns = await Promise.all(
         activeRuns.map(({ providerRunId }) =>
           withProviderRetries(() => adapter.getWorkflowRun(context, refreshedRepository, providerRunId)),

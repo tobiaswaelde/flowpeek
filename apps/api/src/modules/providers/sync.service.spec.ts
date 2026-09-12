@@ -19,7 +19,7 @@ describe('ProviderSyncService', () => {
           update: jest.fn().mockResolvedValue(undefined),
         },
         workflowRun: {
-          findMany: jest.fn().mockResolvedValue([{ providerRunId: '12345' }]),
+          findMany: jest.fn().mockResolvedValue([]),
           updateMany: jest.fn().mockResolvedValue({ count: 0 }),
           upsert: jest.fn(({ create }) => Promise.resolve({ id: 'run-id', ...create })),
         },
@@ -84,7 +84,7 @@ describe('ProviderSyncService', () => {
     expect(mocks.prisma.workflowRun.upsert).toHaveBeenCalledTimes(4);
     expect(mocks.prisma.workflowRun.updateMany).not.toHaveBeenCalled();
     expect(mocks.prisma.workflow.delete).not.toHaveBeenCalled();
-    expect(mocks.adapter.getWorkflowRun).toHaveBeenCalledTimes(4);
+    expect(mocks.adapter.getWorkflowRun).not.toHaveBeenCalled();
     expect(mocks.prisma.workflowRun.upsert).toHaveBeenNthCalledWith(1, {
       create: { ...persistedRun, repositoryId: firstRepository.id, workflowId: 'workflow-id' },
       update: { ...persistedRun, workflowId: 'workflow-id' },
@@ -174,6 +174,62 @@ describe('ProviderSyncService', () => {
       where: { workflowId: 'legacy-workflow-id' },
     });
     expect(prisma.workflow.delete).toHaveBeenCalledWith({ where: { id: 'legacy-workflow-id' } });
+  });
+
+  it('refreshes only current active workflow contexts', async () => {
+    const repository = createRepository('repository');
+    const refreshedApproval = { ...createWorkflowRun(), providerRunId: 'current-approval' };
+    const prisma = {
+      providerAccount: { update: jest.fn().mockResolvedValue(undefined) },
+      repository: {
+        findMany: jest.fn().mockResolvedValue([repository]),
+        update: jest.fn().mockResolvedValue(undefined),
+      },
+      workflow: {
+        delete: jest.fn().mockResolvedValue(undefined),
+        findUnique: jest.fn().mockResolvedValue(null),
+        upsert: jest.fn().mockResolvedValue({ id: 'workflow-id' }),
+      },
+      workflowRun: {
+        findMany: jest.fn().mockResolvedValue([
+          { awaitingApproval: false, providerRunId: 'new-success', status: 'SUCCESS' },
+          { awaitingApproval: true, providerRunId: 'current-approval', status: 'QUEUED' },
+        ]),
+        updateMany: jest.fn().mockResolvedValue({ count: 0 }),
+        upsert: jest.fn(({ create }) => Promise.resolve({ id: 'run-id', ...create })),
+      },
+    };
+    const adapter = {
+      getWorkflowRun: jest.fn().mockResolvedValue(refreshedApproval),
+      listWorkflowRuns: jest.fn().mockResolvedValue([]),
+    };
+    const service = new ProviderSyncService(
+      prisma as unknown as PrismaService,
+      {} as JobRunnerService,
+      { get: jest.fn().mockReturnValue(adapter) } as unknown as ProviderAdapterRegistry,
+      { decrypt: jest.fn().mockReturnValue('access-token') } as unknown as ProviderCredentialService,
+      { refresh: jest.fn((value) => Promise.resolve(value)) } as never,
+      { shouldTrack: jest.fn().mockReturnValue(true) } as unknown as WorkflowFilterService,
+      { evaluateRulesForRun: jest.fn().mockResolvedValue([]) } as unknown as NotificationsService,
+      {
+        beginProviderSync: jest.fn().mockReturnValue('sync-id'),
+        finishProviderSync: jest.fn(),
+        refreshRunningWorkflowCount: jest.fn(),
+        updateProviderSync: jest.fn(),
+      } as unknown as SystemStatusService,
+    );
+
+    await service.syncEnabledRepositories();
+
+    expect(prisma.workflowRun.findMany).toHaveBeenCalledWith({
+      distinct: ['workflowId', 'scopeKey'],
+      orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+      select: { awaitingApproval: true, providerRunId: true, status: true },
+      where: { repositoryId: repository.id },
+    });
+    expect(adapter.getWorkflowRun).toHaveBeenCalledTimes(1);
+    expect(adapter.getWorkflowRun).toHaveBeenCalledWith(expect.anything(), repository, 'current-approval');
+    expect(prisma.workflowRun.upsert).toHaveBeenCalledTimes(1);
   });
 
   it('uses refreshed repository metadata for workflow requests', async () => {

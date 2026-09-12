@@ -204,6 +204,76 @@ describe('workflow-run authorization integration', () => {
     },
   );
 
+  it('keeps superseded approvals in history while excluding them from current approval lists and counts', async () => {
+    const previousRun = await prisma.workflowRun.findUniqueOrThrow({ where: { id: visibleRunId } });
+    const oldApprovalTimestamp = new Date('2026-08-26T11:00:00.000Z');
+    const successTimestamp = new Date('2026-08-26T12:00:00.000Z');
+    const currentApprovalTimestamp = new Date('2026-08-26T13:00:00.000Z');
+    const oldApproval = await prisma.workflowRun.create({
+      data: {
+        awaitingApproval: true,
+        completedAt: oldApprovalTimestamp,
+        displayTitle: 'Superseded approval',
+        providerCreatedAt: oldApprovalTimestamp,
+        providerRunId: 'superseded-approval',
+        rawStatus: 'action_required',
+        repositoryId: previousRun.repositoryId,
+        scopeKey: previousRun.scopeKey,
+        status: 'QUEUED',
+        url: 'https://github.com/flowpeek/visible/actions/runs/superseded-approval',
+        workflowId: previousRun.workflowId,
+        workflowName: previousRun.workflowName,
+      },
+    });
+    await prisma.workflowRun.create({
+      data: {
+        completedAt: successTimestamp,
+        displayTitle: 'Current success',
+        providerCreatedAt: successTimestamp,
+        providerRunId: 'current-success',
+        rawStatus: 'success',
+        repositoryId: previousRun.repositoryId,
+        scopeKey: previousRun.scopeKey,
+        status: 'SUCCESS',
+        url: 'https://github.com/flowpeek/visible/actions/runs/current-success',
+        workflowId: previousRun.workflowId,
+        workflowName: previousRun.workflowName,
+      },
+    });
+    const currentApproval = await prisma.workflowRun.create({
+      data: {
+        awaitingApproval: true,
+        completedAt: currentApprovalTimestamp,
+        displayTitle: 'Current approval',
+        providerCreatedAt: currentApprovalTimestamp,
+        providerRunId: 'current-approval',
+        rawStatus: 'action_required',
+        repositoryId: previousRun.repositoryId,
+        scopeKey: 'change-request:42',
+        status: 'QUEUED',
+        url: 'https://github.com/flowpeek/visible/actions/runs/current-approval',
+        workflowId: previousRun.workflowId,
+        workflowName: previousRun.workflowName,
+      },
+    });
+
+    await expect(dashboard.getAwaitingApproval(users.viewer)).resolves.toEqual([
+      expect.objectContaining({ id: currentApproval.id }),
+    ]);
+    await expect(
+      dashboard.getSummary(users.viewer, {
+        from: '2026-08-26T00:00:00.000Z',
+        to: '2026-08-26T23:59:59.999Z',
+      }),
+    ).resolves.toMatchObject({ awaitingApprovalCount: 1, queuedCount: 1, runningCount: 0 });
+
+    const ability = await runs.getReadAbility(users.viewer);
+    await expect(
+      runs.findMany<{ awaitingApproval: boolean; id: string }>({ where: { id: oldApproval.id } }, ability),
+    ).resolves.toEqual([expect.objectContaining({ awaitingApproval: true, id: oldApproval.id })]);
+    await expect(dashboard.getAwaitingApproval(users.outsider)).resolves.toEqual([]);
+  });
+
   it('paginates the complete needs-attention set without leaking inaccessible runs through metadata', async () => {
     const visibleFailure = await prisma.workflowRun.findUniqueOrThrow({ where: { id: visibleRunId } });
     const secondFailure = await prisma.workflowRun.create({

@@ -77,7 +77,7 @@ test('lists approval-gated workflows with provider and pull-request actions', as
     )
     .toBe(true);
   await expect(page.getByText('twaelde/flowpeek', { exact: true })).toBeVisible();
-  await expect(page.getByText('GitHub', { exact: true })).toBeVisible();
+  await expect(table.getByText('GitHub', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Approve in provider' })).toHaveAttribute(
     'href',
     'https://github.com/twaelde/flowpeek/actions/runs/42',

@@ -77,10 +77,15 @@ export class DashboardService {
    * @returns Approval-gated workflow runs ordered newest first.
    */
   async getAwaitingApproval(user: AuthenticatedUser): Promise<DashboardWorkflowRunModel[]> {
-    return this.findVisibleRuns(user, {
-      orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
-      where: { awaitingApproval: true },
-    });
+    const ability = await this.workflowRuns.getReadAbility(user);
+    return this.workflowRuns.findCurrent<DashboardWorkflowRunModel>(
+      {
+        include: dashboardRunInclude,
+        orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+        where: { awaitingApproval: true },
+      },
+      ability,
+    );
   }
 
   /**
@@ -119,7 +124,7 @@ export class DashboardService {
         },
         ability,
       ),
-      this.workflowRuns.findMany<DashboardSummaryRun>(
+      this.workflowRuns.findCurrent<DashboardSummaryRun>(
         { select: dashboardSummarySelect, where: { status: { in: ['QUEUED', 'RUNNING'] } } },
         ability,
       ),

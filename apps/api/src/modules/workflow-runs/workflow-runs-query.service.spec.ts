@@ -128,4 +128,49 @@ describe('WorkflowRunsQueryService', () => {
       },
     });
   });
+
+  it('applies active-state filters only after resolving the latest authorized workflow contexts', async () => {
+    const mocks = {
+      workflowRun: {
+        findMany: jest
+          .fn()
+          .mockResolvedValueOnce([{ id: 'new-success' }, { id: 'current-approval' }])
+          .mockResolvedValueOnce([{ id: 'current-approval' }]),
+      },
+    };
+    const service = new WorkflowRunsQueryService(mocks as unknown as PrismaService, new CaslAbilityFactory());
+    const ability = new CaslAbilityFactory().createForUser(
+      { id: 'admin', role: 'SYSTEM_ADMIN', username: 'admin' },
+      [],
+    );
+
+    await expect(
+      service.findCurrent<{ id: string }>(
+        {
+          orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+          select: { id: true },
+          where: { awaitingApproval: true },
+        },
+        ability,
+      ),
+    ).resolves.toEqual([{ id: 'current-approval' }]);
+    expect(mocks.workflowRun.findMany).toHaveBeenNthCalledWith(1, {
+      cursor: undefined,
+      distinct: ['workflowId', 'scopeKey'],
+      include: undefined,
+      orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+      select: { id: true },
+      skip: undefined,
+      take: undefined,
+      where: { AND: [{}, {}] },
+    });
+    expect(mocks.workflowRun.findMany).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        where: {
+          AND: [{}, { AND: [{ id: { in: ['new-success', 'current-approval'] } }, { awaitingApproval: true }] }],
+        },
+      }),
+    );
+  });
 });
