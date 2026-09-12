@@ -160,7 +160,7 @@
     "token": "Bearer-token"
   },
   "needsAttention": {
-    "description": "Bekijk elke workflowcontext waarvan de laatste voltooide run is mislukt. Resultaten respecteren je repositorytoegang.",
+    "description": "Bekijk relevante workflowcontexten waarvan de laatste voltooide run is mislukt. Gesloten en succesvol samengevoegde wijzigingen worden automatisch verwijderd.",
     "empty": "Momenteel hebben geen workflows aandacht nodig.",
     "loadError": "Workflows die aandacht nodig hebben konden niet worden geladen.",
     "title": "Aandacht vereist"

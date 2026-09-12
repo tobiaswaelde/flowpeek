@@ -294,7 +294,11 @@ function run(input: {
   const workflowId = input.workflowId ?? `${input.repositoryId}-${input.workflowName}`;
   return {
     awaitingApproval: false,
+    changeRequestCheckedAt: null,
+    changeRequestMergedAt: null,
     changeRequestNumber: null,
+    changeRequestState: 'UNKNOWN',
+    changeRequestTargetBranch: null,
     completedAt: input.completedAt ? new Date(input.completedAt) : null,
     createdAt: new Date(providerCreatedAt),
     displayTitle: input.workflowName,

@@ -6,6 +6,7 @@ import type {
   ProviderAccountContext,
   ProviderAccountValidation,
   ProviderAdapter,
+  ProviderChangeRequestState,
   ProviderRepository,
   ProviderRepositoryReference,
   ProviderWebhookRequest,
@@ -37,6 +38,11 @@ interface GitLabPipeline {
   source?: string;
   merge_request?: { iid: number };
 }
+interface GitLabMergeRequest {
+  merged_at?: string | null;
+  state: string;
+  target_branch?: string;
+}
 
 /** GitLab adapter that only reads projects and pipelines. */
 @Injectable()
@@ -53,6 +59,30 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
   async listRepositories(context: ProviderAccountContext): Promise<ProviderRepository[]> {
     const projects = await this.request<GitLabProject[]>(context, '/projects?membership=true&simple=true&per_page=100');
     return projects.map((project) => this.toRepository(project));
+  }
+
+  async getChangeRequestState(
+    context: ProviderAccountContext,
+    repository: ProviderRepositoryReference,
+    changeRequestNumber: string,
+  ): Promise<ProviderChangeRequestState | null> {
+    const response = await this.fetchFn(
+      this.url(
+        context,
+        `/projects/${encodeURIComponent(repository.providerRepositoryId)}/merge_requests/${changeRequestNumber}`,
+      ),
+      { headers: this.headers(context) },
+    );
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error(`GitLab API request failed with status ${response.status}.`);
+    const mergeRequest = (await response.json()) as GitLabMergeRequest;
+    const mergedAt = mergeRequest.merged_at ? new Date(mergeRequest.merged_at) : null;
+    return {
+      mergedAt,
+      state:
+        mergedAt || mergeRequest.state === 'merged' ? 'MERGED' : mergeRequest.state === 'closed' ? 'CLOSED' : 'OPEN',
+      targetBranch: mergeRequest.target_branch ?? null,
+    };
   }
 
   async getRepository(

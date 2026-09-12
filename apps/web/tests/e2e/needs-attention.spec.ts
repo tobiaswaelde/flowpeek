@@ -91,6 +91,11 @@ test('browses, searches, sorts, filters, refreshes, and paginates the complete n
 
   await page.goto('/workflow-runs/needs-attention');
 
+  await expect(
+    page.getByText(
+      'Browse actionable workflow contexts whose latest completed run failed. Closed and successfully merged changes are cleared automatically.',
+    ),
+  ).toBeVisible();
   const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
   await expect(navigation.getByRole('button', { name: 'Workflow runs' })).toHaveAttribute('aria-expanded', 'true');
   const workflowRunNavigation = navigation.getByRole('region', { name: 'Workflow runs' });

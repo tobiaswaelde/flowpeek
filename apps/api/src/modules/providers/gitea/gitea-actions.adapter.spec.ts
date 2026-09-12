@@ -70,3 +70,36 @@ describe('GiteaActionsAdapter', () => {
     ).resolves.toEqual({ event: 'workflow_run', providerRepositoryId: '42' });
   });
 });
+
+describe('GiteaActionsAdapter change requests', () => {
+  const context = { accessToken: 'token', baseUrl: 'https://gitea.example.test', providerAccountId: 'account' };
+  const repository = { name: 'flowpeek', owner: 'octo', providerRepositoryId: '1' };
+
+  it.each([
+    ['open', false, null, 'OPEN'],
+    ['closed', false, null, 'CLOSED'],
+    ['closed', true, '2026-09-12T10:00:00.000Z', 'MERGED'],
+  ] as const)(
+    'normalizes a %s pull request with merged=%s and merged-at %s as %s',
+    async (state, merged, mergedAt, expected) => {
+      const adapter = new GiteaActionsAdapter(
+        jest
+          .fn()
+          .mockResolvedValue(
+            new Response(JSON.stringify({ base: { ref: 'main' }, merged, merged_at: mergedAt, state })),
+          ),
+      );
+
+      await expect(adapter.getChangeRequestState(context, repository, '42')).resolves.toEqual({
+        mergedAt: mergedAt ? new Date(mergedAt) : null,
+        state: expected,
+        targetBranch: 'main',
+      });
+    },
+  );
+
+  it('returns null when the pull request is unavailable', async () => {
+    const adapter = new GiteaActionsAdapter(jest.fn().mockResolvedValue(new Response(null, { status: 404 })));
+    await expect(adapter.getChangeRequestState(context, repository, '42')).resolves.toBeNull();
+  });
+});

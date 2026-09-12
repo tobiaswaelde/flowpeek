@@ -162,7 +162,7 @@
     "token": "Jeton bearer"
   },
   "needsAttention": {
-    "description": "Consultez tous les contextes dont la dernière exécution terminée a échoué. Les résultats respectent vos accès aux dépôts.",
+    "description": "Consultez les contextes pertinents dont la dernière exécution a échoué. Les changements fermés et fusionnés avec succès sont retirés automatiquement.",
     "empty": "Aucun workflow ne requiert actuellement votre attention.",
     "loadError": "Les workflows nécessitant une attention n’ont pas pu être chargés.",
     "title": "Attention requise"

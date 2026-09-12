@@ -195,3 +195,29 @@ describe('GitHubActionsAdapter', () => {
     ]);
   });
 });
+
+describe('GitHubActionsAdapter change requests', () => {
+  const context = { accessToken: 'token', baseUrl: null, providerAccountId: 'account' };
+  const repository = { name: 'flowpeek', owner: 'octo', providerRepositoryId: '1' };
+
+  it.each([
+    ['open', null, 'OPEN'],
+    ['closed', null, 'CLOSED'],
+    ['closed', '2026-09-12T10:00:00.000Z', 'MERGED'],
+  ] as const)('normalizes a %s pull request with merged-at %s as %s', async (state, mergedAt, expected) => {
+    const adapter = new GitHubActionsAdapter(
+      jest.fn().mockResolvedValue(new Response(JSON.stringify({ base: { ref: 'main' }, merged_at: mergedAt, state }))),
+    );
+
+    await expect(adapter.getChangeRequestState(context, repository, '42')).resolves.toEqual({
+      mergedAt: mergedAt ? new Date(mergedAt) : null,
+      state: expected,
+      targetBranch: 'main',
+    });
+  });
+
+  it('returns null when the pull request is unavailable', async () => {
+    const adapter = new GitHubActionsAdapter(jest.fn().mockResolvedValue(new Response(null, { status: 404 })));
+    await expect(adapter.getChangeRequestState(context, repository, '42')).resolves.toBeNull();
+  });
+});

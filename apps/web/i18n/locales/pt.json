@@ -160,7 +160,7 @@
     "token": "Token bearer"
   },
   "needsAttention": {
-    "description": "Consulte todos os contextos cuja última execução concluída falhou. Os resultados respeitam o seu acesso aos repositórios.",
+    "description": "Consulte os contextos relevantes cuja última execução concluída falhou. As alterações fechadas e integradas com sucesso são removidas automaticamente.",
     "empty": "Nenhum workflow requer atenção neste momento.",
     "loadError": "Não foi possível carregar os workflows que requerem atenção.",
     "title": "Requer atenção"

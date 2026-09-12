@@ -13,6 +13,13 @@ enum WorkflowKind {
   DEPENDABOT_INTERNAL
 }
 
+enum ChangeRequestState {
+  UNKNOWN
+  OPEN
+  CLOSED
+  MERGED
+}
+
 model Workflow {
   id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
@@ -54,8 +61,12 @@ model WorkflowRun {
   event             String?           @db.VarChar(255)
   headBranch        String?           @db.VarChar(1024)
   headSha           String?           @db.VarChar(255)
-  changeRequestNumber String? @db.VarChar(255)
-  scopeKey            String  @db.VarChar(2048)
+  changeRequestNumber       String?            @db.VarChar(255)
+  changeRequestState        ChangeRequestState @default(UNKNOWN)
+  changeRequestTargetBranch String?            @db.VarChar(1024)
+  changeRequestMergedAt     DateTime?
+  changeRequestCheckedAt    DateTime?
+  scopeKey                  String             @db.VarChar(2048)
 
   workflowId String   @db.Uuid
   workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
@@ -68,6 +79,7 @@ model WorkflowRun {
   @@index([repositoryId, providerCreatedAt])
   @@index([repositoryId, status, completedAt])
   @@index([workflowId, scopeKey, providerCreatedAt])
+  @@index([repositoryId, changeRequestNumber, changeRequestCheckedAt])
   @@index([awaitingApproval, providerCreatedAt])
   @@index([completedAt])
   @@map("workflow_runs")

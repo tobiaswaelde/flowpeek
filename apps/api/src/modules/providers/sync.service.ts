@@ -8,10 +8,19 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 import { NotificationsService } from '../notifications/notifications.service.js';
 import { WorkflowFilterService } from '../repositories/workflow-filter.service.js';
 import { SystemStatusService } from '../system-status/system-status.service.js';
-import type { ProviderWorkflowRun } from './provider-adapter.js';
+import type {
+  ProviderAccountContext,
+  ProviderAdapter,
+  ProviderRepositoryReference,
+  ProviderWorkflowRun,
+} from './provider-adapter.js';
 import { ProviderAdapterRegistry } from './provider-adapter.registry.js';
 import { ProviderCredentialService } from './provider-credential.service.js';
 import { RepositoryMetadataService } from './repository-metadata.service.js';
+
+const terminalWorkflowRunStatuses = ['SUCCESS', 'FAILED', 'CANCELLED', 'SKIPPED', 'UNKNOWN'] as const;
+const closedChangeRequestRefreshIntervalMs = 24 * 60 * 60 * 1000;
+const unknownChangeRequestRefreshIntervalMs = 60 * 60 * 1000;
 
 /** Retries transient provider operations with bounded exponential backoff. */
 export async function withProviderRetries<T>(operation: () => Promise<T>, retries = 3): Promise<T> {
@@ -170,6 +179,7 @@ export class ProviderSyncService {
           workflowRunsTotal: runs.length,
         });
       }
+      await this.refreshChangeRequestStates(context, refreshedRepository, adapter);
       await this.prisma.repository.update({ where: { id: repository.id }, data: { lastSyncAt: new Date() } });
       await this.prisma.providerAccount.update({
         where: { id: repository.providerAccount.id },
@@ -186,6 +196,85 @@ export class ProviderSyncService {
       this.logger.warn(`Synchronization failed for provider account ${repository.providerAccount.id}.`);
     }
     await this.status.refreshRunningWorkflowCount();
+  }
+
+  /** Refresh lifecycle metadata for change requests whose current terminal workflow result still failed. */
+  private async refreshChangeRequestStates(
+    context: ProviderAccountContext,
+    repository: ProviderRepositoryReference & { id: string },
+    adapter: ProviderAdapter,
+  ): Promise<void> {
+    const latestTerminalRuns = await this.prisma.workflowRun.findMany({
+      distinct: ['workflowId', 'scopeKey'],
+      orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
+      select: {
+        changeRequestCheckedAt: true,
+        changeRequestNumber: true,
+        changeRequestState: true,
+        status: true,
+      },
+      where: {
+        awaitingApproval: false,
+        changeRequestNumber: { not: null },
+        completedAt: { not: null },
+        repositoryId: repository.id,
+        status: { in: [...terminalWorkflowRunStatuses] },
+        workflow: { kind: 'STANDARD' },
+      },
+    });
+    const now = new Date();
+    const candidates = new Map<string, (typeof latestTerminalRuns)[number]>();
+    for (const run of latestTerminalRuns) {
+      if (run.status !== 'FAILED' || !run.changeRequestNumber) continue;
+      const existing = candidates.get(run.changeRequestNumber);
+      if (!existing || (!this.shouldRefreshChangeRequest(existing, now) && this.shouldRefreshChangeRequest(run, now)))
+        candidates.set(run.changeRequestNumber, run);
+    }
+
+    for (const [changeRequestNumber, candidate] of candidates) {
+      if (!this.shouldRefreshChangeRequest(candidate, now)) continue;
+      try {
+        const state = await withProviderRetries(() =>
+          adapter.getChangeRequestState(context, repository, changeRequestNumber),
+        );
+        await this.prisma.workflowRun.updateMany({
+          data: {
+            changeRequestCheckedAt: now,
+            changeRequestMergedAt: state?.mergedAt ?? null,
+            changeRequestState: state?.state ?? 'UNKNOWN',
+            changeRequestTargetBranch: state?.targetBranch ?? null,
+          },
+          where: { changeRequestNumber, repositoryId: repository.id },
+        });
+      } catch {
+        await this.prisma.workflowRun.updateMany({
+          data: {
+            changeRequestCheckedAt: now,
+            changeRequestMergedAt: null,
+            changeRequestState: 'UNKNOWN',
+            changeRequestTargetBranch: null,
+          },
+          where: { changeRequestNumber, repositoryId: repository.id },
+        });
+        this.logger.warn(
+          `Change-request status refresh failed for repository ${repository.id} and change request ${changeRequestNumber}.`,
+        );
+      }
+    }
+  }
+
+  /** Decide whether cached change-request lifecycle metadata is old enough to refresh. */
+  private shouldRefreshChangeRequest(
+    candidate: { changeRequestCheckedAt: Date | null; changeRequestState: 'UNKNOWN' | 'OPEN' | 'CLOSED' | 'MERGED' },
+    now: Date,
+  ): boolean {
+    if (candidate.changeRequestState === 'MERGED') return false;
+    if (candidate.changeRequestState === 'OPEN' || !candidate.changeRequestCheckedAt) return true;
+    const refreshInterval =
+      candidate.changeRequestState === 'CLOSED'
+        ? closedChangeRequestRefreshIntervalMs
+        : unknownChangeRequestRefreshIntervalMs;
+    return now.getTime() - candidate.changeRequestCheckedAt.getTime() >= refreshInterval;
   }
 
   private async persistRunAndEvaluateRules(repositoryId: string, run: ProviderWorkflowRun): Promise<void> {

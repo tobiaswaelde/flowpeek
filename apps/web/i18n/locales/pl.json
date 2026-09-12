@@ -160,7 +160,7 @@
     "token": "Token bearer"
   },
   "needsAttention": {
-    "description": "Przeglądaj wszystkie konteksty, których ostatnie zakończone wykonanie nie powiodło się. Wyniki uwzględniają dostęp do repozytoriów.",
+    "description": "Przeglądaj istotne konteksty, których ostatnie zakończone wykonanie nie powiodło się. Zamknięte i pomyślnie scalone zmiany są usuwane automatycznie.",
     "empty": "Żaden przepływ pracy nie wymaga obecnie uwagi.",
     "loadError": "Nie można było wczytać przepływów wymagających uwagi.",
     "title": "Wymaga uwagi"

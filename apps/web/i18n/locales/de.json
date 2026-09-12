@@ -162,7 +162,7 @@
     "token": "Bearer-Token"
   },
   "needsAttention": {
-    "description": "Durchsuche alle Workflow-Kontexte, deren letzte abgeschlossene Ausführung fehlgeschlagen ist. Deine Repository-Berechtigungen werden berücksichtigt.",
+    "description": "Durchsuche relevante Workflow-Kontexte, deren letzte abgeschlossene Ausführung fehlgeschlagen ist. Geschlossene und erfolgreich gemergte Changes werden automatisch entfernt.",
     "empty": "Derzeit benötigt kein Workflow Aufmerksamkeit.",
     "loadError": "Workflows, die Aufmerksamkeit benötigen, konnten nicht geladen werden.",
     "title": "Benötigt Aufmerksamkeit"

@@ -162,7 +162,7 @@
     "token": "Bearer token"
   },
   "needsAttention": {
-    "description": "Browse every workflow context whose latest completed run failed. Results respect your repository access.",
+    "description": "Browse actionable workflow contexts whose latest completed run failed. Closed and successfully merged changes are cleared automatically.",
     "empty": "No workflows currently need attention.",
     "loadError": "Workflow runs that need attention could not be loaded.",
     "title": "Needs attention"

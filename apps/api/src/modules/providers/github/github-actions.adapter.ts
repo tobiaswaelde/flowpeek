@@ -6,6 +6,7 @@ import type {
   ProviderAccountContext,
   ProviderAccountValidation,
   ProviderAdapter,
+  ProviderChangeRequestState,
   ProviderRepository,
   ProviderRepositoryReference,
   ProviderWebhookRequest,
@@ -41,6 +42,11 @@ interface GitHubWorkflowRunResponse {
   pull_requests?: { number: number }[];
   workflow_id?: number;
 }
+interface GitHubPullRequestResponse {
+  base?: { ref?: string };
+  merged_at?: string | null;
+  state: string;
+}
 
 const dependabotWorkflowPath = 'dynamic/dependabot/dependabot-updates';
 
@@ -59,6 +65,26 @@ export class GitHubActionsAdapter implements ProviderAdapter {
   async listRepositories(context: ProviderAccountContext): Promise<ProviderRepository[]> {
     const repositories = await this.request<GitHubRepositoryResponse[]>(context, '/user/repos?per_page=100');
     return repositories.map((repository) => this.toRepository(repository));
+  }
+
+  async getChangeRequestState(
+    context: ProviderAccountContext,
+    repository: ProviderRepositoryReference,
+    changeRequestNumber: string,
+  ): Promise<ProviderChangeRequestState | null> {
+    const response = await this.fetchFn(
+      this.url(context, `/repos/${repository.owner}/${repository.name}/pulls/${changeRequestNumber}`),
+      { headers: this.headers(context) },
+    );
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error(`GitHub API request failed with status ${response.status}.`);
+    const pullRequest = (await response.json()) as GitHubPullRequestResponse;
+    const mergedAt = pullRequest.merged_at ? new Date(pullRequest.merged_at) : null;
+    return {
+      mergedAt,
+      state: mergedAt ? 'MERGED' : pullRequest.state === 'closed' ? 'CLOSED' : 'OPEN',
+      targetBranch: pullRequest.base?.ref ?? null,
+    };
   }
 
   async getRepository(

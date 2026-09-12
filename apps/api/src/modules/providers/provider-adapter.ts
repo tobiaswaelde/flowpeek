@@ -25,6 +25,13 @@ export interface ProviderRepositoryReference {
   providerRepositoryId: string;
 }
 
+/** Read-only lifecycle metadata used to retire obsolete change-request workflow failures. */
+export interface ProviderChangeRequestState {
+  mergedAt: Date | null;
+  state: 'OPEN' | 'CLOSED' | 'MERGED';
+  targetBranch: string | null;
+}
+
 /** Provider workflow run normalized before persistence in Flowpeek. */
 export interface ProviderWorkflowRun {
   awaitingApproval: boolean;
@@ -85,6 +92,11 @@ export interface ProviderWebhookRequest {
 export interface ProviderAdapter {
   readonly providerType: ProviderType;
 
+  getChangeRequestState(
+    context: ProviderAccountContext,
+    repository: ProviderRepositoryReference,
+    changeRequestNumber: string,
+  ): Promise<ProviderChangeRequestState | null>;
   getRepository(
     context: ProviderAccountContext,
     repository: ProviderRepositoryReference,

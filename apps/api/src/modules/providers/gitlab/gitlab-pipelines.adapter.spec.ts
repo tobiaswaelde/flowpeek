@@ -123,3 +123,29 @@ describe('GitLabPipelinesAdapter', () => {
     expect(fetchFn).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('GitLabPipelinesAdapter change requests', () => {
+  const context = { accessToken: 'token', baseUrl: 'https://gitlab.example.test', providerAccountId: 'account' };
+  const repository = { name: 'flowpeek', owner: 'octo', providerRepositoryId: '1' };
+
+  it.each([
+    ['opened', null, 'OPEN'],
+    ['closed', null, 'CLOSED'],
+    ['merged', '2026-09-12T10:00:00.000Z', 'MERGED'],
+  ] as const)('normalizes a %s merge request with merged-at %s as %s', async (state, mergedAt, expected) => {
+    const adapter = new GitLabPipelinesAdapter(
+      jest.fn().mockResolvedValue(new Response(JSON.stringify({ merged_at: mergedAt, state, target_branch: 'main' }))),
+    );
+
+    await expect(adapter.getChangeRequestState(context, repository, '42')).resolves.toEqual({
+      mergedAt: mergedAt ? new Date(mergedAt) : null,
+      state: expected,
+      targetBranch: 'main',
+    });
+  });
+
+  it('returns null when the merge request is unavailable', async () => {
+    const adapter = new GitLabPipelinesAdapter(jest.fn().mockResolvedValue(new Response(null, { status: 404 })));
+    await expect(adapter.getChangeRequestState(context, repository, '42')).resolves.toBeNull();
+  });
+});

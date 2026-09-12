@@ -24,7 +24,11 @@ const needsAttentionCandidateWhere = {
   workflow: { kind: 'STANDARD' },
 } satisfies Prisma.WorkflowRunWhereInput;
 
-type LatestTerminalWorkflowRun = Pick<WorkflowRun, 'id' | 'status'>;
+type LatestTerminalWorkflowRun = Pick<
+  WorkflowRun,
+  'changeRequestMergedAt' | 'changeRequestState' | 'changeRequestTargetBranch' | 'id' | 'status' | 'workflowId'
+>;
+type SuccessfulWorkflowRun = Pick<WorkflowRun, 'providerCreatedAt' | 'scopeKey' | 'workflowId'>;
 
 /** Prisma delegate type map used by Query Kit for workflow-run resources. */
 export interface WorkflowRunTypeMap extends BaseDelegateTypeMap {
@@ -169,19 +173,59 @@ export class WorkflowRunsQueryService extends QueryService<
     );
   }
 
-  /** Resolve authorized IDs whose newest completed run failed without exposing inaccessible workflow contexts. */
+  /** Resolve authorized, actionable failures without exposing inaccessible workflow contexts. */
   private async getNeedsAttentionWhere(ability: AppAbility): Promise<Prisma.WorkflowRunWhereInput> {
     const latestTerminalRuns = await this.findMany<LatestTerminalWorkflowRun>(
       {
         distinct: ['workflowId', 'scopeKey'],
         orderBy: [{ providerCreatedAt: 'desc' }, { id: 'desc' }],
-        select: { id: true, status: true },
+        select: {
+          changeRequestMergedAt: true,
+          changeRequestState: true,
+          changeRequestTargetBranch: true,
+          id: true,
+          status: true,
+          workflowId: true,
+        },
         where: needsAttentionCandidateWhere,
       },
       ability,
     );
+    const failures = latestTerminalRuns.filter((run) => run.status === 'FAILED' && run.changeRequestState !== 'CLOSED');
+    const mergedFailures = failures.filter(
+      (run) => run.changeRequestState === 'MERGED' && run.changeRequestMergedAt && run.changeRequestTargetBranch,
+    );
+    const targetBranchSuccesses =
+      mergedFailures.length === 0
+        ? []
+        : await this.findMany<SuccessfulWorkflowRun>(
+            {
+              select: { providerCreatedAt: true, scopeKey: true, workflowId: true },
+              where: {
+                OR: mergedFailures.map((run) => ({
+                  providerCreatedAt: { gte: run.changeRequestMergedAt!.toISOString() },
+                  scopeKey: `branch:${run.changeRequestTargetBranch!}`,
+                  workflowId: run.workflowId,
+                })),
+                status: 'SUCCESS',
+              },
+            },
+            ability,
+          );
+    const resolvedMergedFailureIds = new Set(
+      mergedFailures
+        .filter((failure) =>
+          targetBranchSuccesses.some(
+            (success) =>
+              success.workflowId === failure.workflowId &&
+              success.scopeKey === `branch:${failure.changeRequestTargetBranch!}` &&
+              success.providerCreatedAt >= failure.changeRequestMergedAt!,
+          ),
+        )
+        .map((run) => run.id),
+    );
 
-    return { id: { in: latestTerminalRuns.filter((run) => run.status === 'FAILED').map((run) => run.id) } };
+    return { id: { in: failures.filter((run) => !resolvedMergedFailureIds.has(run.id)).map((run) => run.id) } };
   }
 
   /** Resolve authorized IDs for the newest run of every workflow and PR, branch, or repository context. */

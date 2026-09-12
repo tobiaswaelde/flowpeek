@@ -6,6 +6,7 @@ import type {
   ProviderAccountContext,
   ProviderAccountValidation,
   ProviderAdapter,
+  ProviderChangeRequestState,
   ProviderRepository,
   ProviderRepositoryReference,
   ProviderWebhookRequest,
@@ -59,6 +60,13 @@ interface ForgejoWorkflowRunsResponse {
   workflow_runs?: ForgejoRun[];
 }
 
+interface ForgejoPullRequest {
+  base?: { ref?: string };
+  merged?: boolean;
+  merged_at?: string | null;
+  state: string;
+}
+
 /** Raised when a Forgejo instance predates the read-only Actions run API. */
 export class ForgejoActionsUnsupportedError extends Error {
   constructor() {
@@ -83,6 +91,26 @@ export class ForgejoActionsAdapter implements ProviderAdapter {
   async listRepositories(context: ProviderAccountContext): Promise<ProviderRepository[]> {
     const repositories = await this.request<ForgejoRepository[]>(context, '/user/repos?page=1&limit=100');
     return repositories.map((repository) => this.toRepository(repository));
+  }
+
+  async getChangeRequestState(
+    context: ProviderAccountContext,
+    repository: ProviderRepositoryReference,
+    changeRequestNumber: string,
+  ): Promise<ProviderChangeRequestState | null> {
+    const response = await this.fetchFn(
+      this.url(context, `/repos/${repository.owner}/${repository.name}/pulls/${changeRequestNumber}`),
+      { headers: this.headers(context) },
+    );
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error(`Forgejo API request failed with status ${response.status}.`);
+    const pullRequest = (await response.json()) as ForgejoPullRequest;
+    const mergedAt = pullRequest.merged_at ? new Date(pullRequest.merged_at) : null;
+    return {
+      mergedAt,
+      state: pullRequest.merged || mergedAt ? 'MERGED' : pullRequest.state === 'closed' ? 'CLOSED' : 'OPEN',
+      targetBranch: pullRequest.base?.ref ?? null,
+    };
   }
 
   async getRepository(

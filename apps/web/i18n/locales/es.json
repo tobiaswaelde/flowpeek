@@ -160,7 +160,7 @@
     "token": "Token bearer"
   },
   "needsAttention": {
-    "description": "Consulta todos los contextos cuyo último flujo completado falló. Los resultados respetan tu acceso a repositorios.",
+    "description": "Consulta los contextos relevantes cuyo último flujo completado falló. Los cambios cerrados y fusionados correctamente se eliminan automáticamente.",
     "empty": "Ningún flujo de trabajo requiere atención actualmente.",
     "loadError": "No se pudieron cargar los flujos que requieren atención.",
     "title": "Requiere atención"

@@ -175,6 +175,101 @@ describe('workflow-run authorization integration', () => {
     },
   );
 
+  it('keeps only actionable change-request failures after closure or a successful merge validation', async () => {
+    const previousFailure = await prisma.workflowRun.findUniqueOrThrow({ where: { id: visibleRunId } });
+    const mergeTime = new Date('2026-08-26T11:00:00.000Z');
+    const createRun = async (input: {
+      changeRequestNumber?: string;
+      changeRequestState?: 'OPEN' | 'CLOSED' | 'MERGED';
+      changeRequestTargetBranch?: string;
+      providerCreatedAt: Date;
+      providerRunId: string;
+      scopeKey: string;
+      status: 'FAILED' | 'SUCCESS';
+      workflowId?: string;
+    }) =>
+      prisma.workflowRun.create({
+        data: {
+          changeRequestMergedAt: input.changeRequestState === 'MERGED' ? mergeTime : null,
+          changeRequestNumber: input.changeRequestNumber ?? null,
+          changeRequestState: input.changeRequestState ?? 'UNKNOWN',
+          changeRequestTargetBranch: input.changeRequestTargetBranch ?? null,
+          completedAt: input.providerCreatedAt,
+          displayTitle: input.providerRunId,
+          providerCreatedAt: input.providerCreatedAt,
+          providerRunId: input.providerRunId,
+          rawStatus: input.status.toLowerCase(),
+          repositoryId: previousFailure.repositoryId,
+          scopeKey: input.scopeKey,
+          status: input.status,
+          url: `https://github.com/flowpeek/visible/actions/runs/${input.providerRunId}`,
+          workflowId: input.workflowId ?? previousFailure.workflowId,
+          workflowName: previousFailure.workflowName,
+        },
+      });
+    const openFailure = await createRun({
+      changeRequestNumber: '40',
+      changeRequestState: 'OPEN',
+      changeRequestTargetBranch: 'main',
+      providerCreatedAt: new Date('2026-08-26T10:00:00.000Z'),
+      providerRunId: 'open-failure',
+      scopeKey: 'change-request:40',
+      status: 'FAILED',
+    });
+    const closedFailure = await createRun({
+      changeRequestNumber: '41',
+      changeRequestState: 'CLOSED',
+      changeRequestTargetBranch: 'main',
+      providerCreatedAt: new Date('2026-08-26T10:10:00.000Z'),
+      providerRunId: 'closed-failure',
+      scopeKey: 'change-request:41',
+      status: 'FAILED',
+    });
+    const resolvedMerge = await createRun({
+      changeRequestNumber: '42',
+      changeRequestState: 'MERGED',
+      changeRequestTargetBranch: 'main',
+      providerCreatedAt: new Date('2026-08-26T10:20:00.000Z'),
+      providerRunId: 'resolved-merge',
+      scopeKey: 'change-request:42',
+      status: 'FAILED',
+    });
+    const unresolvedMerge = await createRun({
+      changeRequestNumber: '43',
+      changeRequestState: 'MERGED',
+      changeRequestTargetBranch: 'release',
+      providerCreatedAt: new Date('2026-08-26T10:30:00.000Z'),
+      providerRunId: 'unresolved-merge',
+      scopeKey: 'change-request:43',
+      status: 'FAILED',
+    });
+    await createRun({
+      providerCreatedAt: new Date('2026-08-26T12:00:00.000Z'),
+      providerRunId: 'main-success-after-merge',
+      scopeKey: 'branch:main',
+      status: 'SUCCESS',
+    });
+    await createRun({
+      providerCreatedAt: new Date('2026-08-26T12:10:00.000Z'),
+      providerRunId: 'unrelated-branch-success',
+      scopeKey: 'branch:other',
+      status: 'SUCCESS',
+    });
+
+    const ability = await runs.getReadAbility(users.viewer);
+    const needsAttention = await runs.findNeedsAttention<{ id: string }>({ select: { id: true } }, ability);
+
+    expect(needsAttention).toEqual(expect.arrayContaining([{ id: openFailure.id }, { id: unresolvedMerge.id }]));
+    expect(needsAttention).not.toContainEqual({ id: closedFailure.id });
+    expect(needsAttention).not.toContainEqual({ id: resolvedMerge.id });
+    await expect(
+      runs.findMany<{ id: string }>(
+        { where: { id: { in: [closedFailure.id, resolvedMerge.id] } }, select: { id: true } },
+        ability,
+      ),
+    ).resolves.toHaveLength(2);
+  });
+
   it.each([
     ['RUNNING', 1],
     ['SUCCESS', 0],
