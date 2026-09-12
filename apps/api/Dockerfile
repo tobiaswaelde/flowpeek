@@ -23,4 +23,6 @@ COPY --from=build /workspace/apps/api/prisma.config.ts ./prisma.config.ts
 COPY --from=build /production/package.json ./package.json
 COPY --from=build /production/node_modules ./node_modules
 EXPOSE 3001
+HEALTHCHECK --interval=10s --timeout=5s --retries=6 --start-period=15s \
+  CMD node -e "fetch('http://127.0.0.1:3001/api/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
 CMD ["node", "dist/main.js"]

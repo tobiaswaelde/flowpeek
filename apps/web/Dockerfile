@@ -11,4 +11,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /workspace/apps/web/.output ./.output
 EXPOSE 3000
+HEALTHCHECK --interval=10s --timeout=5s --retries=6 --start-period=10s \
+  CMD node -e "fetch('http://127.0.0.1:3000').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
 CMD ["node", ".output/server/index.mjs"]

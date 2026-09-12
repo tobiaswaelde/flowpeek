@@ -40,15 +40,6 @@ services:
         condition: service_completed_successfully
     ports:
       - '${EZREPO_API_PORT:-3001}:3001'
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - >-
-          node -e "fetch('http://127.0.0.1:3001/api/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
-      interval: 10s
-      timeout: 5s
-      retries: 6
-      start_period: 15s
 
   web:
     image: ghcr.io/tobiaswaelde/ezrepo-web:${EZREPO_VERSION:-latest}
@@ -62,15 +53,6 @@ services:
         condition: service_healthy
     ports:
       - '${EZREPO_WEB_PORT:-3000}:3000'
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - >-
-          node -e "fetch('http://127.0.0.1:3000').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
-      interval: 10s
-      timeout: 5s
-      retries: 6
-      start_period: 10s
 
 volumes:
   ezrepo-postgres:
