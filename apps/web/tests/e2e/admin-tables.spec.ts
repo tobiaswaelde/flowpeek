@@ -25,6 +25,11 @@ test('repository and user administration render full-page Query Kit tables', asy
             enabled: true,
             id: 'repository-1',
             lastSyncAt: null,
+            members: Array.from({ length: 6 }, (_, index) => ({
+              avatarUpdatedAt: null,
+              userId: `member-${index + 1}`,
+              username: `member-${index + 1}`,
+            })),
             name: 'flowpeek',
             owner: 'twaelde',
             providerAccountId: 'provider-1',
@@ -81,7 +86,15 @@ test('repository and user administration render full-page Query Kit tables', asy
   await expect(repositoryBreadcrumb.getByRole('link', { name: 'Dashboard' })).toHaveAttribute('href', '/');
   await expect(repositoryBreadcrumb).toContainText('Repositories');
   await expect(page.getByRole('columnheader', { name: 'Workflow runs' })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Members' })).toBeVisible();
   await expect(page.locator('tbody')).toContainText('12');
+  const membersCell = page.locator('tbody td').filter({ hasText: '+1' });
+  await expect(membersCell).toContainText('+1');
+  await membersCell.getByText('M1', { exact: true }).hover();
+  const memberTooltip = page.locator('[data-slot="content"][data-side]').filter({ hasText: 'member-1' });
+  await expect(memberTooltip).toBeVisible();
+  await page.mouse.move(0, 0);
+  await expect(memberTooltip).toBeHidden();
   await expect(page.locator('tbody').getByRole('link', { name: 'flowpeek', exact: true })).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Open in provider' })).toHaveAttribute(
     'href',

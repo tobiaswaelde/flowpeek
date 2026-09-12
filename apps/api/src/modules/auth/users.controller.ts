@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, ForbiddenException, Get, Param, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  Res,
+  StreamableFile,
+} from '@nestjs/common';
 import {
   ApiErrorResponses,
   ApiPaginatedResponse,
@@ -8,12 +20,13 @@ import {
 } from '@querry-kit/nest';
 import bcrypt from 'bcrypt';
 import { IsEnum, IsString, MaxLength, MinLength } from 'class-validator';
+import type { Response } from 'express';
 
-import type { User } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { Authenticated } from './authenticated.decorator.js';
+import { AvatarService } from './avatar.service.js';
 import { UserQueryDto } from './dto/user-query.dto.js';
-import { UserDto } from './dto/user.dto.js';
+import { UserDto, type UserWithAvatar } from './dto/user.dto.js';
 import type { AuthenticatedUser } from './types.js';
 import { UsersQueryService } from './users-query.service.js';
 
@@ -30,6 +43,7 @@ export class UsersController {
   constructor(
     private readonly prisma: PrismaService,
     private readonly users: UsersQueryService,
+    private readonly avatars: AvatarService,
   ) {}
 
   /** Query system users with server-side filtering, sorting, field selection, and pagination. */
@@ -41,11 +55,19 @@ export class UsersController {
     const ability = this.users.getReadAbility(request.user);
     return ResourceQuery.query({
       ability,
-      map: (user: User, currentAbility) => UserDto.fromModel(user, currentAbility),
+      include: { avatar: { select: { updatedAt: true } } },
+      map: (user: UserWithAvatar, currentAbility) => UserDto.fromModel(user, currentAbility),
       query: this.users.toQueryOptions(query),
       schema: UserDto,
       service: this.users,
     });
+  }
+  /** Return one normalized avatar to authenticated users without exposing its database record. */
+  @Get(':id/avatar')
+  async avatar(@Param('id') id: string, @Res({ passthrough: true }) response: Response): Promise<StreamableFile> {
+    const avatar = await this.avatars.get(id);
+    response.set({ 'Cache-Control': 'private, max-age=3600', ETag: `"${avatar.etag}"` });
+    return new StreamableFile(Buffer.from(avatar.data), { type: 'image/webp' });
   }
   @Post() async create(@Req() request: { user: AuthenticatedUser }, @Body() body: CreateUserDto) {
     this.assertAdmin(request.user);

@@ -23,6 +23,7 @@ export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequestSchema>;
 
 /** The safe authenticated-user payload returned by Flowpeek's auth endpoints. */
 export interface AuthenticatedUser {
+  avatarUpdatedAt: string | null;
   id: string;
   role: (typeof userRoles)[number];
   username: string;

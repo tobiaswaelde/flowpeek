@@ -45,11 +45,15 @@ describe('resource DTO mappings', () => {
     const schema = buildFieldSchemaFromDto(RepositoryDto);
 
     expect(
-      Fields.parseAndValidate('id,name,owner,enabled,url,workflowRunCount,workflowRunRetentionDays,lastSyncAt', schema),
+      Fields.parseAndValidate(
+        'id,name,owner,enabled,url,members,workflowRunCount,workflowRunRetentionDays,lastSyncAt',
+        schema,
+      ),
     ).toEqual({
       enabled: true,
       id: true,
       lastSyncAt: true,
+      members: true,
       name: true,
       owner: true,
       url: true,
@@ -68,6 +72,12 @@ describe('resource DTO mappings', () => {
       enabled: true,
       lastSyncAt: null,
       workflowRunRetentionDays: 30,
+      memberships: [
+        {
+          userId: 'user-1',
+          user: { avatar: { updatedAt: new Date('2026-09-12T10:00:00.000Z') }, username: 'viewer' },
+        },
+      ],
       providerAccountId: 'account',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -82,6 +92,13 @@ describe('resource DTO mappings', () => {
       url: 'https://example.test/flowpeek',
       enabled: true,
       lastSyncAt: null,
+      members: [
+        {
+          avatarUpdatedAt: new Date('2026-09-12T10:00:00.000Z'),
+          userId: 'user-1',
+          username: 'viewer',
+        },
+      ],
       workflowRunRetentionDays: 30,
       providerAccountId: 'account',
       workflowRunCount: 12,

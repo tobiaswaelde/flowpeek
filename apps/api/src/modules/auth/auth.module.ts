@@ -6,6 +6,7 @@ import { CaslModule } from '../../casl/casl.module.js';
 import { ENV } from '../../config/env.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
+import { AvatarService } from './avatar.service.js';
 import { JwtStrategy } from './jwt.strategy.js';
 import { UsersQueryService } from './users-query.service.js';
 import { UsersController } from './users.controller.js';
@@ -23,7 +24,7 @@ import { UsersController } from './users.controller.js';
     }),
   ],
   controllers: [AuthController, UsersController],
-  providers: [AuthService, JwtStrategy, UsersQueryService],
+  providers: [AuthService, AvatarService, JwtStrategy, UsersQueryService],
   exports: [AuthService],
 })
 export class AuthModule {}

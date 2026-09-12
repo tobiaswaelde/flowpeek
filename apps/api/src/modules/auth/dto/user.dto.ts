@@ -6,8 +6,12 @@ import { CaslSubject } from '../../../casl/casl-subject.js';
 import type { AppAbility } from '../../../casl/types.js';
 import type { User } from '../../../generated/prisma/client.js';
 
+export type UserWithAvatar = User & { avatar?: { updatedAt: Date } | null };
+
 /** Public user representation without credential material. */
 export class UserDto {
+  @ApiProperty({ format: 'date-time', nullable: true })
+  avatarUpdatedAt!: Date | null;
   @ApiProperty({ format: 'uuid' })
   id!: string;
   @ApiProperty({ maxLength: 255 })
@@ -20,9 +24,10 @@ export class UserDto {
   updatedAt!: Date;
 
   /** Convert a persisted user to a permission-filtered public representation. */
-  static fromModel(model: User, ability?: AppAbility): UserDto {
+  static fromModel(model: UserWithAvatar, ability?: AppAbility): UserDto {
     return filterCaslFields(
       {
+        avatarUpdatedAt: model.avatar?.updatedAt ?? null,
         id: model.id,
         username: model.username,
         role: model.role,

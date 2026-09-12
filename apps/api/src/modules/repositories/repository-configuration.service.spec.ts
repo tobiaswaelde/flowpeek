@@ -59,7 +59,7 @@ describe('RepositoryConfigurationService', () => {
       where: { userId_repositoryId: { repositoryId: repository.id, userId: 'user-id' } },
       create: { repositoryId: repository.id, role: 'MANAGER', userId: 'user-id' },
       update: { role: 'MANAGER' },
-      include: { user: true },
+      include: { user: { include: { avatar: { select: { updatedAt: true } } } } },
     });
   });
 

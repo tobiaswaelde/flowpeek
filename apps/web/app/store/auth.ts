@@ -42,6 +42,11 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /** Replace the current safe user after a personal profile mutation. */
+  function updateUser(updatedUser: AuthenticatedUser): void {
+    user.value = updatedUser;
+  }
+
   function setSession(session: AuthResult): void {
     accessToken.value = session.accessToken;
     user.value = session.user;
@@ -54,5 +59,5 @@ export const useAuthStore = defineStore('auth', () => {
     if (import.meta.client) window.localStorage.removeItem(accessTokenStorageKey);
   }
 
-  return { accessToken, clearSession, initialize, initialized, refresh, signIn, signOut, user };
+  return { accessToken, clearSession, initialize, initialized, refresh, signIn, signOut, updateUser, user };
 });

@@ -16,8 +16,8 @@ hostname and certificates.
 - A reverse proxy that obtains and renews TLS certificates.
 - A private server directory readable only by deployment administrators.
 
-The Compose stack persists PostgreSQL data in its named `flowpeek-postgres` volume. Do not delete this volume unless
-you intentionally want to remove all ezRepo data.
+The Compose stack persists PostgreSQL data, including normalized user profile pictures, in its named
+`flowpeek-postgres` volume. Do not delete this volume unless you intentionally want to remove all ezRepo data.
 
 ## First deployment
 

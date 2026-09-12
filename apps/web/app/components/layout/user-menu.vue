@@ -1,13 +1,12 @@
 <template>
   <UDropdownMenu v-if="auth.user" :items="items" :ui="{ content: 'w-48' }">
-    <UButton
-      class="gap-2"
-      color="neutral"
-      icon="i-tabler-user-circle"
-      variant="ghost"
-      :disabled="signingOut"
-      :loading="signingOut"
-    >
+    <UButton class="gap-2" color="neutral" variant="ghost" :disabled="signingOut" :loading="signingOut">
+      <CommonUserAvatar
+        size="2xs"
+        :avatar-updated-at="auth.user.avatarUpdatedAt"
+        :user-id="auth.user.id"
+        :username="auth.user.username"
+      />
       <span class="hidden text-sm sm:inline">{{ auth.user.username }}</span>
     </UButton>
   </UDropdownMenu>

@@ -54,6 +54,18 @@
           {{ row.original.enabled ? $t('repositories.enabled') : $t('repositories.disabled') }}
         </UBadge>
       </template>
+      <template #members-cell="{ row }">
+        <UAvatarGroup size="sm" :max="5">
+          <UTooltip v-for="member in row.original.members" :key="member.userId" :text="member.username">
+            <CommonUserAvatar
+              size="sm"
+              :avatar-updated-at="member.avatarUpdatedAt"
+              :user-id="member.userId"
+              :username="member.username"
+            />
+          </UTooltip>
+        </UAvatarGroup>
+      </template>
       <template #workflowRunRetentionDays-cell="{ row }">
         <span class="text-sm text-muted">
           {{ row.original.workflowRunRetentionDays ?? $t('repositories.default') }}
@@ -165,6 +177,7 @@ const columnDefinition = computed<RepositoryTableColumn[]>(() => [
   { accessorKey: 'owner', header: t('repositories.columns.owner'), id: 'owner' },
   { accessorKey: 'name', header: t('repositories.columns.name'), id: 'name' },
   { accessorKey: 'enabled', header: t('repositories.columns.status'), id: 'enabled' },
+  { accessorKey: 'members', header: t('repositories.columns.members'), id: 'members' },
   { accessorKey: 'workflowRunCount', header: t('repositories.columns.workflowRuns'), id: 'workflowRunCount' },
   {
     accessorKey: 'workflowRunRetentionDays',

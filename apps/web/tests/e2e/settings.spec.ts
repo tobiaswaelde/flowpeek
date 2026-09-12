@@ -1,5 +1,10 @@
 import { expect, test } from '@playwright/test';
 
+const nonSquarePng = Buffer.from(
+  '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',
+  'base64',
+);
+
 /** Configure global defaults and apply the selected timestamp format across administration pages. */
 test('updates global retention and date-time formatting with visible request progress', async ({ page }, testInfo) => {
   let settings = { dateTimeFormat: 'LOCALE_MEDIUM', workflowRunRetentionDays: 90 };
@@ -93,4 +98,60 @@ test('shows personal settings but hides global defaults from non-administrators'
   await expect(page.getByRole('button', { name: 'Restore all banners' })).toBeEnabled();
   await expect(page.getByRole('spinbutton', { name: 'Workflow run retention' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Save settings' })).toHaveCount(0);
+});
+
+/** Upload, crop, and remove the current user's profile picture without exposing the original source. */
+test('manages a cropped personal avatar from upload and HTTPS import', async ({ page }, testInfo) => {
+  let currentUser = {
+    avatarUpdatedAt: null as string | null,
+    id: 'playwright-viewer',
+    role: 'VIEWER',
+    username: 'viewer',
+  };
+  let uploadCount = 0;
+  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.route('**/api/v1/auth/me', (route) =>
+    route.fulfill({ contentType: 'application/json', json: currentUser }),
+  );
+  await page.route('**/api/v1/settings/preferences', (route) =>
+    route.fulfill({ contentType: 'application/json', json: { dismissedIntroBannerIds: [] } }),
+  );
+  await page.route('**/api/v1/auth/me/avatar', async (route) => {
+    if (route.request().method() === 'DELETE') {
+      currentUser = { ...currentUser, avatarUpdatedAt: null };
+      return route.fulfill({ contentType: 'application/json', json: currentUser });
+    }
+    uploadCount += 1;
+    expect(route.request().postDataBuffer()?.toString('latin1')).toContain('image/webp');
+    currentUser = { ...currentUser, avatarUpdatedAt: `2026-09-12T10:00:0${uploadCount}.000Z` };
+    await route.fulfill({ contentType: 'application/json', json: currentUser });
+  });
+  await page.route('**/api/v1/auth/me/avatar/remote-preview', async (route) => {
+    expect(route.request().postDataJSON()).toEqual({ url: 'https://example.com/avatar.png' });
+    await route.fulfill({ body: nonSquarePng, contentType: 'image/png' });
+  });
+  await page.route('**/api/v1/users/playwright-viewer/avatar**', (route) =>
+    route.fulfill({ body: nonSquarePng, contentType: 'image/webp' }),
+  );
+
+  await page.goto('/admin/settings');
+  await page
+    .locator('input[type="file"]')
+    .setInputFiles({ buffer: nonSquarePng, mimeType: 'image/png', name: 'avatar.png' });
+  const cropDialog = page.getByRole('dialog', { name: 'Crop profile picture' });
+  await expect(cropDialog).toBeVisible();
+  await expect(cropDialog.getByRole('button', { name: 'Zoom in' })).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('avatar-crop-dialog.png'), fullPage: true });
+  await cropDialog.getByRole('button', { name: 'Apply crop' }).click();
+  await expect(page.getByText('Profile picture updated.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Remove profile picture' })).toBeVisible();
+
+  await page.getByPlaceholder('https://example.com/avatar.jpg').fill('https://example.com/avatar.png');
+  await page.getByRole('button', { name: 'Import image' }).click();
+  await expect(cropDialog).toBeVisible();
+  await cropDialog.getByRole('button', { name: 'Apply crop' }).click();
+  await expect.poll(() => uploadCount).toBe(2);
+
+  await page.getByRole('button', { name: 'Remove profile picture' }).click();
+  await expect(page.getByRole('button', { name: 'Remove profile picture' })).toHaveCount(0);
 });

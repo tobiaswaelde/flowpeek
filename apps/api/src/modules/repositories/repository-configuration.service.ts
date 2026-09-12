@@ -61,12 +61,18 @@ export class RepositoryConfigurationService {
   async listMemberships(
     user: AuthenticatedUser,
     repositoryId: string,
-  ): Promise<Array<RepositoryMembership & { user: { id: string; role: UserRole; username: string } }>> {
+  ): Promise<
+    Array<
+      RepositoryMembership & {
+        user: { avatar: { updatedAt: Date } | null; id: string; role: UserRole; username: string };
+      }
+    >
+  > {
     this.assertAdministrator(user);
     await this.requireRepository(repositoryId);
     return this.prisma.repositoryMembership.findMany({
       where: { repositoryId },
-      include: { user: true },
+      include: { user: { include: { avatar: { select: { updatedAt: true } } } } },
       orderBy: { user: { username: 'asc' } },
     });
   }
@@ -76,7 +82,11 @@ export class RepositoryConfigurationService {
     user: AuthenticatedUser,
     repositoryId: string,
     input: { role: RepositoryRole; userId: string },
-  ): Promise<RepositoryMembership & { user: { id: string; role: UserRole; username: string } }> {
+  ): Promise<
+    RepositoryMembership & {
+      user: { avatar: { updatedAt: Date } | null; id: string; role: UserRole; username: string };
+    }
+  > {
     this.assertAdministrator(user);
     await this.requireRepository(repositoryId);
     const member = await this.prisma.user.findUnique({ where: { id: input.userId } });
@@ -85,7 +95,7 @@ export class RepositoryConfigurationService {
       where: { userId_repositoryId: { repositoryId, userId: input.userId } },
       create: { repositoryId, role: input.role, userId: input.userId },
       update: { role: input.role },
-      include: { user: true },
+      include: { user: { include: { avatar: { select: { updatedAt: true } } } } },
     });
   }
 

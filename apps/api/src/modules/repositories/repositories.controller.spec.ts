@@ -13,6 +13,12 @@ describe('RepositoriesController', () => {
       enabled: true,
       id: 'repository-1',
       lastSyncAt: null,
+      memberships: [
+        {
+          user: { avatar: { updatedAt: new Date('2026-09-12T10:00:00.000Z') }, username: 'member' },
+          userId: 'member-1',
+        },
+      ],
       name: 'flowpeek',
       owner: 'twaelde',
       providerAccountId: 'provider-1',
@@ -22,7 +28,7 @@ describe('RepositoriesController', () => {
       workflowRunRetentionDays: 30,
     } satisfies RepositoryResourceModel;
     const query = {
-      fields: 'id,name,workflowRunCount',
+      fields: 'id,name,members,workflowRunCount',
       page: 1,
       perPage: 10,
     } as RepositoryQueryDto;
@@ -43,10 +49,28 @@ describe('RepositoriesController', () => {
     const response = await controller.query({ user: { id: 'admin', role: 'SYSTEM_ADMIN', username: 'admin' } }, query);
 
     expect(repositories.query).toHaveBeenCalledWith(
-      expect.objectContaining({ include: { _count: { select: { workflowRuns: true } } } }),
+      expect.objectContaining({
+        include: expect.objectContaining({
+          _count: { select: { workflowRuns: true } },
+          memberships: expect.anything(),
+        }),
+      }),
       undefined,
     );
-    expect(response.items).toEqual([{ id: 'repository-1', name: 'flowpeek', workflowRunCount: 12 }]);
+    expect(response.items).toEqual([
+      {
+        id: 'repository-1',
+        members: [
+          {
+            avatarUpdatedAt: new Date('2026-09-12T10:00:00.000Z'),
+            userId: 'member-1',
+            username: 'member',
+          },
+        ],
+        name: 'flowpeek',
+        workflowRunCount: 12,
+      },
+    ]);
   });
 
   it('loads a repository detail through the permission-aware query service', async () => {
@@ -78,6 +102,10 @@ describe('RepositoriesController', () => {
       name: repository.name,
     });
     expect(repositories.getReadAbility).toHaveBeenCalledWith(viewer);
-    expect(repositories.findById).toHaveBeenCalledWith(repository.id, {}, ability);
+    expect(repositories.findById).toHaveBeenCalledWith(
+      repository.id,
+      { include: { memberships: expect.anything() } },
+      ability,
+    );
   });
 });

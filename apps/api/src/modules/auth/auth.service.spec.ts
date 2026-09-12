@@ -26,6 +26,7 @@ describe('AuthService', () => {
   it('issues a JWT for valid credentials', async () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'user-id',
+      avatar: null,
       passwordHash: await bcrypt.hash('password', 4),
       role: 'VIEWER',
       username: 'viewer',
@@ -34,15 +35,16 @@ describe('AuthService', () => {
 
     await expect(service.signIn('viewer', 'password')).resolves.toEqual({
       accessToken: 'jwt',
-      user: { id: 'user-id', role: 'VIEWER', username: 'viewer' },
+      user: { avatarUpdatedAt: null, id: 'user-id', role: 'VIEWER', username: 'viewer' },
     });
   });
 
   it('authenticates a valid access token against the current persisted user', async () => {
     jwt.verifyAsync.mockResolvedValue({ sub: 'user-id' });
-    prisma.user.findUnique.mockResolvedValue({ id: 'user-id', role: 'MANAGER', username: 'manager' });
+    prisma.user.findUnique.mockResolvedValue({ avatar: null, id: 'user-id', role: 'MANAGER', username: 'manager' });
 
     await expect(service.authenticateAccessToken('jwt')).resolves.toEqual({
+      avatarUpdatedAt: null,
       id: 'user-id',
       role: 'MANAGER',
       username: 'manager',

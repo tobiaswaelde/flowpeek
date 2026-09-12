@@ -43,6 +43,17 @@
         td: 'first:pl-8',
       }"
     >
+      <template #username-cell="{ row }">
+        <div class="flex items-center gap-2">
+          <CommonUserAvatar
+            size="xs"
+            :avatar-updated-at="row.original.avatarUpdatedAt"
+            :user-id="row.original.id"
+            :username="row.original.username"
+          />
+          <span class="font-medium">{{ row.original.username }}</span>
+        </div>
+      </template>
       <template #role-cell="{ row }">
         <UBadge color="neutral" variant="subtle">{{ $t(`roles.${row.original.role}`) }}</UBadge>
       </template>
@@ -148,7 +159,7 @@ const userTable = useTable({
   defaultItemsPerPage: 10,
   endpoint: 'users',
   name: 'users',
-  staticFields: ['id'],
+  staticFields: ['avatarUpdatedAt', 'id'],
 });
 const {
   columnOrder,

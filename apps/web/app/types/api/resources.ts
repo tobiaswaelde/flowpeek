@@ -155,12 +155,20 @@ export interface Repository {
   enabled: boolean;
   id: string;
   lastSyncAt: ApiTimestamp | null;
+  members: RepositoryMemberSummary[];
   name: string;
   owner: string;
   providerAccountId: string;
   url: string;
   workflowRunCount?: number;
   workflowRunRetentionDays: number | null;
+}
+
+/** Safe user identity rendered in one repository's member avatar group. */
+export interface RepositoryMemberSummary {
+  avatarUpdatedAt: ApiTimestamp | null;
+  userId: string;
+  username: string;
 }
 
 /** Workflow name filter persisted for one tracked repository. */
@@ -179,12 +187,13 @@ export interface RepositoryMembership {
   id: string;
   repositoryId: string;
   role: RepositoryRole;
-  user: Pick<User, 'id' | 'role' | 'username'>;
+  user: Pick<User, 'avatarUpdatedAt' | 'id' | 'role' | 'username'>;
   userId: string;
 }
 
 /** Safe system user representation. */
 export interface User {
+  avatarUpdatedAt: ApiTimestamp | null;
   id: string;
   username: string;
   role: 'SYSTEM_ADMIN' | 'VIEWER' | 'MANAGER';

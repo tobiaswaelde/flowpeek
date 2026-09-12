@@ -147,7 +147,7 @@ export function useFlowpeekApi() {
       delete: (id: string): Promise<AxiosResponse<void>> => api.delete(`${apiEndpoints.users}/${id}`),
       list: (): Promise<AxiosResponse<PaginatedResource<User>>> =>
         api.get(apiEndpoints.users, {
-          params: { fields: 'id,username,role,createdAt,updatedAt', page: 1, perPage: 100 },
+          params: { fields: 'id,username,role,avatarUpdatedAt,createdAt,updatedAt', page: 1, perPage: 100 },
         }),
     },
   };

@@ -46,6 +46,16 @@ export class ProviderAccountDto {
   }
 }
 
+/** Minimal safe user identity rendered in repository member avatar groups. */
+export class RepositoryMemberSummaryDto {
+  @ApiProperty({ format: 'date-time', nullable: true })
+  avatarUpdatedAt!: Date | null;
+  @ApiProperty({ format: 'uuid' })
+  userId!: string;
+  @ApiProperty({ maxLength: 255 })
+  username!: string;
+}
+
 /** Public tracked-repository representation. */
 export class RepositoryDto {
   @ApiProperty({ format: 'uuid' })
@@ -68,6 +78,8 @@ export class RepositoryDto {
   providerAccountId!: string;
   @ApiPropertyOptional({ minimum: 0 })
   workflowRunCount?: number;
+  @ApiProperty({ isArray: true, type: () => RepositoryMemberSummaryDto })
+  members!: RepositoryMemberSummaryDto[];
 
   /** Convert a tracked repository to a permission-filtered API response. */
   static fromModel(model: RepositoryResourceModel, ability?: AppAbility): RepositoryDto {
@@ -82,6 +94,11 @@ export class RepositoryDto {
         lastSyncAt: model.lastSyncAt,
         workflowRunRetentionDays: model.workflowRunRetentionDays,
         providerAccountId: model.providerAccountId,
+        members: (model.memberships ?? []).map((membership) => ({
+          avatarUpdatedAt: membership.user.avatar?.updatedAt ?? null,
+          userId: membership.userId,
+          username: membership.user.username,
+        })),
         ...(model._count ? { workflowRunCount: model._count.workflowRuns } : {}),
       },
       CaslSubject.Repository,
@@ -94,6 +111,10 @@ export class RepositoryDto {
 /** Repository model with an optional workflow-run aggregate used by list endpoints. */
 export type RepositoryResourceModel = Repository & {
   _count?: { workflowRuns: number };
+  memberships?: Array<{
+    user: { avatar: { updatedAt: Date } | null; username: string };
+    userId: string;
+  }>;
 };
 
 /** Public workflow-run representation used by dashboard and history endpoints. */
@@ -196,17 +217,24 @@ export class RepositoryMembershipDto {
   @ApiProperty({ format: 'uuid' })
   userId!: string;
   @ApiProperty()
-  user!: Pick<User, 'id' | 'role' | 'username'>;
+  user!: Pick<User, 'id' | 'role' | 'username'> & { avatarUpdatedAt: Date | null };
 
   /** Convert a membership and its safe user relation into a public representation. */
   static fromModel(
-    model: RepositoryMembership & { user: Pick<User, 'id' | 'role' | 'username'> },
+    model: RepositoryMembership & {
+      user: Pick<User, 'id' | 'role' | 'username'> & { avatar: { updatedAt: Date } | null };
+    },
   ): RepositoryMembershipDto {
     return {
       id: model.id,
       repositoryId: model.repositoryId,
       role: model.role,
-      user: { id: model.user.id, role: model.user.role, username: model.user.username },
+      user: {
+        avatarUpdatedAt: model.user.avatar?.updatedAt ?? null,
+        id: model.user.id,
+        role: model.user.role,
+        username: model.user.username,
+      },
       userId: model.userId,
     };
   }

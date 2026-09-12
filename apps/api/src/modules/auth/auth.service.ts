@@ -6,6 +6,8 @@ import { ENV } from '../../config/env.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import type { AuthResult, AuthenticatedUser } from './types.js';
 
+const avatarMetadata = { select: { updatedAt: true } } as const;
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -14,10 +16,10 @@ export class AuthService {
   ) {}
 
   async signIn(username: string, password: string): Promise<AuthResult> {
-    const user = await this.prisma.user.findUnique({ where: { username } });
+    const user = await this.prisma.user.findUnique({ where: { username }, include: { avatar: avatarMetadata } });
     if (!user || !(await bcrypt.compare(password, user.passwordHash)))
       throw new UnauthorizedException('Invalid credentials.');
-    const authenticatedUser = { id: user.id, role: user.role, username: user.username };
+    const authenticatedUser = this.toAuthenticatedUser(user);
     return { accessToken: await this.createAccessToken(authenticatedUser), user: authenticatedUser };
   }
 
@@ -41,9 +43,12 @@ export class AuthService {
   async authenticateAccessToken(accessToken: string): Promise<AuthenticatedUser> {
     try {
       const payload = await this.jwt.verifyAsync<{ sub: string }>(accessToken, { issuer: ENV.AUTH_JWT_ISSUER });
-      const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+        include: { avatar: avatarMetadata },
+      });
       if (!user) throw new UnauthorizedException();
-      return { id: user.id, role: user.role, username: user.username };
+      return this.toAuthenticatedUser(user);
     } catch {
       throw new UnauthorizedException();
     }
@@ -51,5 +56,14 @@ export class AuthService {
 
   private createAccessToken(user: AuthenticatedUser): Promise<string> {
     return this.jwt.signAsync({ sub: user.id, role: user.role, username: user.username });
+  }
+
+  private toAuthenticatedUser(user: {
+    avatar: { updatedAt: Date } | null;
+    id: string;
+    role: AuthenticatedUser['role'];
+    username: string;
+  }): AuthenticatedUser {
+    return { avatarUpdatedAt: user.avatar?.updatedAt ?? null, id: user.id, role: user.role, username: user.username };
   }
 }

@@ -48,6 +48,20 @@ class UpsertRepositoryMembershipDto {
   @IsEnum(['VIEWER', 'MANAGER']) role!: 'VIEWER' | 'MANAGER';
 }
 
+const repositoryFieldSchema = {
+  enabled: true,
+  id: true,
+  lastSyncAt: true,
+  members: true,
+  name: true,
+  owner: true,
+  providerAccountId: true,
+  providerRepositoryId: true,
+  url: true,
+  workflowRunCount: true,
+  workflowRunRetentionDays: true,
+} as const;
+
 /** Provides permission-scoped repository reads and administrator-only configuration. */
 @Authenticated()
 @Controller('repositories')
@@ -67,10 +81,19 @@ export class RepositoriesController {
     const ability = await this.repositories.getReadAbility(request.user);
     return ResourceQuery.query({
       ability,
-      include: { _count: { select: { workflowRuns: true } } },
+      include: {
+        _count: { select: { workflowRuns: true } },
+        memberships: {
+          orderBy: { user: { username: 'asc' } },
+          select: {
+            userId: true,
+            user: { select: { avatar: { select: { updatedAt: true } }, username: true } },
+          },
+        },
+      },
       map: (repository: RepositoryResourceModel, currentAbility) => RepositoryDto.fromModel(repository, currentAbility),
       query: this.repositories.toQueryOptions(query),
-      schema: RepositoryDto,
+      schema: repositoryFieldSchema,
       service: this.repositories,
     });
   }
@@ -79,7 +102,24 @@ export class RepositoriesController {
   @Get(':id')
   async findById(@Req() request: { user: AuthenticatedUser }, @Param('id') id: string): Promise<RepositoryDto> {
     const ability = await this.repositories.getReadAbility(request.user);
-    return RepositoryDto.fromModel(await this.repositories.findById<RepositoryResourceModel>(id, {}, ability), ability);
+    return RepositoryDto.fromModel(
+      await this.repositories.findById<RepositoryResourceModel>(
+        id,
+        {
+          include: {
+            memberships: {
+              orderBy: { user: { username: 'asc' } },
+              select: {
+                userId: true,
+                user: { select: { avatar: { select: { updatedAt: true } }, username: true } },
+              },
+            },
+          },
+        },
+        ability,
+      ),
+      ability,
+    );
   }
 
   /** List all workflow filters configured for one repository. */

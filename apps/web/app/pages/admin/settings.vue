@@ -9,6 +9,8 @@
     :description="$t('settings.description')"
     :title="$t('settings.title')"
   >
+    <ModulesSettingsAvatarCard />
+
     <UAlert
       v-if="isAdmin && settingsStore.error"
       color="error"

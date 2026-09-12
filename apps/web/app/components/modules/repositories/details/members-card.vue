@@ -22,7 +22,16 @@
         :items="availableUserOptions"
         :placeholder="$t('repositoryDetails.memberPlaceholder')"
         searchable
-      />
+      >
+        <template #item-leading="{ item }">
+          <CommonUserAvatar
+            size="2xs"
+            :avatar-updated-at="item.avatarUpdatedAt"
+            :user-id="item.userId"
+            :username="item.label"
+          />
+        </template>
+      </USelectMenu>
       <USelect v-model="form.role" class="sm:w-48" :items="membershipRoleOptions" />
       <UButton
         icon="i-lucide-user-plus"
@@ -41,6 +50,17 @@
       :empty="$t('repositoryDetails.noMembers')"
       :loading="loading"
     >
+      <template #user-cell="{ row }">
+        <div class="flex items-center gap-2">
+          <CommonUserAvatar
+            size="xs"
+            :avatar-updated-at="row.original.user.avatarUpdatedAt"
+            :user-id="row.original.user.id"
+            :username="row.original.user.username"
+          />
+          <span>{{ row.original.user.username }}</span>
+        </div>
+      </template>
       <template #role-cell="{ row }">
         <USelect
           class="w-44"
@@ -103,10 +123,10 @@ const availableUserOptions = computed(() => {
   const memberIds = new Set(memberships.value.map((membership) => membership.userId));
   return users.value
     .filter((user) => user.role !== 'SYSTEM_ADMIN' && !memberIds.has(user.id))
-    .map((user) => ({ label: user.username, value: user.id }));
+    .map((user) => ({ avatarUpdatedAt: user.avatarUpdatedAt, label: user.username, userId: user.id, value: user.id }));
 });
 const columns = computed(() => [
-  { accessorKey: 'user.username', header: t('repositoryDetails.user') },
+  { accessorKey: 'user.username', header: t('repositoryDetails.user'), id: 'user' },
   { accessorKey: 'role', header: t('repositoryDetails.role') },
   { id: 'actions', header: t('repositoryDetails.actions') },
 ]);
