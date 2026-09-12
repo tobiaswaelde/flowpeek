@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+### Patch Changes
+
+- 67cd92f: Move API and web container health checks into their Docker images.
+
 ## 0.2.1
 
 ### Patch Changes
