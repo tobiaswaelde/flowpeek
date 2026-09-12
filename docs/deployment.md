@@ -1,3 +1,8 @@
+---
+title: Deploying ezRepo
+description: Production deployment, TLS proxy, backup, restore, upgrade, and rollback guidance for ezRepo.
+---
+
 # Deploying ezRepo
 
 ezRepo's Compose stack starts PostgreSQL, applies Prisma migrations once, and then starts the API and web

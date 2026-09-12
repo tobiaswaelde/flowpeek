@@ -1,3 +1,8 @@
+---
+title: Notification configuration
+description: Securely configure and migrate Apprise notification channels for ezRepo workflow events.
+---
+
 # Notification configuration
 
 ezRepo sends repository workflow notifications through [Apprise](https://appriseit.com/). Each channel has a

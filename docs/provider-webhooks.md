@@ -1,3 +1,8 @@
+---
+title: Manual provider webhook setup
+description: Configure signed read-only webhooks for GitHub, GitLab, Forgejo, and Gitea providers.
+---
+
 # Manual provider webhook setup
 
 ezRepo can receive signed webhooks to synchronize a tracked repository sooner

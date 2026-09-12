@@ -4,6 +4,8 @@ ezRepo is a read-only dashboard for GitHub Actions, GitLab pipelines, Forgejo
 Actions, and Gitea Actions. It tracks selected workflow runs, shows failures and trends,
 and sends notifications without modifying provider resources.
 
+[Read the ezRepo documentation](https://tobiaswaelde.github.io/ezrepo/).
+
 ## Status
 
 The repository currently contains the monorepo bootstrap. API and web
@@ -86,6 +88,8 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm docs:check
+pnpm docs:build
 pnpm changeset status
 ```
 
@@ -143,11 +147,8 @@ auditable justification in GitHub.
 
 - `apps/api`: NestJS, Prisma, PostgreSQL, CASL, and `@querry-kit/nest`.
 - `apps/web`: Nuxt 4 SPA, Pinia, Nuxt UI, and `@querry-kit/nuxt`.
-- `docs/deployment.md`: production deployment, TLS proxy, backup, restore, and rollback procedures.
+- [Documentation](https://tobiaswaelde.github.io/ezrepo/): deployment, providers, notifications, repositories, and localization.
 - `PLAN.md`: approved architecture and release design.
-- `docs/provider-webhooks.md`: manual read-only webhook setup for each provider.
-- `docs/repositories.md`: tracked repository identity, rename handling, and metadata refresh behavior.
-- `docs/localization.md`: supported interface locales, fallback behavior, and translation process.
 - [GitHub Issues](https://github.com/tobiaswaelde/ezrepo/issues): ordered
   implementation epics and tasks.
 - `AGENTS.md`: repository-specific instructions for coding agents.

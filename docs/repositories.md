@@ -1,3 +1,8 @@
+---
+title: Tracked repositories
+description: Repository identity, rename handling, metadata refresh behavior, and read-only synchronization rules.
+---
+
 # Tracked repositories
 
 ezRepo identifies a tracked repository by its provider account and stable provider repository ID. The displayed owner,

@@ -1,3 +1,8 @@
+---
+title: Provider OAuth setup
+description: Register OAuth applications and configure read-only provider authentication for ezRepo.
+---
+
 # Provider OAuth setup
 
 ezRepo connects provider accounts through OAuth or a personal access token (PAT). OAuth is available when at

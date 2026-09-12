@@ -15,18 +15,24 @@
     "db:generate": "nx run api:db:generate",
     "dev": "nx run-many -t dev --all --exclude=flowpeek --parallel=2",
     "docker:build": "nx run-many -t docker:build --all --exclude=flowpeek --parallel=2",
+    "docs:build": "vitepress build docs",
+    "docs:check": "tsx scripts/check-docs.ts",
+    "docs:dev": "vitepress dev docs",
+    "docs:preview": "vitepress preview docs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "nx run-many -t lint --all --exclude=flowpeek --parallel=2",
     "nx": "nx",
     "release": "changeset tag",
     "test": "nx run-many -t test --all --exclude=flowpeek --parallel=2",
+    "test:docs:e2e": "playwright test --config playwright.docs.config.ts",
     "typecheck": "nx run-many -t typecheck --all --exclude=flowpeek --parallel=2",
     "version-packages": "changeset version"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.2",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
@@ -34,7 +40,9 @@
     "nx": "^23.2.0",
     "prettier": "^3.9.6",
     "prettier-plugin-organize-imports": "^4.3.0",
+    "tsx": "^4.20.6",
     "typescript": "6.0.3",
-    "typescript-eslint": "^8.70.0"
+    "typescript-eslint": "^8.70.0",
+    "vitepress": "^1.6.4"
   }
 }

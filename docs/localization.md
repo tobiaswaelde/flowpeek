@@ -1,3 +1,8 @@
+---
+title: Interface localization
+description: Supported interface languages, fallback behavior, and the process for maintaining ezRepo translations.
+---
+
 # Interface localization
 
 ezRepo ships its web interface in English (`en`), German (`de`), Spanish (`es`), French (`fr`), Italian (`it`),
