@@ -172,7 +172,7 @@ test('updates personal details and refreshes the visible user identity', async (
 
 /** Upload, crop, and remove the current user's profile picture without exposing the original source. */
 test('manages a cropped personal avatar from upload and HTTPS import', async ({ page }, testInfo) => {
-  let currentUser = {
+  const currentUser = {
     avatarUpdatedAt: null as string | null,
     firstName: null,
     id: 'playwright-viewer',
@@ -180,7 +180,7 @@ test('manages a cropped personal avatar from upload and HTTPS import', async ({ 
     role: 'VIEWER',
     username: 'viewer',
   };
-  let uploadCount = 0;
+  const uploadCount = 0;
   await page.addInitScript(() => window.localStorage.setItem('ezrepo.access-token', 'playwright-access-token'));
   await page.route('**/api/v1/auth/me', (route) =>
     route.fulfill({ contentType: 'application/json', json: currentUser }),
