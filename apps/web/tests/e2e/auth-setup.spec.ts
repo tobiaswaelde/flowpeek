@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+
 import { expect, test } from '@playwright/test';
 
 const administrator = {
@@ -48,4 +50,6 @@ test('redirects an initialized installation away from setup', async ({ page }) =
 
   await expect(page).toHaveURL('/auth/signin');
   await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'ezRepo' }).locator('img')).toHaveAttribute('src', '/logo.svg');
+  await page.screenshot({ path: resolve(process.cwd(), '../../docs/public/screenshots/sign-in.png'), fullPage: true });
 });

@@ -1,4 +1,4 @@
-import { VersionService } from './version.service.js';
+import { parseReleaseVersion, VersionService } from './version.service.js';
 
 describe('VersionService', () => {
   const originalFetch = global.fetch;
@@ -9,7 +9,7 @@ describe('VersionService', () => {
 
   it('returns the latest GitHub release without its tag prefix and caches it', async () => {
     const fetchMock = jest.fn().mockResolvedValue({
-      json: jest.fn().mockResolvedValue({ tag_name: 'v1.2.3' }),
+      json: jest.fn().mockResolvedValue({ tag_name: 'ezrepo@1.2.3' }),
       ok: true,
     });
     global.fetch = fetchMock as unknown as typeof fetch;
@@ -28,5 +28,29 @@ describe('VersionService', () => {
     global.fetch = jest.fn().mockRejectedValue(new Error('offline')) as unknown as typeof fetch;
 
     await expect(new VersionService().getLatest()).resolves.toEqual({ latest: null });
+  });
+
+  it.each([
+    ['v1.2.3', '1.2.3'],
+    ['1.2.3', '1.2.3'],
+    ['ezrepo@1.2.3', '1.2.3'],
+    ['@ezrepo/app@v1.2.3-beta.1', '1.2.3-beta.1'],
+    ['release-1.2.3', null],
+    [undefined, null],
+  ])('parses release tag %s as %s', (tagName, expected) => {
+    expect(parseReleaseVersion(tagName)).toBe(expected);
+  });
+
+  it('does not cache a failed release lookup', async () => {
+    const fetchMock = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('offline'))
+      .mockResolvedValueOnce({ json: jest.fn().mockResolvedValue({ tag_name: 'ezrepo@1.2.3' }), ok: true });
+    global.fetch = fetchMock as unknown as typeof fetch;
+    const service = new VersionService();
+
+    await expect(service.getLatest()).resolves.toEqual({ latest: null });
+    await expect(service.getLatest()).resolves.toEqual({ latest: '1.2.3' });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });

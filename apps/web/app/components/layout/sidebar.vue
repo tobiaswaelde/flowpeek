@@ -13,11 +13,14 @@
       <NuxtLink
         to="/"
         aria-label="ezRepo"
-        class="font-display text-xl font-bold"
+        class="flex items-center gap-2 font-display text-xl font-bold"
         :class="collapsed ? 'mx-auto' : undefined"
       >
-        <span class="text-primary">ez</span>
-        <span v-if="!collapsed" class="tracking-tight text-highlighted">Repo</span>
+        <img src="/logo.svg" alt="" class="size-7 shrink-0" />
+        <span v-if="!collapsed">
+          <span class="text-primary">ez</span>
+          <span class="tracking-tight text-highlighted">Repo</span>
+        </span>
       </NuxtLink>
     </template>
 
@@ -80,18 +83,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { useEzRepoApi } from '~/composables/api/ezrepo-api';
 import { useModuleApi } from '~/composables/api/module-api';
 import { useNavigationItems } from '~/composables/app/navigation-items';
+import { useVersionCheck } from '~/composables/app/version-check';
 
 const { t } = useI18n();
 const api = useEzRepoApi();
-const appVersion = useRuntimeConfig().public.appVersion;
 const changelogOpen = useState('changelog-open', () => false);
-const latestVersion = ref<string | null>(null);
-const updateAvailable = computed(() => compareSemver(latestVersion.value, appVersion) > 0);
+const { current: appVersion, load: loadVersion, updateAvailable } = useVersionCheck();
 const needsAttentionApi = useModuleApi('workflow-runs/needs-attention');
 const awaitingApprovalCount = ref<number | null>(null);
 const needsAttentionCount = ref<number | null>(null);
@@ -115,22 +117,5 @@ async function loadAttentionCounts(): Promise<void> {
 
 onMounted(() => void loadAttentionCounts());
 
-function compareSemver(left: string | null, right: string): number {
-  if (!left) return 0;
-  const leftParts = left.split('.').map(Number);
-  const rightParts = right.split('.').map(Number);
-  for (let index = 0; index < 3; index += 1) {
-    const difference = (leftParts[index] ?? 0) - (rightParts[index] ?? 0);
-    if (difference !== 0) return difference;
-  }
-  return 0;
-}
-
-onMounted(async () => {
-  try {
-    latestVersion.value = (await api.version()).data.latest;
-  } catch {
-    latestVersion.value = null;
-  }
-});
+onMounted(loadVersion);
 </script>

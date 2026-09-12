@@ -8,6 +8,11 @@ interface CachedVersion {
   timestamp: number;
 }
 
+/** Extract a SemVer value from GitHub tags created manually or by Changesets. */
+export function parseReleaseVersion(tagName: string | undefined): string | null {
+  return tagName?.match(/(?:^|@)v?(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)$/)?.[1] ?? null;
+}
+
 /** Resolves the latest published ezRepo version without exposing GitHub failures to clients. */
 @Injectable()
 export class VersionService {
@@ -22,7 +27,7 @@ export class VersionService {
       this.pending = undefined;
     });
     const result = await this.pending;
-    this.cached = { ...result, timestamp: Date.now() };
+    if (result.latest) this.cached = { ...result, timestamp: Date.now() };
     return result;
   }
 
@@ -33,7 +38,7 @@ export class VersionService {
       });
       if (!response.ok) return { latest: null };
       const release = (await response.json()) as { tag_name?: string };
-      return { latest: release.tag_name?.replace(/^v/, '') ?? null };
+      return { latest: parseReleaseVersion(release.tag_name) };
     } catch {
       return { latest: null };
     }

@@ -83,6 +83,8 @@ test('uses the shared page shell without introductory banners', async ({ page })
   await expect(page.locator('[data-page-introduction]')).toHaveCount(0);
   await expect(page.locator('[data-intro-banner-id]')).toHaveCount(0);
   await expect(page.locator('[data-sidebar-footer]')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'ezRepo' }).locator('img')).toHaveAttribute('src', '/logo.svg');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', '/favicon.svg');
   await expect(page.getByRole('link', { name: 'GitHub' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Documentation' })).toBeVisible();
   await expect(page.locator('[data-update-indicator]')).toBeVisible();

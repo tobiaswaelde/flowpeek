@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { class: 'h-full' },
       bodyAttrs: { class: 'h-full bg-default' },
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
       title: 'ezRepo',
       titleTemplate: '%s · ezRepo',
     },
