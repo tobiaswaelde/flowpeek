@@ -14,6 +14,10 @@
       </template>
     </UDashboardToolbar>
 
+    <UDashboardToolbar v-if="$slots.navigation" data-page-navigation>
+      <slot name="navigation" />
+    </UDashboardToolbar>
+
     <UDashboardToolbar
       v-if="bannerVisible && !padded"
       class="shrink-0 border-b border-default px-4 py-2"

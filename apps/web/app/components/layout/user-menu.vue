@@ -1,13 +1,15 @@
 <template>
-  <UDropdownMenu v-if="auth.user" :items="items" :ui="{ content: 'w-48' }">
+  <UDropdownMenu v-if="auth.user" :items="items" :ui="{ content: 'w-64' }">
     <UButton class="gap-2" color="neutral" variant="ghost" :disabled="signingOut" :loading="signingOut">
       <CommonUserAvatar
         size="2xs"
         :avatar-updated-at="auth.user.avatarUpdatedAt"
+        :first-name="auth.user.firstName"
+        :last-name="auth.user.lastName"
         :user-id="auth.user.id"
         :username="auth.user.username"
       />
-      <span class="hidden text-sm sm:inline">{{ auth.user.username }}</span>
+      <span class="hidden max-w-64 truncate text-sm sm:inline">{{ getUserIdentityLabel(auth.user) }}</span>
     </UButton>
   </UDropdownMenu>
 </template>
@@ -18,6 +20,7 @@ import type { DropdownMenuItem } from '#ui/types';
 import { useLocales } from '~/composables/app/locales';
 import { useThemes } from '~/composables/app/themes';
 import { useAuthStore } from '~/store/auth';
+import { getUserIdentityLabel } from '~/utils/user-identity';
 
 const auth = useAuthStore();
 const signingOut = ref(false);

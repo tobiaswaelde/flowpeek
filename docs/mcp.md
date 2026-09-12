@@ -14,8 +14,8 @@ workflows, or change ezRepo configuration.
 
 ## Create an access token
 
-Open **Settings**, find **MCP access**, and create a named token. Expiration is optional. Copy the complete token from
-the creation dialog because ezRepo displays it only once and stores only its SHA-256 hash.
+Open **Settings**, select the **MCP access** tab, and create a named token. Expiration is optional. Copy the complete
+token from the creation dialog because ezRepo displays it only once and stores only its SHA-256 hash.
 
 Revoking a token takes effect on the next request. Deleting its user also deletes the token. Changes to the user's role
 or repository memberships apply immediately because every request resolves current authorization from the database.
@@ -63,5 +63,6 @@ tools.
 
 ## Token administration
 
-Users manage their own tokens in Settings. System administrators can inspect safe token metadata and revoke a token from
-the Users page, but cannot retrieve its hash or plaintext secret and cannot create a token on another user's behalf.
+Users manage their own tokens in the **MCP access** tab under Settings. System administrators can inspect safe token
+metadata and revoke a token from the Users page, but cannot retrieve its hash or plaintext secret and cannot create a
+token on another user's behalf.

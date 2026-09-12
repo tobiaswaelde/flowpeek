@@ -64,7 +64,14 @@ export class RepositoryConfigurationService {
   ): Promise<
     Array<
       RepositoryMembership & {
-        user: { avatar: { updatedAt: Date } | null; id: string; role: UserRole; username: string };
+        user: {
+          avatar: { updatedAt: Date } | null;
+          firstName: string | null;
+          id: string;
+          lastName: string | null;
+          role: UserRole;
+          username: string;
+        };
       }
     >
   > {
@@ -84,7 +91,14 @@ export class RepositoryConfigurationService {
     input: { role: RepositoryRole; userId: string },
   ): Promise<
     RepositoryMembership & {
-      user: { avatar: { updatedAt: Date } | null; id: string; role: UserRole; username: string };
+      user: {
+        avatar: { updatedAt: Date } | null;
+        firstName: string | null;
+        id: string;
+        lastName: string | null;
+        role: UserRole;
+        username: string;
+      };
     }
   > {
     this.assertAdministrator(user);

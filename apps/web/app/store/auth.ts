@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 import { accessTokenStorageKey, useApi } from '~/composables/api/api';
-import type { AuthResult, AuthenticatedUser } from '~/types/api/auth';
+import type { AuthResult, AuthenticatedUser, UpdateProfileRequest } from '~/types/api/auth';
 
 /** Manages local bearer-token persistence and the current authenticated user. */
 export const useAuthStore = defineStore('auth', () => {
@@ -47,6 +47,11 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = updatedUser;
   }
 
+  /** Persist personal identity fields and refresh every current-user surface. */
+  async function updateProfile(input: UpdateProfileRequest): Promise<void> {
+    user.value = (await useApi().patch<AuthenticatedUser>('/auth/me', input)).data;
+  }
+
   function setSession(session: AuthResult): void {
     accessToken.value = session.accessToken;
     user.value = session.user;
@@ -59,5 +64,16 @@ export const useAuthStore = defineStore('auth', () => {
     if (import.meta.client) window.localStorage.removeItem(accessTokenStorageKey);
   }
 
-  return { accessToken, clearSession, initialize, initialized, refresh, signIn, signOut, updateUser, user };
+  return {
+    accessToken,
+    clearSession,
+    initialize,
+    initialized,
+    refresh,
+    signIn,
+    signOut,
+    updateProfile,
+    updateUser,
+    user,
+  };
 });

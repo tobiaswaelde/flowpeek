@@ -6,6 +6,13 @@ import { ENV } from '../../config/env.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import type { AuthResult, AuthenticatedUser } from './types.js';
 
+interface UpdateProfileInput {
+  currentPassword?: string;
+  firstName: string | null;
+  lastName: string | null;
+  username: string;
+}
+
 const avatarMetadata = { select: { updatedAt: true } } as const;
 
 @Injectable()
@@ -31,6 +38,29 @@ export class AuthService {
       where: { id: userId },
       data: { passwordHash: await bcrypt.hash(newPassword, 12) },
     });
+  }
+
+  /** Update one user's personal identity while protecting changes to their login name. */
+  async updateProfile(userId: string, input: UpdateProfileInput): Promise<AuthenticatedUser> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException();
+
+    const username = input.username.trim();
+    if (username !== user.username) {
+      if (!input.currentPassword || !(await bcrypt.compare(input.currentPassword, user.passwordHash)))
+        throw new UnauthorizedException('Invalid credentials.');
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        firstName: input.firstName?.trim() || null,
+        lastName: input.lastName?.trim() || null,
+        username,
+      },
+      include: { avatar: avatarMetadata },
+    });
+    return this.toAuthenticatedUser(updatedUser);
   }
 
   /**
@@ -60,10 +90,19 @@ export class AuthService {
 
   private toAuthenticatedUser(user: {
     avatar: { updatedAt: Date } | null;
+    firstName: string | null;
     id: string;
+    lastName: string | null;
     role: AuthenticatedUser['role'];
     username: string;
   }): AuthenticatedUser {
-    return { avatarUpdatedAt: user.avatar?.updatedAt ?? null, id: user.id, role: user.role, username: user.username };
+    return {
+      avatarUpdatedAt: user.avatar?.updatedAt ?? null,
+      firstName: user.firstName,
+      id: user.id,
+      lastName: user.lastName,
+      role: user.role,
+      username: user.username,
+    };
   }
 }

@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  Patch,
   Post,
   Put,
   Req,
@@ -21,6 +22,7 @@ import { AvatarService } from './avatar.service.js';
 import { RemoteAvatarDto } from './dto/avatar.dto.js';
 import { SignInDto } from './dto/sign-in.dto.js';
 import { UpdatePasswordDto } from './dto/update-password.dto.js';
+import { UpdateProfileDto } from './dto/update-profile.dto.js';
 import type { AuthenticatedUser } from './types.js';
 
 @ApiTags('auth')
@@ -41,6 +43,16 @@ export class AuthController {
   @Authenticated()
   me(@Req() request: { user: AuthenticatedUser }) {
     return request.user;
+  }
+
+  /** Update the current user's personal identity after verifying login-name changes. */
+  @Patch('me')
+  @Authenticated()
+  updateProfile(
+    @Req() request: { user: AuthenticatedUser },
+    @Body() body: UpdateProfileDto,
+  ): Promise<AuthenticatedUser> {
+    return this.auth.updateProfile(request.user.id, body);
   }
 
   /** Store a normalized avatar for the current user. */

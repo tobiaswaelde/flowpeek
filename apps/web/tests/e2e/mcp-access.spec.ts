@@ -2,7 +2,9 @@ import { expect, test, type Page } from '@playwright/test';
 
 const admin = {
   createdAt: '2026-09-12T08:00:00.000Z',
+  firstName: null,
   id: 'playwright-admin',
+  lastName: null,
   role: 'SYSTEM_ADMIN',
   updatedAt: '2026-09-12T08:00:00.000Z',
   username: 'playwright',
@@ -71,7 +73,7 @@ test('creates, reveals once, lists, and revokes a personal MCP token', async ({ 
     await route.fulfill({ json: tokens });
   });
 
-  await page.goto('/admin/settings');
+  await page.goto('/admin/settings/mcp');
   await expect(page.getByRole('heading', { name: 'MCP access' })).toBeVisible();
   await page.getByRole('button', { name: 'Create token' }).click();
   await page.getByRole('textbox', { name: 'Token name' }).fill('VS Code laptop');

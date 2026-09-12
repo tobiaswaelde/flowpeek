@@ -167,6 +167,8 @@ export interface Repository {
 /** Safe user identity rendered in one repository's member avatar group. */
 export interface RepositoryMemberSummary {
   avatarUpdatedAt: ApiTimestamp | null;
+  firstName: string | null;
+  lastName: string | null;
   userId: string;
   username: string;
 }
@@ -187,14 +189,16 @@ export interface RepositoryMembership {
   id: string;
   repositoryId: string;
   role: RepositoryRole;
-  user: Pick<User, 'avatarUpdatedAt' | 'id' | 'role' | 'username'>;
+  user: Pick<User, 'avatarUpdatedAt' | 'firstName' | 'id' | 'lastName' | 'role' | 'username'>;
   userId: string;
 }
 
 /** Safe system user representation. */
 export interface User {
   avatarUpdatedAt: ApiTimestamp | null;
+  firstName: string | null;
   id: string;
+  lastName: string | null;
   username: string;
   role: 'SYSTEM_ADMIN' | 'VIEWER' | 'MANAGER';
   createdAt: ApiTimestamp;

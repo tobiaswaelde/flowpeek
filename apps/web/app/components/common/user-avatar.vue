@@ -1,5 +1,5 @@
 <template>
-  <UAvatar :alt="username" :size="size" :src="source" :text="initials" />
+  <UAvatar :alt="identityLabel" :size="size" :src="source" :text="initials" />
 </template>
 
 <script setup lang="ts">
@@ -7,10 +7,13 @@ import type { AvatarProps } from '#ui/components/Avatar.vue';
 import { computed, ref, watch } from 'vue';
 
 import { useAvatarImages } from '~/composables/app/avatar-images';
+import { getUserIdentityLabel, getUserInitials } from '~/utils/user-identity';
 
 const props = withDefaults(
   defineProps<{
     avatarUpdatedAt?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
     size?: AvatarProps['size'];
     userId: string;
     username: string;
@@ -20,14 +23,8 @@ const props = withDefaults(
 
 const { load } = useAvatarImages();
 const source = ref<string>();
-const initials = computed(() => {
-  const parts = props.username
-    .trim()
-    .split(/[\s._-]+/)
-    .filter(Boolean);
-  if (parts.length > 1) return `${parts[0]?.[0] ?? ''}${parts.at(-1)?.[0] ?? ''}`.toUpperCase();
-  return props.username.slice(0, 2).toUpperCase();
-});
+const identityLabel = computed(() => getUserIdentityLabel(props));
+const initials = computed(() => getUserInitials(props));
 let loadSequence = 0;
 
 watch(

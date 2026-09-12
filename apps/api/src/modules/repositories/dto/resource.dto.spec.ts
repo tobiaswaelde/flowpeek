@@ -75,7 +75,12 @@ describe('resource DTO mappings', () => {
       memberships: [
         {
           userId: 'user-1',
-          user: { avatar: { updatedAt: new Date('2026-09-12T10:00:00.000Z') }, username: 'viewer' },
+          user: {
+            avatar: { updatedAt: new Date('2026-09-12T10:00:00.000Z') },
+            firstName: 'Vera',
+            lastName: 'Viewer',
+            username: 'viewer',
+          },
         },
       ],
       providerAccountId: 'account',
@@ -95,6 +100,8 @@ describe('resource DTO mappings', () => {
       members: [
         {
           avatarUpdatedAt: new Date('2026-09-12T10:00:00.000Z'),
+          firstName: 'Vera',
+          lastName: 'Viewer',
           userId: 'user-1',
           username: 'viewer',
         },

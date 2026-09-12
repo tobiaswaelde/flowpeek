@@ -56,10 +56,12 @@
       </template>
       <template #members-cell="{ row }">
         <UAvatarGroup size="sm" :max="5">
-          <UTooltip v-for="member in row.original.members" :key="member.userId" :text="member.username">
+          <UTooltip v-for="member in row.original.members" :key="member.userId" :text="getUserIdentityLabel(member)">
             <CommonUserAvatar
               size="sm"
               :avatar-updated-at="member.avatarUpdatedAt"
+              :first-name="member.firstName"
+              :last-name="member.lastName"
               :user-id="member.userId"
               :username="member.username"
             />
@@ -148,6 +150,7 @@ import { usePendingActions } from '~/composables/use-pending-actions';
 import { useAuthStore } from '~/store/auth';
 import type { Repository } from '~/types/api/resources';
 import type { ColumnDefinition } from '~/types/table';
+import { getUserIdentityLabel } from '~/utils/user-identity';
 
 type RepositoryRow = Repository & Record<string, unknown>;
 type RepositoryTableColumn = ColumnDefinition<RepositoryRow> & { header: string; id: string };

@@ -50,6 +50,10 @@ export class ProviderAccountDto {
 export class RepositoryMemberSummaryDto {
   @ApiProperty({ format: 'date-time', nullable: true })
   avatarUpdatedAt!: Date | null;
+  @ApiProperty({ maxLength: 255, nullable: true })
+  firstName!: string | null;
+  @ApiProperty({ maxLength: 255, nullable: true })
+  lastName!: string | null;
   @ApiProperty({ format: 'uuid' })
   userId!: string;
   @ApiProperty({ maxLength: 255 })
@@ -96,6 +100,8 @@ export class RepositoryDto {
         providerAccountId: model.providerAccountId,
         members: (model.memberships ?? []).map((membership) => ({
           avatarUpdatedAt: membership.user.avatar?.updatedAt ?? null,
+          firstName: membership.user.firstName,
+          lastName: membership.user.lastName,
           userId: membership.userId,
           username: membership.user.username,
         })),
@@ -112,7 +118,7 @@ export class RepositoryDto {
 export type RepositoryResourceModel = Repository & {
   _count?: { workflowRuns: number };
   memberships?: Array<{
-    user: { avatar: { updatedAt: Date } | null; username: string };
+    user: { avatar: { updatedAt: Date } | null; firstName: string | null; lastName: string | null; username: string };
     userId: string;
   }>;
 };
@@ -217,12 +223,14 @@ export class RepositoryMembershipDto {
   @ApiProperty({ format: 'uuid' })
   userId!: string;
   @ApiProperty()
-  user!: Pick<User, 'id' | 'role' | 'username'> & { avatarUpdatedAt: Date | null };
+  user!: Pick<User, 'firstName' | 'id' | 'lastName' | 'role' | 'username'> & { avatarUpdatedAt: Date | null };
 
   /** Convert a membership and its safe user relation into a public representation. */
   static fromModel(
     model: RepositoryMembership & {
-      user: Pick<User, 'id' | 'role' | 'username'> & { avatar: { updatedAt: Date } | null };
+      user: Pick<User, 'firstName' | 'id' | 'lastName' | 'role' | 'username'> & {
+        avatar: { updatedAt: Date } | null;
+      };
     },
   ): RepositoryMembershipDto {
     return {
@@ -231,7 +239,9 @@ export class RepositoryMembershipDto {
       role: model.role,
       user: {
         avatarUpdatedAt: model.user.avatar?.updatedAt ?? null,
+        firstName: model.user.firstName,
         id: model.user.id,
+        lastName: model.user.lastName,
         role: model.user.role,
         username: model.user.username,
       },

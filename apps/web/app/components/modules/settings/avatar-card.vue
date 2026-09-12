@@ -20,6 +20,8 @@
       <CommonUserAvatar
         size="xl"
         :avatar-updated-at="auth.user.avatarUpdatedAt"
+        :first-name="auth.user.firstName"
+        :last-name="auth.user.lastName"
         :user-id="auth.user.id"
         :username="auth.user.username"
       />

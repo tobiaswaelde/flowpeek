@@ -17,7 +17,13 @@ test('updates global retention and date-time formatting with visible request pro
   await page.route('**/api/v1/auth/me', async (route) => {
     await route.fulfill({
       contentType: 'application/json',
-      json: { id: 'playwright-admin', role: 'SYSTEM_ADMIN', username: 'playwright' },
+      json: {
+        firstName: null,
+        id: 'playwright-admin',
+        lastName: null,
+        role: 'SYSTEM_ADMIN',
+        username: 'playwright',
+      },
     });
   });
   await page.route('**/api/v1/settings', async (route) => {
@@ -50,9 +56,27 @@ test('updates global retention and date-time formatting with visible request pro
     });
   });
 
-  await page.goto('/admin/settings');
+  await page.goto('/admin/settings/system');
 
   await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'General' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'MCP access' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'System' })).toHaveAttribute('aria-current', 'page');
+  await expect
+    .poll(() =>
+      page.locator('[data-settings-page]').evaluate((element) => {
+        const contentBounds = element.parentElement?.getBoundingClientRect();
+        const pageBounds = element.getBoundingClientRect();
+        const shellBounds = element.closest('[data-page-shell]')?.getBoundingClientRect();
+        return Boolean(
+          contentBounds &&
+            shellBounds &&
+            Math.abs(contentBounds.right - shellBounds.right) <= 1 &&
+            pageBounds.width < contentBounds.width,
+        );
+      }),
+    )
+    .toBe(true);
   await expect(page.getByRole('spinbutton', { name: 'Workflow run retention' })).toHaveValue('90');
   await page.getByRole('spinbutton', { name: 'Workflow run retention' }).fill('30');
   await page.getByRole('combobox', { name: 'Default date and time format' }).click();
@@ -77,7 +101,7 @@ test('shows personal settings but hides global defaults from non-administrators'
   await page.route('**/api/v1/auth/me', async (route) => {
     await route.fulfill({
       contentType: 'application/json',
-      json: { id: 'playwright-viewer', role: 'VIEWER', username: 'viewer' },
+      json: { firstName: null, id: 'playwright-viewer', lastName: null, role: 'VIEWER', username: 'viewer' },
     });
   });
   await page.route('**/api/v1/settings', async (route) => {
@@ -94,17 +118,77 @@ test('shows personal settings but hides global defaults from non-administrators'
 
   await expect(page).toHaveURL('/admin/settings');
   await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'General' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'MCP access' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'System' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Page introductions' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Restore all banners' })).toBeEnabled();
   await expect(page.getByRole('spinbutton', { name: 'Workflow run retention' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Save settings' })).toHaveCount(0);
+
+  await page.goto('/admin/settings/system');
+  await expect(page).toHaveURL('/');
+});
+
+/** Update personal names and protect a login-username change with the current password. */
+test('updates personal details and refreshes the visible user identity', async ({ page }, testInfo) => {
+  let currentUser = {
+    avatarUpdatedAt: null,
+    firstName: null as string | null,
+    id: 'playwright-viewer',
+    lastName: null as string | null,
+    role: 'VIEWER',
+    username: 'viewer',
+  };
+  let releaseUpdate: (() => void) | undefined;
+  const updateGate = new Promise<void>((resolve) => {
+    releaseUpdate = resolve;
+  });
+  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'playwright-access-token'));
+  await page.route('**/api/v1/auth/me', async (route) => {
+    if (route.request().method() === 'PATCH') {
+      expect(route.request().postDataJSON()).toEqual({
+        currentPassword: 'current-password',
+        firstName: 'Vera',
+        lastName: 'Viewer',
+        username: 'vera',
+      });
+      await updateGate;
+      currentUser = { ...currentUser, firstName: 'Vera', lastName: 'Viewer', username: 'vera' };
+    }
+    await route.fulfill({ contentType: 'application/json', json: currentUser });
+  });
+  await page.route('**/api/v1/settings/preferences', (route) =>
+    route.fulfill({ contentType: 'application/json', json: { dismissedIntroBannerIds: [] } }),
+  );
+
+  await page.goto('/admin/settings');
+  await expect(page.getByRole('heading', { name: 'Personal details' })).toBeVisible();
+  await expect(page.getByLabel('Current password')).toHaveCount(0);
+  await page.getByLabel('First name').fill('Vera');
+  await page.getByLabel('Last name').fill('Viewer');
+  await page.getByLabel('Username').fill('vera');
+  await expect(page.getByRole('button', { name: 'Save profile' })).toBeDisabled();
+  await page.getByLabel('Current password').fill('current-password');
+
+  const saveButton = page.getByRole('button', { name: 'Save profile' });
+  await saveButton.click();
+  await expect(saveButton).toBeDisabled();
+  await page.screenshot({ path: testInfo.outputPath('profile-settings-saving.png'), fullPage: true });
+  releaseUpdate?.();
+
+  await expect(page.getByText('Personal details saved.')).toBeVisible();
+  await expect(page.getByText('Vera Viewer (@vera)', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('Current password')).toHaveCount(0);
 });
 
 /** Upload, crop, and remove the current user's profile picture without exposing the original source. */
 test('manages a cropped personal avatar from upload and HTTPS import', async ({ page }, testInfo) => {
   let currentUser = {
     avatarUpdatedAt: null as string | null,
+    firstName: null,
     id: 'playwright-viewer',
+    lastName: null,
     role: 'VIEWER',
     username: 'viewer',
   };

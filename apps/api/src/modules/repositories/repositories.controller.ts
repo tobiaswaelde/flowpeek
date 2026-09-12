@@ -87,7 +87,9 @@ export class RepositoriesController {
           orderBy: { user: { username: 'asc' } },
           select: {
             userId: true,
-            user: { select: { avatar: { select: { updatedAt: true } }, username: true } },
+            user: {
+              select: { avatar: { select: { updatedAt: true } }, firstName: true, lastName: true, username: true },
+            },
           },
         },
       },
@@ -111,7 +113,9 @@ export class RepositoriesController {
               orderBy: { user: { username: 'asc' } },
               select: {
                 userId: true,
-                user: { select: { avatar: { select: { updatedAt: true } }, username: true } },
+                user: {
+                  select: { avatar: { select: { updatedAt: true } }, firstName: true, lastName: true, username: true },
+                },
               },
             },
           },

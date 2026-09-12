@@ -15,7 +15,12 @@ describe('RepositoriesController', () => {
       lastSyncAt: null,
       memberships: [
         {
-          user: { avatar: { updatedAt: new Date('2026-09-12T10:00:00.000Z') }, username: 'member' },
+          user: {
+            avatar: { updatedAt: new Date('2026-09-12T10:00:00.000Z') },
+            firstName: 'Marie',
+            lastName: 'Member',
+            username: 'member',
+          },
           userId: 'member-1',
         },
       ],
@@ -63,6 +68,8 @@ describe('RepositoriesController', () => {
         members: [
           {
             avatarUpdatedAt: new Date('2026-09-12T10:00:00.000Z'),
+            firstName: 'Marie',
+            lastName: 'Member',
             userId: 'member-1',
             username: 'member',
           },

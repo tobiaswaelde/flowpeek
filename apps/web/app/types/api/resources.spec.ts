@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { signInRequestSchema, updatePasswordRequestSchema } from './auth';
+import { signInRequestSchema, updatePasswordRequestSchema, updateProfileRequestSchema } from './auth';
 import { apiEndpoints } from './endpoints';
 import { applicationSettingsSchema, providerOAuthFormSchema, providerPatFormSchema } from './resources';
 
@@ -10,6 +10,18 @@ describe('web API contracts', () => {
     expect(updatePasswordRequestSchema.safeParse({ currentPassword: 'secret', newPassword: 'short' }).success).toBe(
       false,
     );
+  });
+
+  it('validates trimmed personal profile fields', () => {
+    expect(
+      updateProfileRequestSchema.safeParse({
+        currentPassword: '',
+        firstName: ' Vera ',
+        lastName: '',
+        username: ' viewer ',
+      }).success,
+    ).toBe(true);
+    expect(updateProfileRequestSchema.safeParse({ firstName: '', lastName: '', username: '' }).success).toBe(false);
   });
 
   it('keeps the Query Kit endpoint relative to the configured API version', () => {

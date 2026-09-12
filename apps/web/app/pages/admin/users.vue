@@ -48,10 +48,17 @@
           <CommonUserAvatar
             size="xs"
             :avatar-updated-at="row.original.avatarUpdatedAt"
+            :first-name="row.original.firstName"
+            :last-name="row.original.lastName"
             :user-id="row.original.id"
             :username="row.original.username"
           />
-          <span class="font-medium">{{ row.original.username }}</span>
+          <div class="min-w-0">
+            <p class="truncate font-medium">{{ getUserDisplayName(row.original) }}</p>
+            <p v-if="getUserDisplayName(row.original) !== row.original.username" class="truncate text-xs text-muted">
+              @{{ row.original.username }}
+            </p>
+          </div>
         </div>
       </template>
       <template #role-cell="{ row }">
@@ -116,6 +123,7 @@ import { usePendingActions } from '~/composables/use-pending-actions';
 import { useAuthStore } from '~/store/auth';
 import type { User } from '~/types/api/resources';
 import type { ColumnDefinition } from '~/types/table';
+import { getUserDisplayName } from '~/utils/user-identity';
 
 type UserRole = User['role'];
 type UserRow = User & Record<string, unknown>;
@@ -159,7 +167,7 @@ const userTable = useTable({
   defaultItemsPerPage: 10,
   endpoint: 'users',
   name: 'users',
-  staticFields: ['avatarUpdatedAt', 'id'],
+  staticFields: ['avatarUpdatedAt', 'firstName', 'id', 'lastName'],
 });
 const {
   columnOrder,

@@ -12,8 +12,12 @@ export type UserWithAvatar = User & { avatar?: { updatedAt: Date } | null };
 export class UserDto {
   @ApiProperty({ format: 'date-time', nullable: true })
   avatarUpdatedAt!: Date | null;
+  @ApiProperty({ maxLength: 255, nullable: true })
+  firstName!: string | null;
   @ApiProperty({ format: 'uuid' })
   id!: string;
+  @ApiProperty({ maxLength: 255, nullable: true })
+  lastName!: string | null;
   @ApiProperty({ maxLength: 255 })
   username!: string;
   @ApiProperty({ enum: ['SYSTEM_ADMIN', 'VIEWER', 'MANAGER'] })
@@ -28,7 +32,9 @@ export class UserDto {
     return filterCaslFields(
       {
         avatarUpdatedAt: model.avatar?.updatedAt ?? null,
+        firstName: model.firstName,
         id: model.id,
+        lastName: model.lastName,
         username: model.username,
         role: model.role,
         createdAt: model.createdAt,

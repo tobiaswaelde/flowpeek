@@ -27,8 +27,10 @@
           <CommonUserAvatar
             size="2xs"
             :avatar-updated-at="item.avatarUpdatedAt"
+            :first-name="item.firstName"
+            :last-name="item.lastName"
             :user-id="item.userId"
-            :username="item.label"
+            :username="item.username"
           />
         </template>
       </USelectMenu>
@@ -55,10 +57,20 @@
           <CommonUserAvatar
             size="xs"
             :avatar-updated-at="row.original.user.avatarUpdatedAt"
+            :first-name="row.original.user.firstName"
+            :last-name="row.original.user.lastName"
             :user-id="row.original.user.id"
             :username="row.original.user.username"
           />
-          <span>{{ row.original.user.username }}</span>
+          <div class="min-w-0">
+            <p class="truncate">{{ getUserDisplayName(row.original.user) }}</p>
+            <p
+              v-if="getUserDisplayName(row.original.user) !== row.original.user.username"
+              class="truncate text-xs text-muted"
+            >
+              @{{ row.original.user.username }}
+            </p>
+          </div>
         </div>
       </template>
       <template #role-cell="{ row }">
@@ -101,6 +113,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
 import { usePendingActions } from '~/composables/use-pending-actions';
 import type { RepositoryMembership, RepositoryRole, User } from '~/types/api/resources';
+import { getUserDisplayName, getUserIdentityLabel } from '~/utils/user-identity';
 
 const props = defineProps<{
   repositoryId: string;
@@ -123,7 +136,15 @@ const availableUserOptions = computed(() => {
   const memberIds = new Set(memberships.value.map((membership) => membership.userId));
   return users.value
     .filter((user) => user.role !== 'SYSTEM_ADMIN' && !memberIds.has(user.id))
-    .map((user) => ({ avatarUpdatedAt: user.avatarUpdatedAt, label: user.username, userId: user.id, value: user.id }));
+    .map((user) => ({
+      avatarUpdatedAt: user.avatarUpdatedAt,
+      firstName: user.firstName,
+      label: getUserIdentityLabel(user),
+      lastName: user.lastName,
+      userId: user.id,
+      username: user.username,
+      value: user.id,
+    }));
 });
 const columns = computed(() => [
   { accessorKey: 'user.username', header: t('repositoryDetails.user'), id: 'user' },

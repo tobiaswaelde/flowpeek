@@ -24,7 +24,11 @@ The repository table shows the users with explicit access as a compact avatar gr
 the remaining count is summarized when a repository has more members. Member identities are returned only together
 with repositories the signed-in user is allowed to read.
 
-Every user can manage their profile picture under **Settings**. JPEG, PNG, and WebP sources up to 2 MB can be uploaded
-or imported from a public HTTPS URL. Non-square sources must be cropped before they are saved. ezRepo removes image
-metadata, renders a 256 × 256 WebP, and stores only that normalized image in PostgreSQL. The original file and remote
-URL are not retained. Users without a profile picture are represented by initials.
+Every user can manage their personal name, login username, and profile picture in the **General** tab under Settings.
+Personal names are optional and become the preferred display identity, while the username remains visible for
+unambiguous account identification. Changing the login username requires the user's current password.
+
+JPEG, PNG, and WebP sources up to 2 MB can be uploaded or imported from a public HTTPS URL. Non-square sources must be
+cropped before they are saved. ezRepo removes image metadata, renders a 256 × 256 WebP, and stores only that normalized
+image in PostgreSQL. The original file and remote URL are not retained. Users without a profile picture are represented
+by initials derived from their personal name or username.
