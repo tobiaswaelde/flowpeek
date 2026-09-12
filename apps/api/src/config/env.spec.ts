@@ -8,7 +8,6 @@ const originalEnv = process.env;
 function setRequiredEnvironment(): void {
   process.env.AUTH_JWT_SECRET = 'a-long-test-secret';
   process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/flowpeek_test';
-  process.env.INITIAL_ADMIN_PASSWORD = 'test-password';
   process.env.SHADOW_DATABASE_URL = 'postgresql://test:test@localhost:5432/flowpeek_shadow';
   process.env.TOKEN_ENCRYPTION_KEY = 'MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=';
 }
@@ -49,7 +48,8 @@ describe('environment configuration', () => {
     const template = readFileSync(resolve(__dirname, '../../../../.env.example'), 'utf8');
 
     expect(template).toContain('POSTGRES_PASSWORD=replace-with-a-unique-postgresql-password');
-    expect(template).toContain('INITIAL_ADMIN_PASSWORD=replace-with-a-strong-initial-admin-password');
+    expect(template).not.toContain('INITIAL_ADMIN_PASSWORD');
+    expect(template).not.toContain('INITIAL_ADMIN_USERNAME');
     expect(template).toContain('TOKEN_ENCRYPTION_KEY=replace-with-a-base64-encoded-32-byte-key');
     expect(template).not.toContain('MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=');
   });

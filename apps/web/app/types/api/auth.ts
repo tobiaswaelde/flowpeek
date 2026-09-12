@@ -12,8 +12,36 @@ export const signInRequestSchema = z.object({
 /** Validate a password-change request before submitting it to the API. */
 export const updatePasswordRequestSchema = z.object({
   currentPassword: z.string().min(1),
-  newPassword: z.string().min(12),
+  newPassword: z.string().min(12).max(256),
 });
+
+/** Validate the first administrator form, including its client-only password confirmation. */
+export const setupFormSchema = z.object({
+  confirmPassword: z.string().min(1),
+  firstName: z.string().trim().max(255),
+  lastName: z.string().trim().max(255),
+  password: z.string().min(12).max(256),
+  username: z.string().trim().min(1).max(255),
+});
+
+/** Add a localized password-confirmation error to the first-run form schema. */
+export function createSetupFormSchema(passwordMismatchMessage: string) {
+  return setupFormSchema.refine((value) => value.password === value.confirmPassword, {
+    message: passwordMismatchMessage,
+    path: ['confirmPassword'],
+  });
+}
+
+/** Validate the password settings form, including its client-only confirmation. */
+export const updatePasswordFormSchema = updatePasswordRequestSchema.extend({ confirmPassword: z.string().min(1) });
+
+/** Add a localized password-confirmation error to the password settings schema. */
+export function createUpdatePasswordFormSchema(passwordMismatchMessage: string) {
+  return updatePasswordFormSchema.refine((value) => value.newPassword === value.confirmPassword, {
+    message: passwordMismatchMessage,
+    path: ['confirmPassword'],
+  });
+}
 
 /** Validate editable personal identity fields before submitting them to the API. */
 export const updateProfileRequestSchema = z.object({
@@ -26,8 +54,27 @@ export const updateProfileRequestSchema = z.object({
 /** Local sign-in request payload. */
 export type SignInRequest = z.infer<typeof signInRequestSchema>;
 
+/** First-run administrator form state. */
+export type SetupForm = z.infer<typeof setupFormSchema>;
+
 /** Password-change request payload. */
 export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequestSchema>;
+
+/** Password settings form state. */
+export type UpdatePasswordForm = z.infer<typeof updatePasswordFormSchema>;
+
+/** One-time first-administrator request accepted by the API. */
+export interface SetupRequest {
+  firstName?: string;
+  lastName?: string;
+  password: string;
+  username: string;
+}
+
+/** Public first-run initialization state. */
+export interface SetupStatus {
+  initialized: boolean;
+}
 
 /** Browser form state validated before a personal profile update. */
 export type UpdateProfileForm = z.infer<typeof updateProfileRequestSchema>;

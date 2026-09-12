@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { signInRequestSchema, updatePasswordRequestSchema, updateProfileRequestSchema } from './auth';
+import {
+  createSetupFormSchema,
+  createUpdatePasswordFormSchema,
+  signInRequestSchema,
+  updatePasswordRequestSchema,
+  updateProfileRequestSchema,
+} from './auth';
 import { apiEndpoints } from './endpoints';
 import { applicationSettingsSchema, providerOAuthFormSchema, providerPatFormSchema } from './resources';
 
@@ -10,6 +16,37 @@ describe('web API contracts', () => {
     expect(updatePasswordRequestSchema.safeParse({ currentPassword: 'secret', newPassword: 'short' }).success).toBe(
       false,
     );
+  });
+
+  it('validates first-run and password-change confirmations', () => {
+    const setupSchema = createSetupFormSchema('mismatch');
+    const passwordSchema = createUpdatePasswordFormSchema('mismatch');
+
+    expect(
+      setupSchema.safeParse({
+        confirmPassword: 'secure-password',
+        firstName: '',
+        lastName: '',
+        password: 'secure-password',
+        username: 'admin',
+      }).success,
+    ).toBe(true);
+    expect(
+      setupSchema.safeParse({
+        confirmPassword: 'different-password',
+        firstName: '',
+        lastName: '',
+        password: 'secure-password',
+        username: 'admin',
+      }).success,
+    ).toBe(false);
+    expect(
+      passwordSchema.safeParse({
+        confirmPassword: 'different-password',
+        currentPassword: 'current-password',
+        newPassword: 'replacement-password',
+      }).success,
+    ).toBe(false);
   });
 
   it('validates trimmed personal profile fields', () => {
@@ -26,6 +63,7 @@ describe('web API contracts', () => {
 
   it('keeps the Query Kit endpoint relative to the configured API version', () => {
     expect(apiEndpoints.workflowRuns).toBe('workflow-runs');
+    expect(apiEndpoints.auth.setupStatus).toBe('/auth/setup-status');
     expect(apiEndpoints.settings).toEqual({ base: '/settings', preferences: '/settings/preferences' });
   });
 

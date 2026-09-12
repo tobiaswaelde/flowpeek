@@ -8,6 +8,7 @@ const sidebar: DefaultTheme.SidebarItem[] = [
     text: 'Operations',
     items: [
       { text: 'Deployment', link: '/deployment' },
+      { text: 'Authentication', link: '/authentication' },
       { text: 'MCP access', link: '/mcp' },
       { text: 'Notifications', link: '/notifications' },
     ],

@@ -8,6 +8,7 @@
     "db:migrate:deploy": "prisma migrate deploy --config prisma.config.ts",
     "db:migrate:dev": "prisma migrate dev --config prisma.config.ts",
     "db:validate": "prisma validate --config prisma.config.ts",
+    "db:reset-password": "node dist/scripts/reset-password.js",
     "dev": "nest start --watch",
     "docker:build": "docker build -f Dockerfile -t flowpeek-api:local ../..",
     "lint": "eslint .",

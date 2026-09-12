@@ -2,6 +2,7 @@
   <div class="space-y-6">
     <ModulesSettingsProfileCard />
     <ModulesSettingsAvatarCard />
+    <ModulesSettingsPasswordCard />
 
     <UCard :ui="{ body: 'space-y-4' }">
       <template #header>

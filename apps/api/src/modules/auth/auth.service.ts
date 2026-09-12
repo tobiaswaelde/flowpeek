@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 
@@ -10,6 +10,13 @@ interface UpdateProfileInput {
   currentPassword?: string;
   firstName: string | null;
   lastName: string | null;
+  username: string;
+}
+
+interface SetupInput {
+  firstName?: string;
+  lastName?: string;
+  password: string;
   username: string;
 }
 
@@ -27,17 +34,49 @@ export class AuthService {
     if (!user || !(await bcrypt.compare(password, user.passwordHash)))
       throw new UnauthorizedException('Invalid credentials.');
     const authenticatedUser = this.toAuthenticatedUser(user);
-    return { accessToken: await this.createAccessToken(authenticatedUser), user: authenticatedUser };
+    return { accessToken: await this.createAccessToken(authenticatedUser, user.authVersion), user: authenticatedUser };
   }
 
-  async updatePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+  /** Return whether at least one local user has completed first-run setup. */
+  async getSetupStatus(): Promise<{ initialized: boolean }> {
+    return { initialized: (await this.prisma.user.count()) > 0 };
+  }
+
+  /** Create exactly one first-run system administrator under a transaction-scoped PostgreSQL lock. */
+  async setup(input: SetupInput): Promise<AuthResult> {
+    const passwordHash = await bcrypt.hash(input.password, 12);
+    const user = await this.prisma.transaction(async (transaction) => {
+      await transaction.$executeRaw`SELECT pg_advisory_xact_lock(1573210845)`;
+      if ((await transaction.user.count()) > 0) throw new ConflictException('The application is already initialized.');
+      return transaction.user.create({
+        data: {
+          firstName: input.firstName?.trim() || null,
+          lastName: input.lastName?.trim() || null,
+          passwordHash,
+          role: 'SYSTEM_ADMIN',
+          username: input.username.trim(),
+        },
+      });
+    });
+    const authenticatedUser = this.toAuthenticatedUser({ ...user, avatar: null });
+    return { accessToken: await this.createAccessToken(authenticatedUser, user.authVersion), user: authenticatedUser };
+  }
+
+  /** Replace the current password, invalidate other tokens, and issue a replacement token. */
+  async updatePassword(userId: string, currentPassword: string, newPassword: string): Promise<AuthResult> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user || !(await bcrypt.compare(currentPassword, user.passwordHash)))
       throw new UnauthorizedException('Invalid credentials.');
-    await this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: userId },
-      data: { passwordHash: await bcrypt.hash(newPassword, 12) },
+      data: { authVersion: { increment: 1 }, passwordHash: await bcrypt.hash(newPassword, 12) },
+      include: { avatar: avatarMetadata },
     });
+    const authenticatedUser = this.toAuthenticatedUser(updatedUser);
+    return {
+      accessToken: await this.createAccessToken(authenticatedUser, updatedUser.authVersion),
+      user: authenticatedUser,
+    };
   }
 
   /** Update one user's personal identity while protecting changes to their login name. */
@@ -72,20 +111,22 @@ export class AuthService {
    */
   async authenticateAccessToken(accessToken: string): Promise<AuthenticatedUser> {
     try {
-      const payload = await this.jwt.verifyAsync<{ sub: string }>(accessToken, { issuer: ENV.AUTH_JWT_ISSUER });
+      const payload = await this.jwt.verifyAsync<{ authVersion?: number; sub: string }>(accessToken, {
+        issuer: ENV.AUTH_JWT_ISSUER,
+      });
       const user = await this.prisma.user.findUnique({
         where: { id: payload.sub },
         include: { avatar: avatarMetadata },
       });
-      if (!user) throw new UnauthorizedException();
+      if (!user || (payload.authVersion ?? 0) !== user.authVersion) throw new UnauthorizedException();
       return this.toAuthenticatedUser(user);
     } catch {
       throw new UnauthorizedException();
     }
   }
 
-  private createAccessToken(user: AuthenticatedUser): Promise<string> {
-    return this.jwt.signAsync({ sub: user.id, role: user.role, username: user.username });
+  private createAccessToken(user: AuthenticatedUser, authVersion: number): Promise<string> {
+    return this.jwt.signAsync({ authVersion, sub: user.id, role: user.role, username: user.username });
   }
 
   private toAuthenticatedUser(user: {

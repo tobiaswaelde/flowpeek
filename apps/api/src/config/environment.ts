@@ -41,8 +41,6 @@ const validators = {
   AUTH_JWT_ISSUER: str({ default: 'flowpeek' }),
   AUTH_JWT_SECRET: str({ desc: 'JWT signing secret' }),
   AUTH_JWT_EXPIRATION: str({ default: '7d' }),
-  INITIAL_ADMIN_USERNAME: str({ default: 'admin' }),
-  INITIAL_ADMIN_PASSWORD: str({ desc: 'Initial administrator password' }),
   TOKEN_ENCRYPTION_KEY: base64Key({ desc: 'Base64-encoded 32-byte encryption key' }),
   OAUTH_CALLBACK_URL: httpUrl({
     default: 'http://localhost:3001/api/v1/provider-accounts/oauth/callback',

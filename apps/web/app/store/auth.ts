@@ -2,7 +2,13 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 import { accessTokenStorageKey, useApi } from '~/composables/api/api';
-import type { AuthResult, AuthenticatedUser, UpdateProfileRequest } from '~/types/api/auth';
+import type {
+  AuthResult,
+  AuthenticatedUser,
+  SetupRequest,
+  UpdatePasswordRequest,
+  UpdateProfileRequest,
+} from '~/types/api/auth';
 
 /** Manages local bearer-token persistence and the current authenticated user. */
 export const useAuthStore = defineStore('auth', () => {
@@ -21,6 +27,12 @@ export const useAuthStore = defineStore('auth', () => {
   /** Sign in with local credentials and persist the resulting bearer token. */
   async function signIn(username: string, password: string): Promise<void> {
     const response = await useApi().post<AuthResult>('/auth/signin', { password, username });
+    setSession(response.data);
+  }
+
+  /** Create and persist the first administrator session. */
+  async function setup(input: SetupRequest): Promise<void> {
+    const response = await useApi().post<AuthResult>('/auth/setup', input);
     setSession(response.data);
   }
 
@@ -52,6 +64,12 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = (await useApi().patch<AuthenticatedUser>('/auth/me', input)).data;
   }
 
+  /** Change the password and replace the now-invalid access token. */
+  async function updatePassword(input: UpdatePasswordRequest): Promise<void> {
+    const response = await useApi().post<AuthResult>('/auth/password', input);
+    setSession(response.data);
+  }
+
   function setSession(session: AuthResult): void {
     accessToken.value = session.accessToken;
     user.value = session.user;
@@ -70,8 +88,10 @@ export const useAuthStore = defineStore('auth', () => {
     initialize,
     initialized,
     refresh,
+    setup,
     signIn,
     signOut,
+    updatePassword,
     updateProfile,
     updateUser,
     user,

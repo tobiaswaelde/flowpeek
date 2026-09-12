@@ -70,9 +70,9 @@ test('updates global retention and date-time formatting with visible request pro
         const shellBounds = element.closest('[data-page-shell]')?.getBoundingClientRect();
         return Boolean(
           contentBounds &&
-            shellBounds &&
-            Math.abs(contentBounds.right - shellBounds.right) <= 1 &&
-            pageBounds.width < contentBounds.width,
+          shellBounds &&
+          Math.abs(contentBounds.right - shellBounds.right) <= 1 &&
+          pageBounds.width < contentBounds.width,
         );
       }),
     )
@@ -164,12 +164,13 @@ test('updates personal details and refreshes the visible user identity', async (
 
   await page.goto('/admin/settings');
   await expect(page.getByRole('heading', { name: 'Personal details' })).toBeVisible();
-  await expect(page.getByLabel('Current password')).toHaveCount(0);
+  await expect(page.getByLabel('Current password')).toHaveCount(1);
   await page.getByLabel('First name').fill('Vera');
   await page.getByLabel('Last name').fill('Viewer');
   await page.getByLabel('Username').fill('vera');
   await expect(page.getByRole('button', { name: 'Save profile' })).toBeDisabled();
-  await page.getByLabel('Current password').fill('current-password');
+  await expect(page.getByLabel('Current password')).toHaveCount(2);
+  await page.getByLabel('Current password').first().fill('current-password');
 
   const saveButton = page.getByRole('button', { name: 'Save profile' });
   await saveButton.click();
@@ -179,7 +180,52 @@ test('updates personal details and refreshes the visible user identity', async (
 
   await expect(page.getByText('Personal details saved.')).toBeVisible();
   await expect(page.getByText('Vera Viewer (@vera)', { exact: true })).toBeVisible();
-  await expect(page.getByLabel('Current password')).toHaveCount(0);
+  await expect(page.getByLabel('Current password')).toHaveCount(1);
+});
+
+/** Change the password while replacing the current token and invalidating other sessions. */
+test('changes the personal password and keeps the current browser signed in', async ({ page }, testInfo) => {
+  const user = {
+    avatarUpdatedAt: null,
+    firstName: 'Vera',
+    id: 'playwright-viewer',
+    lastName: 'Viewer',
+    role: 'VIEWER',
+    username: 'viewer',
+  } as const;
+  let releaseUpdate: (() => void) | undefined;
+  const updateGate = new Promise<void>((resolve) => {
+    releaseUpdate = resolve;
+  });
+  await page.addInitScript(() => window.localStorage.setItem('flowpeek.access-token', 'old-access-token'));
+  await page.route('**/api/v1/auth/me', (route) => route.fulfill({ json: user }));
+  await page.route('**/api/v1/settings/preferences', (route) =>
+    route.fulfill({ json: { dismissedIntroBannerIds: [] } }),
+  );
+  await page.route('**/api/v1/auth/password', async (route) => {
+    expect(route.request().postDataJSON()).toEqual({
+      currentPassword: 'current-password',
+      newPassword: 'replacement-password',
+    });
+    await updateGate;
+    await route.fulfill({ json: { accessToken: 'replacement-access-token', user } });
+  });
+
+  await page.goto('/admin/settings');
+  await expect(page.getByRole('heading', { name: 'Change password' })).toBeVisible();
+  await page.getByLabel('Current password').last().fill('current-password');
+  await page.getByLabel('New password').fill('replacement-password');
+  await page.getByLabel('Confirm password').fill('replacement-password');
+  const saveButton = page.getByRole('button', { name: 'Change password' });
+  await saveButton.click();
+  await expect(saveButton).toBeDisabled();
+  await page.screenshot({ path: testInfo.outputPath('password-settings-saving.png'), fullPage: true });
+  releaseUpdate?.();
+
+  await expect(page.getByText('Password changed. Other sessions have been signed out.')).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => window.localStorage.getItem('flowpeek.access-token')))
+    .toBe('replacement-access-token');
 });
 
 /** Upload, crop, and remove the current user's profile picture without exposing the original source. */

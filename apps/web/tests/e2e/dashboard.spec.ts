@@ -45,6 +45,7 @@ async function mockDashboard(page: Page, role: 'SYSTEM_ADMIN' | 'VIEWER'): Promi
 }
 
 test('redirects unauthenticated visitors to sign-in', async ({ page }) => {
+  await page.route('**/api/v1/auth/setup-status', (route) => route.fulfill({ json: { initialized: true } }));
   await page.goto('/');
 
   await expect(page).toHaveURL(/\/auth\/signin$/);

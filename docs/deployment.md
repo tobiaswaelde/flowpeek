@@ -28,8 +28,8 @@ The Compose stack persists PostgreSQL data, including normalized user profile pi
    chmod 600 .env
    ```
 
-2. Replace every placeholder in `.env`, especially `POSTGRES_PASSWORD`, both database URLs, `AUTH_JWT_SECRET`,
-   `INITIAL_ADMIN_PASSWORD`, and `TOKEN_ENCRYPTION_KEY`. Generate the encryption key with:
+2. Replace every placeholder in `.env`, especially `POSTGRES_PASSWORD`, both database URLs, `AUTH_JWT_SECRET`, and
+   `TOKEN_ENCRYPTION_KEY`. Generate the encryption key with:
 
    ```bash
    openssl rand -base64 32
@@ -67,6 +67,9 @@ The Compose stack persists PostgreSQL data, including normalized user profile pi
    ```bash
    curl --fail http://127.0.0.1:3001/api/health
    ```
+
+7. Open the public ezRepo URL and complete the [one-time first-run setup](./authentication) to create the first
+   system administrator.
 
 ## Reverse proxy and TLS
 

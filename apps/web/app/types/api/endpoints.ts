@@ -18,6 +18,8 @@ export const apiEndpoints = {
   auth: {
     currentUser: '/auth/me',
     password: '/auth/password',
+    setup: '/auth/setup',
+    setupStatus: '/auth/setup-status',
     signIn: '/auth/signin',
     signOut: '/auth/signout',
   },

@@ -20,10 +20,11 @@ import { AuthService } from './auth.service.js';
 import { Authenticated } from './authenticated.decorator.js';
 import { AvatarService } from './avatar.service.js';
 import { RemoteAvatarDto } from './dto/avatar.dto.js';
+import { SetupDto } from './dto/setup.dto.js';
 import { SignInDto } from './dto/sign-in.dto.js';
 import { UpdatePasswordDto } from './dto/update-password.dto.js';
 import { UpdateProfileDto } from './dto/update-profile.dto.js';
-import type { AuthenticatedUser } from './types.js';
+import type { AuthResult, AuthenticatedUser } from './types.js';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -37,6 +38,19 @@ export class AuthController {
   @HttpCode(200)
   signIn(@Body() body: SignInDto) {
     return this.auth.signIn(body.username, body.password);
+  }
+
+  /** Report whether the one-time first-user setup has completed. */
+  @Get('setup-status')
+  setupStatus(): Promise<{ initialized: boolean }> {
+    return this.auth.getSetupStatus();
+  }
+
+  /** Create and sign in the first system administrator exactly once. */
+  @Post('setup')
+  @HttpCode(200)
+  setup(@Body() body: SetupDto): Promise<AuthResult> {
+    return this.auth.setup(body);
   }
 
   @Get('me')
@@ -94,9 +108,8 @@ export class AuthController {
   signOut(): void {}
 
   @Post('password')
-  @HttpCode(204)
   @Authenticated()
-  async updatePassword(@Req() request: { user: AuthenticatedUser }, @Body() body: UpdatePasswordDto): Promise<void> {
-    await this.auth.updatePassword(request.user.id, body.currentPassword, body.newPassword);
+  updatePassword(@Req() request: { user: AuthenticatedUser }, @Body() body: UpdatePasswordDto): Promise<AuthResult> {
+    return this.auth.updatePassword(request.user.id, body.currentPassword, body.newPassword);
   }
 }

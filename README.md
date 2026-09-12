@@ -57,8 +57,6 @@ API accepts the following variables:
 | `AUTH_JWT_ISSUER`                 | No       | `flowpeek`              | JWT issuer identifier.                                                                      |
 | `AUTH_JWT_SECRET`                 | Yes      | —                       | Long, unique secret used to sign JWTs.                                                      |
 | `AUTH_JWT_EXPIRATION`             | No       | `7d`                    | JWT lifetime accepted by the Nest JWT module.                                               |
-| `INITIAL_ADMIN_USERNAME`          | No       | `admin`                 | Username created on the initial empty database.                                             |
-| `INITIAL_ADMIN_PASSWORD`          | Yes      | —                       | Password for the initial administrator; use a strong unique value.                          |
 | `TOKEN_ENCRYPTION_KEY`            | Yes      | —                       | Canonical Base64 value decoding to exactly 32 bytes; encrypts provider and webhook secrets. |
 | `SCHEDULER_ENABLED`               | No       | `true`                  | Enables scheduled polling and retention jobs. Set `false` for one-off commands.             |
 | `SCHEDULER_SYNC_INTERVAL_SECONDS` | No       | `300`                   | Positive integer polling interval in seconds.                                               |
@@ -80,6 +78,9 @@ by the Nest API's `envalid` configuration:
 Provider access tokens, provider webhook secrets, and notification credentials
 are not environment variables. ezRepo stores them encrypted in PostgreSQL
 through its application configuration. See [notification configuration](docs/notifications.md) for Apprise URL handling and migration guidance.
+
+On a new installation, open ezRepo in a browser and complete the one-time
+[first-run setup](docs/authentication.md) to create the first system administrator.
 
 ## Commands
 
