@@ -110,7 +110,10 @@ test('renders dashboard values, reloads for range filters, and presents request 
     trendUrls.push(route.request().url());
     return route.fulfill({
       contentType: 'application/json',
-      json: [{ bucketStart: '2026-08-27T00:00:00.000Z', errorCount: 1, successCount: 1 }],
+      json: [
+        { bucketStart: '2026-08-26T00:00:00.000Z', errorCount: 1, successCount: 2 },
+        { bucketStart: '2026-08-27T00:00:00.000Z', errorCount: 1, successCount: 1 },
+      ],
     });
   });
 
@@ -134,7 +137,32 @@ test('renders dashboard values, reloads for range filters, and presents request 
   await expect(page.getByRole('heading', { name: 'Status distribution' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Repository health' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'View all' })).toHaveAttribute('href', '/workflow-runs/needs-attention');
-  await expect(page.getByRole('img', { name: /1 successful and 1 failed run/ })).toBeVisible();
+  const trendChart = page.getByRole('img', { name: /3 successful and 2 failed runs/ });
+  await expect(trendChart).toBeVisible();
+  await expect(trendChart.locator('[data-series="success"]')).toHaveCount(2);
+  await expect(trendChart.locator('[data-series="error"]')).toHaveCount(2);
+  const stackedBars = await trendChart.locator('[data-series]').evaluateAll((segments) =>
+    segments.map((segment) => ({
+      height: Number(segment.getAttribute('height')),
+      series: segment.getAttribute('data-series'),
+      width: Number(segment.getAttribute('width')),
+      x: Number(segment.getAttribute('x')),
+      y: Number(segment.getAttribute('y')),
+    })),
+  );
+  expect(stackedBars).toHaveLength(4);
+  expect(stackedBars[0]).toMatchObject({
+    series: 'success',
+    width: stackedBars[2]?.width,
+    x: stackedBars[2]?.x,
+  });
+  expect(stackedBars[1]).toMatchObject({
+    series: 'success',
+    width: stackedBars[3]?.width,
+    x: stackedBars[3]?.x,
+  });
+  expect(stackedBars[2]?.y).toBeCloseTo((stackedBars[0]?.y ?? 0) - (stackedBars[2]?.height ?? 0));
+  expect(stackedBars[3]?.y).toBeCloseTo((stackedBars[1]?.y ?? 0) - (stackedBars[3]?.height ?? 0));
   const latestRunsTable = page.locator('table');
   await expect(latestRunsTable.getByRole('link', { name: 'CI', exact: true })).toHaveCount(0);
   const latestRunLink = latestRunsTable.getByRole('link', { name: 'Open in provider' });
