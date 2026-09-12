@@ -18,7 +18,7 @@ not confused with ezRepo's record timestamps.
 | `notifications.prisma`     | Channels, rules, deliveries, and attempts                |
 | `webhooks.prisma`          | Webhook configuration and idempotency records            |
 | `settings.prisma`          | Global and repository-scoped settings                    |
-| `sync.prisma`              | Synchronization health and execution metadata            |
+| `sync.prisma`              | Durable, leased repository synchronization requests      |
 
 Never edit `src/generated/prisma`; regenerate it through `pnpm db:generate`
 after changing this schema.

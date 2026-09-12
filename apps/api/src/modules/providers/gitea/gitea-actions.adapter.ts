@@ -14,6 +14,7 @@ import type {
   VerifiedWebhook,
 } from '../provider-adapter.js';
 import { buildWorkflowRunScopeKey, PROVIDER_FETCH } from '../provider-adapter.js';
+import { providerRequestError } from '../provider-request.error.js';
 import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
@@ -91,7 +92,7 @@ export class GiteaActionsAdapter implements ProviderAdapter {
       { headers: this.headers(context) },
     );
     if (response.status === 404) return null;
-    if (!response.ok) throw new Error(`Gitea API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('Gitea', response);
     const pullRequest = (await response.json()) as GiteaPullRequest;
     const mergedAt = pullRequest.merged_at ? new Date(pullRequest.merged_at) : null;
     return {
@@ -109,7 +110,7 @@ export class GiteaActionsAdapter implements ProviderAdapter {
       headers: this.headers(context),
     });
     if (response.status === 404) return null;
-    if (!response.ok) throw new Error(`Gitea API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('Gitea', response);
     return this.toRepository((await response.json()) as GiteaRepository);
   }
 
@@ -134,7 +135,7 @@ export class GiteaActionsAdapter implements ProviderAdapter {
       { headers: this.headers(context) },
     );
     if (response.status === 404) return null;
-    if (!response.ok) throw new Error(`Gitea API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('Gitea', response);
     return this.toWorkflowRun((await response.json()) as GiteaWorkflowRun);
   }
 
@@ -153,14 +154,14 @@ export class GiteaActionsAdapter implements ProviderAdapter {
 
   private async request<T>(context: ProviderAccountContext, path: string): Promise<T> {
     const response = await this.fetchFn(this.url(context, path), { headers: this.headers(context) });
-    if (!response.ok) throw new Error(`Gitea API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('Gitea', response);
     return (await response.json()) as T;
   }
 
   private async actionsRequest<T>(context: ProviderAccountContext, path: string): Promise<T> {
     const response = await this.fetchFn(this.url(context, path), { headers: this.headers(context) });
     if (response.status === 404) throw new GiteaActionsUnsupportedError();
-    if (!response.ok) throw new Error(`Gitea API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('Gitea', response);
     return (await response.json()) as T;
   }
 

@@ -1,4 +1,3 @@
-import type { JobRunnerService } from '../../jobs/job-runner.service.js';
 import type { PrismaService } from '../../prisma/prisma.service.js';
 import type { NotificationsService } from '../notifications/notifications.service.js';
 import type { WorkflowFilterService } from '../repositories/workflow-filter.service.js';
@@ -45,7 +44,6 @@ describe('ProviderSyncService', () => {
     };
     const service = new ProviderSyncService(
       mocks.prisma as unknown as PrismaService,
-      {} as JobRunnerService,
       { get: jest.fn().mockReturnValue(mocks.adapter) } as unknown as ProviderAdapterRegistry,
       mocks.credentials as unknown as ProviderCredentialService,
       { refresh: jest.fn((repository) => Promise.resolve(repository)) } as never,
@@ -145,7 +143,6 @@ describe('ProviderSyncService', () => {
     };
     const service = new ProviderSyncService(
       prisma as unknown as PrismaService,
-      {} as JobRunnerService,
       {
         get: jest.fn().mockReturnValue({
           getWorkflowRun: jest.fn(),
@@ -205,7 +202,6 @@ describe('ProviderSyncService', () => {
     };
     const service = new ProviderSyncService(
       prisma as unknown as PrismaService,
-      {} as JobRunnerService,
       { get: jest.fn().mockReturnValue(adapter) } as unknown as ProviderAdapterRegistry,
       { decrypt: jest.fn().mockReturnValue('access-token') } as unknown as ProviderCredentialService,
       { refresh: jest.fn((value) => Promise.resolve(value)) } as never,
@@ -272,7 +268,6 @@ describe('ProviderSyncService', () => {
     };
     const service = new ProviderSyncService(
       prisma as unknown as PrismaService,
-      {} as JobRunnerService,
       { get: jest.fn().mockReturnValue(adapter) } as unknown as ProviderAdapterRegistry,
       { decrypt: jest.fn().mockReturnValue('access-token') } as unknown as ProviderCredentialService,
       { refresh: jest.fn((value) => Promise.resolve(value)) } as never,
@@ -301,7 +296,7 @@ describe('ProviderSyncService', () => {
     });
   });
 
-  it('keeps synchronization successful when change-request lifecycle lookup fails', async () => {
+  it('reports a failed change-request lifecycle lookup to the durable queue', async () => {
     const repository = createRepository('repository');
     const prisma = {
       providerAccount: { update: jest.fn().mockResolvedValue(undefined) },
@@ -331,7 +326,6 @@ describe('ProviderSyncService', () => {
     };
     const service = new ProviderSyncService(
       prisma as unknown as PrismaService,
-      {} as JobRunnerService,
       { get: jest.fn().mockReturnValue(adapter) } as unknown as ProviderAdapterRegistry,
       { decrypt: jest.fn().mockReturnValue('access-token') } as unknown as ProviderCredentialService,
       { refresh: jest.fn((value) => Promise.resolve(value)) } as never,
@@ -345,21 +339,17 @@ describe('ProviderSyncService', () => {
       } as unknown as SystemStatusService,
     );
 
-    await service.syncEnabledRepositories();
+    await expect(service.syncEnabledRepositories()).rejects.toThrow('provider unavailable');
 
-    expect(adapter.getChangeRequestState).toHaveBeenCalledTimes(3);
-    expect(prisma.workflowRun.updateMany).toHaveBeenCalledWith({
-      data: {
-        changeRequestCheckedAt: expect.any(Date),
-        changeRequestMergedAt: null,
-        changeRequestState: 'UNKNOWN',
-        changeRequestTargetBranch: null,
-      },
-      where: { changeRequestNumber: '42', repositoryId: repository.id },
-    });
-    expect(prisma.repository.update).toHaveBeenCalled();
+    expect(adapter.getChangeRequestState).toHaveBeenCalledTimes(1);
+    expect(prisma.workflowRun.updateMany).not.toHaveBeenCalled();
+    expect(prisma.repository.update).not.toHaveBeenCalled();
     expect(prisma.providerAccount.update).toHaveBeenCalledWith(
-      expect.objectContaining({ data: expect.objectContaining({ lastSyncError: null }) }),
+      expect.objectContaining({
+        data: expect.objectContaining({
+          lastSyncError: 'Synchronization failed. Check provider connectivity and credentials.',
+        }),
+      }),
     );
   });
 
@@ -384,7 +374,6 @@ describe('ProviderSyncService', () => {
     };
     const service = new ProviderSyncService(
       prisma as unknown as PrismaService,
-      {} as JobRunnerService,
       { get: jest.fn().mockReturnValue(adapter) } as unknown as ProviderAdapterRegistry,
       { decrypt: jest.fn().mockReturnValue('access-token') } as unknown as ProviderCredentialService,
       metadata as never,

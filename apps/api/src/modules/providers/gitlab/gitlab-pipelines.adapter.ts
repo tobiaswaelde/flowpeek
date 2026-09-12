@@ -14,6 +14,7 @@ import type {
   VerifiedWebhook,
 } from '../provider-adapter.js';
 import { buildWorkflowRunScopeKey, PROVIDER_FETCH } from '../provider-adapter.js';
+import { providerRequestError } from '../provider-request.error.js';
 import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
@@ -74,7 +75,7 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
       { headers: this.headers(context) },
     );
     if (response.status === 404) return null;
-    if (!response.ok) throw new Error(`GitLab API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('GitLab', response);
     const mergeRequest = (await response.json()) as GitLabMergeRequest;
     const mergedAt = mergeRequest.merged_at ? new Date(mergeRequest.merged_at) : null;
     return {
@@ -94,7 +95,7 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
       { headers: this.headers(context) },
     );
     if (response.status === 404) return null;
-    if (!response.ok) throw new Error(`GitLab API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('GitLab', response);
     return this.toRepository((await response.json()) as GitLabProject);
   }
 
@@ -122,7 +123,7 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
       { headers: this.headers(context) },
     );
     if (response.status === 404) return null;
-    if (!response.ok) throw new Error(`GitLab API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('GitLab', response);
     return this.toWorkflowRun((await response.json()) as GitLabPipeline);
   }
 
@@ -175,7 +176,7 @@ export class GitLabPipelinesAdapter implements ProviderAdapter {
 
   private async request<T>(context: ProviderAccountContext, path: string): Promise<T> {
     const response = await this.fetchFn(this.url(context, path), { headers: this.headers(context) });
-    if (!response.ok) throw new Error(`GitLab API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('GitLab', response);
     return (await response.json()) as T;
   }
   private headers(context: ProviderAccountContext): HeadersInit {

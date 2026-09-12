@@ -21,6 +21,7 @@ import { ProviderOAuthController } from './provider-oauth.controller.js';
 import { ProviderOAuthService } from './provider-oauth.service.js';
 import { RepositoryMetadataService } from './repository-metadata.service.js';
 import { RepositoryRefreshController } from './repository-refresh.controller.js';
+import { ProviderSyncQueueService } from './sync-queue.service.js';
 import { ProviderSyncService } from './sync.service.js';
 
 @Module({
@@ -52,7 +53,8 @@ import { ProviderSyncService } from './sync.service.js';
       inject: [GitHubActionsAdapter, GitLabPipelinesAdapter, ForgejoActionsAdapter, GiteaActionsAdapter],
     },
     ProviderSyncService,
+    ProviderSyncQueueService,
   ],
-  exports: [ProviderCredentialService, ProviderAdapterRegistry, ProviderSyncService],
+  exports: [ProviderCredentialService, ProviderAdapterRegistry, ProviderSyncQueueService, ProviderSyncService],
 })
 export class ProvidersModule {}

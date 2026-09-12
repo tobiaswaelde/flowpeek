@@ -14,6 +14,18 @@ describe('GiteaActionsAdapter', () => {
   const context = { accessToken: 'token', baseUrl: 'https://gitea.example.test', providerAccountId: 'account' };
   const repository = { providerRepositoryId: '42', owner: 'flowpeek', name: 'flowpeek' };
 
+  it('retains Gitea rate-limit timing without exposing the response body', async () => {
+    const adapter = new GiteaActionsAdapter(
+      jest.fn().mockResolvedValue(new Response('sensitive', { headers: { 'retry-after': '60' }, status: 429 })),
+    );
+
+    await expect(adapter.listRepositories(context)).rejects.toMatchObject({
+      message: 'Gitea API request failed with status 429.',
+      retryAt: expect.any(Date),
+      status: 429,
+    });
+  });
+
   it('discovers repositories and maps Actions workflow runs from recorded read-only API fixtures', async () => {
     const fetchFn = jest.fn(async (url: string) => {
       if (url.endsWith('/user')) return new Response(JSON.stringify(readFixture('user.json')));

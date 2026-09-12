@@ -14,6 +14,7 @@ import type {
   VerifiedWebhook,
 } from '../provider-adapter.js';
 import { buildWorkflowRunScopeKey, PROVIDER_FETCH } from '../provider-adapter.js';
+import { providerRequestError } from '../provider-request.error.js';
 import { isWorkflowRunAwaitingApproval, normalizeWorkflowRunStatus } from '../workflow-status.js';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
@@ -77,7 +78,7 @@ export class GitHubActionsAdapter implements ProviderAdapter {
       { headers: this.headers(context) },
     );
     if (response.status === 404) return null;
-    if (!response.ok) throw new Error(`GitHub API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('GitHub', response);
     const pullRequest = (await response.json()) as GitHubPullRequestResponse;
     const mergedAt = pullRequest.merged_at ? new Date(pullRequest.merged_at) : null;
     return {
@@ -95,7 +96,7 @@ export class GitHubActionsAdapter implements ProviderAdapter {
       headers: this.headers(context),
     });
     if (response.status === 404) return null;
-    if (!response.ok) throw new Error(`GitHub API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('GitHub', response);
     return this.toRepository((await response.json()) as GitHubRepositoryResponse);
   }
 
@@ -123,7 +124,7 @@ export class GitHubActionsAdapter implements ProviderAdapter {
       { headers: this.headers(context) },
     );
     if (response.status === 404) return null;
-    if (!response.ok) throw new Error(`GitHub API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('GitHub', response);
     return this.toWorkflowRun((await response.json()) as GitHubWorkflowRunResponse, repository);
   }
 
@@ -140,7 +141,7 @@ export class GitHubActionsAdapter implements ProviderAdapter {
 
   private async request<T>(context: ProviderAccountContext, path: string): Promise<T> {
     const response = await this.fetchFn(this.url(context, path), { headers: this.headers(context) });
-    if (!response.ok) throw new Error(`GitHub API request failed with status ${response.status}.`);
+    if (!response.ok) throw providerRequestError('GitHub', response);
     return (await response.json()) as T;
   }
 

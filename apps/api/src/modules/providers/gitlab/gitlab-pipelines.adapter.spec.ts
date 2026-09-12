@@ -10,6 +10,18 @@ const readFixture = (name: string): unknown => JSON.parse(readFileSync(resolve(f
 describe('GitLabPipelinesAdapter', () => {
   const context = { accessToken: 'token', baseUrl: 'https://gitlab.example.test', providerAccountId: 'account' };
 
+  it('retains GitLab rate-limit timing without exposing the response body', async () => {
+    const adapter = new GitLabPipelinesAdapter(
+      jest.fn().mockResolvedValue(new Response('sensitive', { headers: { 'retry-after': '60' }, status: 429 })),
+    );
+
+    await expect(adapter.listRepositories(context)).rejects.toMatchObject({
+      message: 'GitLab API request failed with status 429.',
+      retryAt: expect.any(Date),
+      status: 429,
+    });
+  });
+
   it('maps projects and pipelines using only GitLab read endpoints', async () => {
     const fetchFn = jest
       .fn()

@@ -18,6 +18,9 @@ model ProviderAccount {
   enabled                Boolean  @default(true)
   lastSyncAt             DateTime?
   lastSyncError          String?  @db.Text
+  syncLeaseToken         String?  @db.VarChar(64)
+  syncLeaseExpiresAt     DateTime?
+  rateLimitResetAt       DateTime?
   repositories           Repository[]
   webhookDeliveries      WebhookDelivery[]
 

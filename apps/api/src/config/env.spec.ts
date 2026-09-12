@@ -28,7 +28,7 @@ describe('environment configuration', () => {
     expect(environment.CORS_ORIGIN).toBe('http://localhost:3000');
     expect(environment.PORT).toBe(3001);
     expect(environment.SCHEDULER_ENABLED).toBe(true);
-    expect(environment.SCHEDULER_SYNC_INTERVAL_SECONDS).toBe(300);
+    expect(environment.SCHEDULER_SYNC_INTERVAL_SECONDS).toBe(1_800);
     expect(environment.isTest).toBe(true);
   });
 

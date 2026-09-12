@@ -12,7 +12,9 @@ each provider webhook manually in the provider UI.
 
 Webhooks are an optimization, not the source of truth. ezRepo uses the
 verified payload only to select a tracked repository, then reads workflow runs
-through the configured read-only provider adapter.
+through the configured read-only provider adapter. Accepted deliveries enqueue
+a durable repository synchronization. Deliveries received within 15 seconds
+are combined, and the default fallback polling interval is 30 minutes.
 
 ## Before creating a provider webhook
 
@@ -35,6 +37,11 @@ Repeated provider delivery IDs return `{ "accepted": true, "duplicate": true }`
 and do not start another targeted synchronization. Invalid signatures,
 unknown accounts, disabled accounts, missing secrets, or missing delivery IDs
 are rejected without exposing account details.
+
+Queued synchronization survives API restarts. Multiple API instances claim work
+through expiring database leases and never synchronize the same provider account
+in parallel. Provider rate-limit headers delay all queued work for that account;
+bounded retries handle transient failures without tight retry loops.
 
 ## GitHub Actions
 
@@ -137,3 +144,7 @@ verified delivery. See the [Gitea webhook documentation](https://docs.gitea.com/
   ezRepo only performs a read-only synchronization afterwards.
 - Check `/api/health` for the last persisted provider synchronization status.
   The health endpoint does not contact providers or expose secrets.
+- Existing installations retain their configured polling interval. Set
+  `SCHEDULER_SYNC_INTERVAL_SECONDS=1800` to use the 30-minute fallback.
+- `SCHEDULER_ENABLED=false` leaves accepted requests persisted but pauses both
+  fallback enqueueing and queue processing until scheduling is enabled again.

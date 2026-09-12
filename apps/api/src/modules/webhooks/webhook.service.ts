@@ -1,10 +1,10 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import type { ProviderType } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { ProviderAdapterRegistry } from '../providers/provider-adapter.registry.js';
 import { ProviderCredentialService } from '../providers/provider-credential.service.js';
-import { ProviderSyncService } from '../providers/sync.service.js';
+import { ProviderSyncQueueService } from '../providers/sync-queue.service.js';
 
 /** Raw signed webhook data supplied by the HTTP controller. */
 export interface WebhookRequest {
@@ -21,13 +21,11 @@ export interface WebhookAcceptance {
 /** Verifies signed provider webhooks and schedules read-only targeted synchronization. */
 @Injectable()
 export class WebhookService {
-  private readonly logger = new Logger(WebhookService.name);
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly adapters: ProviderAdapterRegistry,
     private readonly credentials: ProviderCredentialService,
-    private readonly sync: ProviderSyncService,
+    private readonly syncQueue: ProviderSyncQueueService,
   ) {}
 
   /**
@@ -65,20 +63,22 @@ export class WebhookService {
     if (!verified || !deliveryId) throw new UnauthorizedException('Webhook signature validation failed.');
 
     try {
-      await this.prisma.webhookDelivery.create({
-        data: {
-          deliveryId,
-          event: verified.event,
-          providerAccountId,
-          providerRepositoryId: verified.providerRepositoryId,
-        },
+      await this.prisma.transaction(async (transaction) => {
+        await transaction.webhookDelivery.create({
+          data: {
+            deliveryId,
+            event: verified.event,
+            providerAccountId,
+            providerRepositoryId: verified.providerRepositoryId,
+          },
+        });
+        if (verified.providerRepositoryId)
+          await this.syncQueue.enqueueWebhookRepository(providerAccountId, verified.providerRepositoryId, transaction);
       });
     } catch (error) {
       if (this.isDuplicateDeliveryError(error)) return { accepted: true, duplicate: true };
       throw error;
     }
-
-    if (verified.providerRepositoryId) this.scheduleTargetedSync(providerAccountId, verified.providerRepositoryId);
     return { accepted: true, duplicate: false };
   }
 
@@ -99,11 +99,5 @@ export class WebhookService {
 
   private isDuplicateDeliveryError(error: unknown): boolean {
     return typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002';
-  }
-
-  private scheduleTargetedSync(providerAccountId: string, providerRepositoryId: string): void {
-    void this.sync.syncRepositoryByProviderReference(providerAccountId, providerRepositoryId).catch(() => {
-      this.logger.warn(`Webhook synchronization failed for provider account ${providerAccountId}.`);
-    });
   }
 }

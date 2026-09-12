@@ -16,6 +16,7 @@ model Repository {
   memberships       RepositoryMembership[]
   notificationChannels NotificationChannel[]
   notificationRules    NotificationRule[]
+  syncRequest          RepositorySyncRequest?
   workflowFilters      WorkflowFilter[]
   workflows            Workflow[]
   workflowRuns      WorkflowRun[]

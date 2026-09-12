@@ -55,7 +55,7 @@ const validators = {
   FORGEJO_OAUTH_CLIENT_ID: str({ default: '' }),
   FORGEJO_OAUTH_CLIENT_SECRET: str({ default: '' }),
   SCHEDULER_ENABLED: bool({ default: true }),
-  SCHEDULER_SYNC_INTERVAL_SECONDS: positiveInteger({ default: 300 }),
+  SCHEDULER_SYNC_INTERVAL_SECONDS: positiveInteger({ default: 1_800 }),
 };
 
 /** The validated API runtime configuration. */

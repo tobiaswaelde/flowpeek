@@ -1,1 +1,27 @@
-// Synchronization state and provider-health metadata are defined here.
+enum RepositorySyncRequestStatus {
+  PENDING
+  RUNNING
+  FAILED
+}
+
+model RepositorySyncRequest {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status         RepositorySyncRequestStatus @default(PENDING)
+  requestedAt    DateTime
+  runAfter       DateTime
+  attempt        Int                         @default(0)
+  generation     Int                         @default(1)
+  leaseToken     String?                     @db.VarChar(64)
+  leaseExpiresAt DateTime?
+  lastError      String?                     @db.Text
+
+  repositoryId String     @unique @db.Uuid
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@index([status, runAfter])
+  @@index([leaseExpiresAt])
+  @@map("repository_sync_requests")
+}

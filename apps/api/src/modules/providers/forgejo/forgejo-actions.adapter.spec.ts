@@ -9,6 +9,18 @@ const readFixture = (name: string): unknown => JSON.parse(readFileSync(resolve(f
 
 describe('ForgejoActionsAdapter', () => {
   const context = { accessToken: 'token', baseUrl: 'https://forgejo.example.test', providerAccountId: 'account' };
+
+  it('retains Forgejo rate-limit timing without exposing the response body', async () => {
+    const adapter = new ForgejoActionsAdapter(
+      jest.fn().mockResolvedValue(new Response('sensitive', { headers: { 'retry-after': '60' }, status: 429 })),
+    );
+
+    await expect(adapter.listRepositories(context)).rejects.toMatchObject({
+      message: 'Forgejo API request failed with status 429.',
+      retryAt: expect.any(Date),
+      status: 429,
+    });
+  });
   it('maps Actions workflow runs through the read-only API', async () => {
     const fetchFn = jest.fn().mockResolvedValue(new Response(JSON.stringify(readFixture('workflow-runs.json'))));
     await expect(
