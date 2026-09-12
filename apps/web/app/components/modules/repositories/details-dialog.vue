@@ -2,7 +2,7 @@
   <UModal
     v-model:open="open"
     :description="$t('repositoryDetails.generalDescription')"
-    :dismissible="!refreshing"
+    :dismissible="!refreshing && !syncing"
     :title="dialogTitle"
     :ui="{ body: 'max-h-[min(75vh,48rem)] overflow-y-auto', content: 'sm:max-w-5xl' }"
   >
@@ -33,6 +33,14 @@
             :label="$t('repositoryDetails.refresh')"
             :loading="refreshing"
             @click="refreshRepository"
+          />
+          <UButton
+            v-if="isAdmin"
+            color="primary"
+            icon="i-lucide-download"
+            :label="$t('repositoryDetails.syncWorkflowRuns')"
+            :loading="syncing"
+            @click="syncWorkflowRuns"
           />
           <UButton
             color="neutral"
@@ -81,6 +89,7 @@ const repository = ref<Repository>();
 const loading = ref(false);
 const loadError = ref(false);
 const refreshing = ref(false);
+const syncing = ref(false);
 const toast = useToast();
 const isAdmin = computed(() => auth.user?.role === 'SYSTEM_ADMIN');
 const dialogTitle = computed(() =>
@@ -102,6 +111,7 @@ function reset(): void {
   loadError.value = false;
   loading.value = false;
   refreshing.value = false;
+  syncing.value = false;
 }
 
 /** Load the repository selected by the URL-controlled dialog. */
@@ -137,6 +147,20 @@ async function refreshRepository(): Promise<void> {
     toast.add({ color: 'error', title: t('repositoryDetails.refreshError') });
   } finally {
     refreshing.value = false;
+  }
+}
+
+/** Queue an immediate read-only workflow synchronization for the displayed repository. */
+async function syncWorkflowRuns(): Promise<void> {
+  if (!repository.value || syncing.value) return;
+  syncing.value = true;
+  try {
+    await api.repositories.sync(repository.value.id);
+    toast.add({ color: 'success', title: t('repositoryDetails.syncWorkflowRunsQueued') });
+  } catch {
+    toast.add({ color: 'error', title: t('repositoryDetails.syncWorkflowRunsError') });
+  } finally {
+    syncing.value = false;
   }
 }
 </script>

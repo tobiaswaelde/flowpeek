@@ -73,11 +73,12 @@ The Compose stack persists PostgreSQL data, including normalized user profile pi
 
 ## Reverse proxy and TLS
 
-Proxy the public web origin to port 3000 and only the API path to port 3001. For example, a Caddy site block can use:
+Proxy the public web origin to port 3000, and the API and Socket.IO paths to port 3001. For example, a Caddy site block can use:
 
 ```caddy
 ezrepo.example.com {
   reverse_proxy /api/* 127.0.0.1:3001
+  reverse_proxy /socket.io/* 127.0.0.1:3001
   reverse_proxy 127.0.0.1:3000
 }
 ```

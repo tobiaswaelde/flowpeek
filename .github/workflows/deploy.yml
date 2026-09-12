@@ -166,7 +166,10 @@ jobs:
 
       - name: Prepare Compose environment
         if: steps.compose-inputs.outputs.ready == 'true'
-        run: cp .env.example .env
+        run: |
+          cp .env.example .env
+          encryption_key="$(openssl rand -base64 32)"
+          sed -i "s|^TOKEN_ENCRYPTION_KEY=.*$|TOKEN_ENCRYPTION_KEY=${encryption_key}|" .env
 
       - name: Validate release image tags
         if: steps.compose-inputs.outputs.ready == 'true'
@@ -187,6 +190,10 @@ jobs:
       - name: Check API health
         if: steps.compose-inputs.outputs.ready == 'true'
         run: curl --fail --retry 12 --retry-connrefused --retry-delay 5 http://localhost:3001/api/health
+
+      - name: Show release stack logs on failure
+        if: failure() && steps.compose-inputs.outputs.ready == 'true'
+        run: docker compose -f compose.yml logs --no-color
 
       - name: Stop release stack
         if: always() && steps.compose-inputs.outputs.ready == 'true'

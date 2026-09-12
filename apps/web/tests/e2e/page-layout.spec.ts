@@ -109,3 +109,20 @@ test('uses the shared page shell without introductory banners', async ({ page })
     });
   }
 });
+
+test('queues workflow retrieval from the repository details dialog', async ({ page }) => {
+  await mockApplication(page);
+  let syncRequested = false;
+  await page.route('**/api/v1/repositories/repository-1/sync', async (route) => {
+    syncRequested = true;
+    await route.fulfill({ status: 202 });
+  });
+
+  await page.goto('/repositories?repository=repository-1');
+
+  const syncButton = page.getByRole('button', { name: 'Fetch workflow runs' });
+  await expect(syncButton).toBeVisible();
+  await syncButton.click();
+  await expect.poll(() => syncRequested).toBe(true);
+  await expect(page.getByText('Workflow runs were queued for retrieval.')).toBeVisible();
+});

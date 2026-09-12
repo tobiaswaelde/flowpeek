@@ -59,6 +59,11 @@ export class ProviderSyncQueueService {
     for (const repository of repositories) await this.enqueueRepository(repository.id, 0);
   }
 
+  /** Persist an immediate synchronization request for one newly tracked or manually selected repository. */
+  async enqueueRepositorySync(repositoryId: string, database: QueueDatabase = this.prisma): Promise<void> {
+    await this.enqueueRepository(repositoryId, 0, database);
+  }
+
   /** Persist a debounced request for a provider-native repository reference. */
   async enqueueWebhookRepository(
     providerAccountId: string,

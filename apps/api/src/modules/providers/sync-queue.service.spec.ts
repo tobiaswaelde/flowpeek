@@ -20,6 +20,18 @@ describe('ProviderSyncQueueService', () => {
     expect(runAfter.getTime() - requestedAt.getTime()).toBe(15_000);
   });
 
+  it('enqueues direct repository requests without a delay', async () => {
+    const executeRaw = jest.fn().mockResolvedValue(1);
+    const service = createService({ $executeRaw: executeRaw });
+
+    await service.enqueueRepositorySync('00000000-0000-0000-0000-000000000001');
+
+    const query = executeRaw.mock.calls[0]?.[0] as { values: unknown[] };
+    const requestedAt = query.values[1] as Date;
+    const runAfter = query.values[2] as Date;
+    expect(runAfter.getTime()).toBe(requestedAt.getTime());
+  });
+
   it('atomically claims one account and removes a completed request', async () => {
     const mocks = processingMocks();
     const service = createService(mocks.prisma, mocks.sync);

@@ -6,6 +6,7 @@ import type { AuthenticatedUser } from '../auth/types.js';
 import type { ProviderRepository } from './provider-adapter.js';
 import { ProviderAdapterRegistry } from './provider-adapter.registry.js';
 import { ProviderCredentialService } from './provider-credential.service.js';
+import { ProviderSyncQueueService } from './sync-queue.service.js';
 
 /** Admin-only persistence service for ezRepo provider accounts. */
 @Injectable()
@@ -14,6 +15,7 @@ export class ProviderAccountsService {
     private readonly prisma: PrismaService,
     private readonly credentials: ProviderCredentialService,
     private readonly adapters: ProviderAdapterRegistry,
+    private readonly syncQueue: ProviderSyncQueueService,
   ) {}
 
   async list(user: AuthenticatedUser) {
@@ -160,7 +162,7 @@ export class ProviderAccountsService {
     );
     if (!repository) throw new NotFoundException('Provider repository not found.');
 
-    return this.prisma.repository.create({
+    const trackedRepository = await this.prisma.repository.create({
       data: {
         name: repository.name,
         owner: repository.owner,
@@ -169,6 +171,8 @@ export class ProviderAccountsService {
         url: repository.url,
       },
     });
+    await this.syncQueue.enqueueRepositorySync(trackedRepository.id);
+    return trackedRepository;
   }
 
   /** Ensures that a request belongs to a system administrator. */

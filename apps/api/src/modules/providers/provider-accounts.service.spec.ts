@@ -26,7 +26,13 @@ describe('ProviderAccountsService', () => {
       validateAccount: jest.fn().mockResolvedValue({ valid: true }),
     })),
   };
-  const service = new ProviderAccountsService(prisma as never, credentials as never, adapters as never);
+  const syncQueue = { enqueueRepositorySync: jest.fn().mockResolvedValue(undefined) };
+  const service = new ProviderAccountsService(
+    prisma as never,
+    credentials as never,
+    adapters as never,
+    syncQueue as never,
+  );
   const admin = { id: 'admin', role: 'SYSTEM_ADMIN' as const, username: 'admin' };
 
   beforeEach(() => jest.clearAllMocks());
@@ -169,5 +175,6 @@ describe('ProviderAccountsService', () => {
         url: 'https://example.test/ezrepo',
       },
     });
+    expect(syncQueue.enqueueRepositorySync).toHaveBeenCalledWith('repository-id');
   });
 });

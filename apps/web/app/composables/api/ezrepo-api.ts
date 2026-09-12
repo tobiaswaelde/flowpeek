@@ -128,6 +128,7 @@ export function useEzRepoApi() {
         api.get(`${apiEndpoints.repositories}/${id}/workflow-filters`),
       refresh: (id: string): Promise<AxiosResponse<Repository>> =>
         api.post(`${apiEndpoints.repositories}/${id}/refresh`),
+      sync: (id: string): Promise<AxiosResponse<void>> => api.post(`${apiEndpoints.repositories}/${id}/sync`),
       update: (
         id: string,
         input: { enabled: boolean; workflowRunRetentionDays: number | null },
