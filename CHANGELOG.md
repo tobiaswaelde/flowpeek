@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+### Patch Changes
+
+- a06a9b1: Fix the release deployment workflow so it can publish API and web images to GitHub Container Registry.
+
 ## 0.2.0
 
 ### Minor Changes
