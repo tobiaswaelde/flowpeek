@@ -75,27 +75,44 @@ test('viewer browses assigned repositories without administration actions', asyn
   await page.getByPlaceholder('Search ezRepo').fill('repositories');
   await expect(page.getByRole('link', { name: 'Repositories' }).last()).toHaveAttribute('href', '/repositories');
   await page.keyboard.press('Escape');
-  await page.getByRole('link', { name: 'Open repository' }).click();
+  await page.getByRole('button', { name: 'Open repository' }).click();
 
-  await expect(page).toHaveURL(/\/repositories\/repository-1$/);
+  await expect(page).toHaveURL(/\/repositories\?repository=repository-1$/);
+  const repositoryDialog = page.getByRole('dialog', { name: 'twaelde/flowpeek' });
+  await expect(repositoryDialog).toBeVisible();
+  await expect(repositoryDialog.getByText('Enabled', { exact: true })).toBeVisible();
+  await expect(repositoryDialog.getByRole('button', { name: 'Save' })).toHaveCount(0);
+  await expect(repositoryDialog.getByRole('button', { name: 'Refresh provider data' })).toHaveCount(0);
+  await expect(repositoryDialog.getByRole('heading', { name: 'Workflow filters' })).toHaveCount(0);
+  await expect(repositoryDialog.getByRole('heading', { name: 'Members' })).toHaveCount(0);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/repositories$/);
+  await expect(repositoryDialog).not.toBeVisible();
   await expect(repositoriesLink).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByRole('heading', { level: 1, name: 'twaelde/flowpeek' })).toBeVisible();
-  await expect(page.getByText('Enabled', { exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Save' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Refresh provider data' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Workflow filters' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Members' })).toHaveCount(0);
+  await page.goForward();
+  await expect(repositoryDialog).toBeVisible();
   await page.reload();
-  await expect(page).toHaveURL(/\/repositories\/repository-1$/);
-  await expect(repositoriesLink).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByRole('heading', { level: 1, name: 'twaelde/flowpeek' })).toBeVisible();
+  await expect(page).toHaveURL(/\/repositories\?repository=repository-1$/);
+  await expect(repositoryDialog).toBeVisible();
+
+  await page.goto('/repositories/repository-1?source=detail#settings');
+  await expect
+    .poll(() => {
+      const url = new URL(page.url());
+      return `${url.pathname}|${url.searchParams.get('repository')}|${url.searchParams.get('source')}|${url.hash}`;
+    })
+    .toBe('/repositories|repository-1|detail|#settings');
+  await expect(repositoryDialog).toBeVisible();
 
   await page.goto('/admin/repositories/repository-1?source=legacy#details');
-  await expect(page).toHaveURL(/\/repositories\/repository-1\?source=legacy#details$/);
-  await expect(repositoriesLink).toHaveAttribute('aria-current', 'page');
-
+  await expect
+    .poll(() => {
+      const url = new URL(page.url());
+      return `${url.pathname}|${url.searchParams.get('repository')}|${url.searchParams.get('source')}|${url.hash}`;
+    })
+    .toBe('/repositories|repository-1|legacy|#details');
   await page.setViewportSize({ height: 844, width: 390 });
-  await expect(page.getByRole('heading', { level: 1, name: 'twaelde/flowpeek' })).toBeVisible();
+  await expect(repositoryDialog).toBeVisible();
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
     .toBe(true);
@@ -134,8 +151,16 @@ test('administrator refreshes renamed repository metadata from the provider', as
     route.fulfill({ json: { items: [], meta: { itemCount: 0, pageCount: 0 } } }),
   );
   await page.route('**/api/v1/repositories/repository-1', (route) => route.fulfill({ json: repository }));
+  await page.route(/\/api\/v1\/repositories(?:\?.*)?$/, (route) =>
+    route.fulfill({
+      json: {
+        items: [repository],
+        meta: { hasNextPage: false, hasPrevPage: false, itemCount: 1, page: 1, pageCount: 1, perPage: 10 },
+      },
+    }),
+  );
 
-  await page.goto('/repositories/repository-1');
+  await page.goto('/repositories?repository=repository-1');
 
   const refreshButton = page.getByRole('button', { name: 'Refresh provider data' });
   await refreshButton.click();
@@ -144,13 +169,15 @@ test('administrator refreshes renamed repository metadata from the provider', as
   await page.screenshot({ path: testInfo.outputPath('repository-refresh-loading.png'), fullPage: true });
   releaseRefresh?.();
 
-  await expect(page.getByRole('heading', { level: 1, name: 'new-owner/ezrepo' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'new-owner/ezrepo' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Open in provider' })).toHaveAttribute(
     'href',
     'https://github.com/new-owner/ezrepo',
   );
-  await expect(page.getByText('Repository data was refreshed from the provider.')).toBeVisible();
+  await expect(page.getByText('Repository data was refreshed from the provider.', { exact: true })).toBeVisible();
 
   await refreshButton.click();
-  await expect(page.getByText('Repository data could not be refreshed from the provider.')).toBeVisible();
+  await expect(
+    page.getByText('Repository data could not be refreshed from the provider.', { exact: true }),
+  ).toBeVisible();
 });

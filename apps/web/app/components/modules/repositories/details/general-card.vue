@@ -89,8 +89,9 @@ function formatLastSync(lastSyncAt: string | null): string {
 
 /** Persist a valid explicit retention override or restore the provider default. */
 async function saveRetention(): Promise<void> {
-  const parsedRetention = retentionDays.value.trim() === '' ? null : Number(retentionDays.value);
-  if (!Number.isInteger(parsedRetention) || (parsedRetention !== null && parsedRetention < 1)) return;
+  const retentionInput = String(retentionDays.value).trim();
+  const parsedRetention = retentionInput === '' ? null : Number(retentionInput);
+  if (parsedRetention !== null && (!Number.isInteger(parsedRetention) || parsedRetention < 1)) return;
 
   saving.value = true;
   saveError.value = false;

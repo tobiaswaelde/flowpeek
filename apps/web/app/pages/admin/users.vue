@@ -57,15 +57,19 @@
       </template>
       <template #actions-cell="{ row }">
         <div class="flex justify-end">
-          <UButton
-            color="error"
-            icon="i-lucide-trash-2"
-            variant="ghost"
-            :aria-label="$t('users.delete')"
-            :disabled="row.original.id === auth.user?.id || isPending(row.original.id)"
-            :loading="isPending(row.original.id)"
-            @click="remove(row.original.id)"
-          />
+          <UTooltip :text="$t('users.delete')">
+            <span class="inline-flex">
+              <UButton
+                color="error"
+                icon="i-lucide-trash-2"
+                variant="ghost"
+                :aria-label="$t('users.delete')"
+                :disabled="row.original.id === auth.user?.id || isPending(row.original.id)"
+                :loading="isPending(row.original.id)"
+                @click="remove(row.original.id)"
+              />
+            </span>
+          </UTooltip>
         </div>
       </template>
     </UTable>

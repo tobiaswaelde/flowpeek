@@ -46,8 +46,13 @@ test('provider account table opens an add dialog with structured native controls
   await expect(breadcrumb.locator('[class~="i-lucide:layout-dashboard"]')).toBeVisible();
   await expect(breadcrumb.locator('[class~="i-lucide:plug-zap"]')).toBeVisible();
   await expect(page.getByText('Production GitHub')).toBeVisible();
-  await expect(page.locator('[class~="i-tabler:brand-github"]')).toBeVisible();
+  await expect(page.locator('#main-content [class~="i-tabler:brand-github"]')).toBeVisible();
   await expect(page.getByRole('button', { name: /add provider|anbieter hinzufügen/i })).toBeVisible();
+  await page.getByRole('button', { name: 'Disable' }).hover();
+  await expect(page.locator('[data-slot="content"][data-side]').filter({ hasText: 'Disable' })).toBeVisible();
+  await page.mouse.move(0, 0);
+  await page.getByRole('button', { name: 'Delete' }).hover();
+  await expect(page.locator('[data-slot="content"][data-side]').filter({ hasText: 'Delete' })).toBeVisible();
 
   await page.getByRole('button', { name: 'playwright' }).click();
   await expect(page.getByText('Language', { exact: true })).toBeVisible();

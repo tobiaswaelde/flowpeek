@@ -363,6 +363,7 @@
     "allow": "Permitir",
     "delete": "Eliminar",
     "deny": "Excluir",
+    "edit": "Editar repositório",
     "filterPlaceholder": "por ex. build-*",
     "generalDescription": "Configure a retenção e o acesso para este repositório monitorizado.",
     "loadError": "Não foi possível carregar as definições do repositório.",

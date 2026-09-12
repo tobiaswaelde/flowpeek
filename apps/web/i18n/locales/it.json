@@ -363,6 +363,7 @@
     "allow": "Consenti",
     "delete": "Elimina",
     "deny": "Escludi",
+    "edit": "Modifica repository",
     "filterPlaceholder": "ad es. build-*",
     "generalDescription": "Configura conservazione e accesso per questo repository monitorato.",
     "loadError": "Non è stato possibile caricare le impostazioni del repository.",

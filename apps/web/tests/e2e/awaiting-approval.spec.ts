@@ -78,14 +78,17 @@ test('lists approval-gated workflows with provider and pull-request actions', as
     .toBe(true);
   await expect(page.getByText('twaelde/flowpeek', { exact: true })).toBeVisible();
   await expect(table.getByText('GitHub', { exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Approve in provider' })).toHaveAttribute(
-    'href',
-    'https://github.com/twaelde/flowpeek/actions/runs/42',
-  );
-  await expect(page.getByRole('link', { name: 'Open pull request' })).toHaveAttribute(
-    'href',
-    'https://github.com/twaelde/flowpeek/pull/12',
-  );
+  const approveLink = page.getByRole('link', { name: 'Approve in provider' });
+  await expect(approveLink).toHaveAttribute('href', 'https://github.com/twaelde/flowpeek/actions/runs/42');
+  const reviewLink = page.getByRole('link', { name: 'Open pull request' });
+  await expect(reviewLink).toHaveAttribute('href', 'https://github.com/twaelde/flowpeek/pull/12');
+  await approveLink.hover();
+  await expect(
+    page.locator('[data-slot="content"][data-side]').filter({ hasText: 'Approve in provider' }),
+  ).toBeVisible();
+  await page.mouse.move(0, 0);
+  await reviewLink.hover();
+  await expect(page.locator('[data-slot="content"][data-side]').filter({ hasText: 'Open pull request' })).toBeVisible();
   await expect(page.locator('table')).not.toContainText(/\b(?:AM|PM)\b/);
 
   await page.getByPlaceholder('Search workflows or repositories').fill('missing');

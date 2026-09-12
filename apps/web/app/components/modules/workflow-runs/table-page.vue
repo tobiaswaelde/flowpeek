@@ -87,15 +87,17 @@
       </template>
       <template #actions-cell="{ row }">
         <div class="flex justify-end">
-          <UButton
-            color="neutral"
-            icon="i-tabler-external-link"
-            rel="noreferrer"
-            target="_blank"
-            variant="ghost"
-            :aria-label="$t('dashboard.openProvider')"
-            :to="row.original.url"
-          />
+          <UTooltip :text="$t('dashboard.openProvider')">
+            <UButton
+              color="neutral"
+              icon="i-tabler-external-link"
+              rel="noreferrer"
+              target="_blank"
+              variant="ghost"
+              :aria-label="$t('dashboard.openProvider')"
+              :to="row.original.url"
+            />
+          </UTooltip>
         </div>
       </template>
     </UTable>

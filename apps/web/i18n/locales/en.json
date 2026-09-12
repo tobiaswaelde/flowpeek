@@ -373,6 +373,7 @@
     "allow": "Allow",
     "delete": "Delete",
     "deny": "Deny",
+    "edit": "Edit repository",
     "filterPlaceholder": "e.g. build-*",
     "generalDescription": "Configure retention and access for this tracked repository.",
     "loadError": "Repository settings could not be loaded.",

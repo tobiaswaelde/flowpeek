@@ -80,24 +80,32 @@
       </template>
       <template #actions-cell="{ row }">
         <div class="flex justify-end gap-1">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            :aria-label="row.original.enabled ? $t('providers.disable') : $t('providers.enable')"
-            :disabled="isProviderPending(row.original.id)"
-            :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
-            :loading="isPending(providerActionKey('toggle', row.original.id))"
-            @click="toggle(row.original)"
-          />
-          <UButton
-            color="error"
-            icon="i-lucide-trash-2"
-            variant="ghost"
-            :aria-label="$t('providers.delete')"
-            :disabled="isProviderPending(row.original.id)"
-            :loading="isPending(providerActionKey('delete', row.original.id))"
-            @click="remove(row.original.id)"
-          />
+          <UTooltip :text="row.original.enabled ? $t('providers.disable') : $t('providers.enable')">
+            <span class="inline-flex">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                :aria-label="row.original.enabled ? $t('providers.disable') : $t('providers.enable')"
+                :disabled="isProviderPending(row.original.id)"
+                :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
+                :loading="isPending(providerActionKey('toggle', row.original.id))"
+                @click="toggle(row.original)"
+              />
+            </span>
+          </UTooltip>
+          <UTooltip :text="$t('providers.delete')">
+            <span class="inline-flex">
+              <UButton
+                color="error"
+                icon="i-lucide-trash-2"
+                variant="ghost"
+                :aria-label="$t('providers.delete')"
+                :disabled="isProviderPending(row.original.id)"
+                :loading="isPending(providerActionKey('delete', row.original.id))"
+                @click="remove(row.original.id)"
+              />
+            </span>
+          </UTooltip>
         </div>
       </template>
     </UTable>

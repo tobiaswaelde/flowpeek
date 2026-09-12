@@ -132,10 +132,10 @@ test('renders dashboard values, reloads for range filters, and presents request 
   await expect(page.getByRole('img', { name: /1 successful and 1 failed run/ })).toBeVisible();
   const latestRunsTable = page.locator('table');
   await expect(latestRunsTable.getByRole('link', { name: 'CI', exact: true })).toHaveCount(0);
-  await expect(latestRunsTable.getByRole('link', { name: 'Open in provider' })).toHaveAttribute(
-    'href',
-    'https://github.com/flowpeek/flowpeek/actions/runs/101',
-  );
+  const latestRunLink = latestRunsTable.getByRole('link', { name: 'Open in provider' });
+  await expect(latestRunLink).toHaveAttribute('href', 'https://github.com/flowpeek/flowpeek/actions/runs/101');
+  await latestRunLink.hover();
+  await expect(page.locator('[data-slot="content"][data-side]').filter({ hasText: 'Open in provider' })).toBeVisible();
   await expect(latestRunsTable).not.toContainText(/\b(?:AM|PM)\b/);
 
   await page.getByRole('combobox', { name: 'Dashboard period' }).click();

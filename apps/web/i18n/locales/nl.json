@@ -363,6 +363,7 @@
     "allow": "Toestaan",
     "delete": "Verwijderen",
     "deny": "Uitsluiten",
+    "edit": "Repository bewerken",
     "filterPlaceholder": "bijv. build-*",
     "generalDescription": "Configureer bewaartermijn en toegang voor deze gevolgde repository.",
     "loadError": "Repository-instellingen konden niet worden geladen.",

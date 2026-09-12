@@ -10,8 +10,8 @@ namespace, name, and URL are provider-owned metadata and are not editable as fre
 
 Before every workflow synchronization, ezRepo reads the repository metadata from the provider. Renames and transfers
 therefore retain the existing workflow history, filters, memberships, notification rules, and notification channels.
-A system administrator can trigger the same read-only update immediately with **Refresh provider data** on the
-repository details page.
+A system administrator can trigger the same read-only update immediately with **Refresh provider data** in the
+repository dialog opened from the repository table.
 
 ezRepo updates metadata only when the provider returns the same stable repository ID. If the repository was deleted,
 became inaccessible, or a different repository now uses the previous path, ezRepo preserves the tracked repository and

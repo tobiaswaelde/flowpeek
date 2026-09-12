@@ -367,6 +367,7 @@
     "allow": "Permitir",
     "delete": "Eliminar",
     "deny": "Excluir",
+    "edit": "Editar repositorio",
     "filterPlaceholder": "p. ej., build-*",
     "generalDescription": "Configura la retención y el acceso para este repositorio supervisado.",
     "loadError": "No se pudieron cargar los ajustes del repositorio.",

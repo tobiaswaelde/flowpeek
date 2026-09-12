@@ -1,8 +1,10 @@
-/** Redirect legacy administration URLs to the canonical top-level repository routes. */
+/** Redirect legacy repository detail URLs to the canonical URL-controlled dialog. */
 export default defineNuxtRouteMiddleware((to) => {
-  const match = /^\/admin\/repositories(?:\/(.+))?$/.exec(to.path);
-  if (!match) return;
+  const legacyAdminMatch = /^\/admin\/repositories(?:\/([^/]+))?$/.exec(to.path);
+  const legacyDetailMatch = /^\/repositories\/([^/]+)$/.exec(to.path);
+  if (!legacyAdminMatch && !legacyDetailMatch) return;
 
-  const repositoryPath = match[1] ? `/repositories/${match[1]}` : '/repositories';
-  return navigateTo({ hash: to.hash, path: repositoryPath, query: to.query }, { redirectCode: 301, replace: true });
+  const repositoryId = legacyAdminMatch?.[1] ?? legacyDetailMatch?.[1];
+  const query = repositoryId ? { ...to.query, repository: repositoryId } : to.query;
+  return navigateTo({ hash: to.hash, path: '/repositories', query }, { redirectCode: 301, replace: true });
 });

@@ -28,15 +28,17 @@
             <td class="py-3">{{ formatDuration(run.durationMs) }}</td>
             <td class="py-3 whitespace-nowrap">{{ formatTimestamp(run.completedAt) }}</td>
             <td class="py-3 text-right">
-              <UButton
-                color="neutral"
-                icon="i-tabler-external-link"
-                rel="noreferrer"
-                target="_blank"
-                variant="ghost"
-                :aria-label="$t('dashboard.openProvider')"
-                :to="run.url"
-              />
+              <UTooltip :text="$t('dashboard.openProvider')">
+                <UButton
+                  color="neutral"
+                  icon="i-tabler-external-link"
+                  rel="noreferrer"
+                  target="_blank"
+                  variant="ghost"
+                  :aria-label="$t('dashboard.openProvider')"
+                  :to="run.url"
+                />
+              </UTooltip>
             </td>
           </tr>
         </tbody>

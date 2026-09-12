@@ -44,15 +44,19 @@
       </template>
       <template #actions-cell="{ row }">
         <div class="flex justify-end">
-          <UButton
-            color="error"
-            icon="i-lucide-trash-2"
-            variant="ghost"
-            :aria-label="$t('repositoryDetails.delete')"
-            :disabled="isPending(row.original.id)"
-            :loading="isPending(row.original.id)"
-            @click="removeWorkflowFilter(row.original.id)"
-          />
+          <UTooltip :portal="false" :text="$t('repositoryDetails.delete')">
+            <span class="inline-flex">
+              <UButton
+                color="error"
+                icon="i-lucide-trash-2"
+                variant="ghost"
+                :aria-label="$t('repositoryDetails.delete')"
+                :disabled="isPending(row.original.id)"
+                :loading="isPending(row.original.id)"
+                @click="removeWorkflowFilter(row.original.id)"
+              />
+            </span>
+          </UTooltip>
         </div>
       </template>
     </UTable>

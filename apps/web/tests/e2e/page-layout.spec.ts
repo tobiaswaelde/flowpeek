@@ -99,12 +99,6 @@ test('uses the shared page shell, toolbar, breadcrumbs, and introduction on ever
     { bannerId: 'notifications', path: '/notifications', tablePage: false, title: 'Notifications' },
     { bannerId: 'admin-providers', path: '/admin/providers', tablePage: true, title: 'Provider accounts' },
     { bannerId: 'admin-repositories', path: '/repositories', tablePage: true, title: 'Repositories' },
-    {
-      bannerId: 'repository-details',
-      path: '/repositories/repository-1',
-      tablePage: false,
-      title: 'tobiaswaelde/flowpeek',
-    },
     { bannerId: 'admin-users', path: '/admin/users', tablePage: true, title: 'Users' },
     { bannerId: 'settings', path: '/admin/settings', tablePage: false, title: 'Settings' },
   ];

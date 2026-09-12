@@ -365,6 +365,7 @@
     "allow": "Autoriser",
     "delete": "Supprimer",
     "deny": "Exclure",
+    "edit": "Modifier le dépôt",
     "filterPlaceholder": "par ex. build-*",
     "generalDescription": "Configurez la rétention et les accès pour ce dépôt suivi.",
     "loadError": "Les paramètres du dépôt n’ont pas pu être chargés.",

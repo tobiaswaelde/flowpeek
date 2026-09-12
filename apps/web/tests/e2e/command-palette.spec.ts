@@ -85,6 +85,10 @@ async function mockCommandPaletteShell(page: Page, role: 'SYSTEM_ADMIN' | 'VIEWE
   await page.route('**/api/v1/provider-accounts/authentication-options', (route) =>
     route.fulfill({ json: { oauthProviderTypes: [] } }),
   );
+  await page.route('**/api/v1/repositories/repository-1', (route) => route.fulfill({ json: repository }));
+  await page.route('**/api/v1/repositories/repository-1/workflow-filters', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/v1/repositories/repository-1/memberships', (route) => route.fulfill({ json: [] }));
+  await page.route(/\/api\/v1\/users(?:\?.*)?$/, (route) => route.fulfill({ json: emptyPage }));
 }
 
 test('opens globally, restores focus, supports keyboard navigation, and opens resource results', async ({
@@ -133,7 +137,11 @@ test('opens globally, restores focus, supports keyboard navigation, and opens re
     .getByRole('option', { name: /tobiaswaelde\/flowpeek/ })
     .first()
     .click();
-  await expect(page).toHaveURL(/\/repositories\/repository-1$/);
+  await expect(page).toHaveURL(/\/repositories\?repository=repository-1$/);
+  const repositoryDialog = page.getByRole('dialog', { name: 'tobiaswaelde/flowpeek' });
+  await expect(repositoryDialog).toBeVisible();
+  await repositoryDialog.getByRole('button', { name: 'Close' }).click();
+  await expect(repositoryDialog).not.toBeVisible();
 
   await page.setViewportSize({ height: 844, width: 390 });
   await page.keyboard.press('Control+K');

@@ -79,29 +79,32 @@
       </template>
       <template #actions-cell="{ row }">
         <div class="flex justify-end gap-2">
-          <UButton
-            v-if="row.original.reviewUrl"
-            color="neutral"
-            icon="i-tabler-external-link"
-            rel="noreferrer"
-            size="sm"
-            target="_blank"
-            variant="ghost"
-            :aria-label="$t('awaitingApproval.openReview')"
-            :label="$t('awaitingApproval.openReview')"
-            :to="row.original.reviewUrl"
-          />
-          <UButton
-            color="warning"
-            icon="i-tabler-external-link"
-            rel="noreferrer"
-            size="sm"
-            target="_blank"
-            variant="soft"
-            :aria-label="$t('awaitingApproval.approveInProvider')"
-            :label="$t('awaitingApproval.approveInProvider')"
-            :to="row.original.url"
-          />
+          <UTooltip v-if="row.original.reviewUrl" :text="$t('awaitingApproval.openReview')">
+            <UButton
+              color="neutral"
+              icon="i-tabler-external-link"
+              rel="noreferrer"
+              size="sm"
+              target="_blank"
+              variant="ghost"
+              :aria-label="$t('awaitingApproval.openReview')"
+              :label="$t('awaitingApproval.openReview')"
+              :to="row.original.reviewUrl"
+            />
+          </UTooltip>
+          <UTooltip :text="$t('awaitingApproval.approveInProvider')">
+            <UButton
+              color="warning"
+              icon="i-tabler-external-link"
+              rel="noreferrer"
+              size="sm"
+              target="_blank"
+              variant="soft"
+              :aria-label="$t('awaitingApproval.approveInProvider')"
+              :label="$t('awaitingApproval.approveInProvider')"
+              :to="row.original.url"
+            />
+          </UTooltip>
         </div>
       </template>
     </UTable>

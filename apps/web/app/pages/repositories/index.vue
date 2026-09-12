@@ -70,32 +70,42 @@
       </template>
       <template #actions-cell="{ row }">
         <div class="flex justify-end gap-1">
-          <UButton
-            color="neutral"
-            icon="i-tabler-external-link"
-            rel="noreferrer"
-            target="_blank"
-            variant="ghost"
-            :aria-label="$t('dashboard.openProvider')"
-            :to="row.original.url"
-          />
-          <UButton
-            color="neutral"
-            icon="i-lucide-settings-2"
-            variant="ghost"
-            :aria-label="$t('repositoryDetails.open')"
-            :to="`/repositories/${row.original.id}`"
-          />
-          <UButton
+          <UTooltip :text="$t('dashboard.openProvider')">
+            <UButton
+              color="neutral"
+              icon="i-tabler-external-link"
+              rel="noreferrer"
+              target="_blank"
+              variant="ghost"
+              :aria-label="$t('dashboard.openProvider')"
+              :to="row.original.url"
+            />
+          </UTooltip>
+          <UTooltip :text="isAdmin ? $t('repositoryDetails.edit') : $t('repositoryDetails.open')">
+            <UButton
+              color="neutral"
+              icon="i-lucide-settings-2"
+              variant="ghost"
+              :aria-label="isAdmin ? $t('repositoryDetails.edit') : $t('repositoryDetails.open')"
+              @click="openDetailsDialog(row.original.id)"
+            />
+          </UTooltip>
+          <UTooltip
             v-if="isAdmin"
-            color="neutral"
-            variant="ghost"
-            :aria-label="row.original.enabled ? $t('repositories.disable') : $t('repositories.enable')"
-            :disabled="isPending(row.original.id)"
-            :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
-            :loading="isPending(row.original.id)"
-            @click="toggle(row.original)"
-          />
+            :text="row.original.enabled ? $t('repositories.disable') : $t('repositories.enable')"
+          >
+            <span class="inline-flex">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                :aria-label="row.original.enabled ? $t('repositories.disable') : $t('repositories.enable')"
+                :disabled="isPending(row.original.id)"
+                :icon="row.original.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
+                :loading="isPending(row.original.id)"
+                @click="toggle(row.original)"
+              />
+            </span>
+          </UTooltip>
         </div>
       </template>
     </UTable>
@@ -107,11 +117,16 @@
       shortcuts
     />
     <ModulesRepositoriesAddDialog v-if="isAdmin" v-model:open="dialogOpen" @created="handleRepositoryCreated" />
+    <ModulesRepositoriesDetailsDialog
+      v-model:open="detailsDialogOpen"
+      :repository-id="selectedRepositoryId"
+      @updated="handleRepositoryUpdated"
+    />
   </LayoutPage>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 import { FilterFieldType, type FilterField, type SortingField } from '@querry-kit/nuxt-ui/types';
 import { useFlowpeekApi } from '~/composables/api/flowpeek-api';
@@ -131,8 +146,20 @@ const { t } = useI18n();
 const { formatDateTime } = useDateTime();
 const api = useFlowpeekApi();
 const auth = useAuthStore();
+const route = useRoute();
+const router = useRouter();
 const isAdmin = computed(() => auth.user?.role === 'SYSTEM_ADMIN');
 const dialogOpen = ref(false);
+const openedFromList = ref(false);
+const selectedRepositoryId = computed(() =>
+  typeof route.query.repository === 'string' && route.query.repository ? route.query.repository : undefined,
+);
+const detailsDialogOpen = computed({
+  get: () => Boolean(selectedRepositoryId.value),
+  set: (isOpen: boolean) => {
+    if (!isOpen) closeDetailsDialog();
+  },
+});
 const { isPending, run: runPendingAction } = usePendingActions();
 const columnDefinition = computed<RepositoryTableColumn[]>(() => [
   { accessorKey: 'owner', header: t('repositories.columns.owner'), id: 'owner' },
@@ -186,6 +213,10 @@ const columnPinning = computed({
 
 useHead({ title: computed(() => t('repositories.title')) });
 
+watch(selectedRepositoryId, (repositoryId) => {
+  if (!repositoryId) openedFromList.value = false;
+});
+
 /** Format a repository's last successful synchronization in the active interface locale. */
 function formatLastSync(lastSyncAt: string | null): string {
   if (!lastSyncAt) return t('repositories.neverSynced');
@@ -195,6 +226,25 @@ function formatLastSync(lastSyncAt: string | null): string {
 /** Open the dialog used to discover a provider-owned repository. */
 function openAddDialog(): void {
   dialogOpen.value = true;
+}
+
+/** Open a repository dialog while adding a browser-history entry. */
+async function openDetailsDialog(repositoryId: string): Promise<void> {
+  openedFromList.value = true;
+  await router.push({ hash: route.hash, query: { ...route.query, repository: repositoryId } });
+}
+
+/** Close a repository dialog without discarding unrelated URL state. */
+function closeDetailsDialog(): void {
+  if (openedFromList.value) {
+    openedFromList.value = false;
+    router.back();
+    return;
+  }
+
+  const query = { ...route.query };
+  delete query.repository;
+  void router.replace({ hash: route.hash, query });
 }
 
 defineShortcuts({
@@ -207,6 +257,12 @@ defineShortcuts({
 async function handleRepositoryCreated(): Promise<void> {
   page.value = 1;
   await repositoryTable.refresh();
+}
+
+/** Replace a changed repository row without reloading the complete table. */
+function handleRepositoryUpdated(repository: Repository): void {
+  const existingRepository = items.value.find((item) => item.id === repository.id);
+  repositoryTable.updateRow({ ...existingRepository, ...repository } as RepositoryRow);
 }
 
 /** Enable or disable a repository without changing its retention configuration. */

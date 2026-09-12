@@ -363,6 +363,7 @@
     "allow": "Zezwalaj",
     "delete": "Usuń",
     "deny": "Wyklucz",
+    "edit": "Edytuj repozytorium",
     "filterPlaceholder": "np. build-*",
     "generalDescription": "Skonfiguruj przechowywanie i dostęp do tego śledzonego repozytorium.",
     "loadError": "Nie udało się wczytać ustawień repozytorium.",

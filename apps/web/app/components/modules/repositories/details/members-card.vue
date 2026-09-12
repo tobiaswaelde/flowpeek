@@ -56,15 +56,19 @@
       </template>
       <template #actions-cell="{ row }">
         <div class="flex justify-end">
-          <UButton
-            color="error"
-            icon="i-lucide-user-minus"
-            variant="ghost"
-            :aria-label="$t('repositoryDetails.removeMember')"
-            :disabled="isMembershipPending(row.original.userId)"
-            :loading="isPending(memberActionKey('remove', row.original.userId))"
-            @click="removeMember(row.original.userId)"
-          />
+          <UTooltip :portal="false" :text="$t('repositoryDetails.removeMember')">
+            <span class="inline-flex">
+              <UButton
+                color="error"
+                icon="i-lucide-user-minus"
+                variant="ghost"
+                :aria-label="$t('repositoryDetails.removeMember')"
+                :disabled="isMembershipPending(row.original.userId)"
+                :loading="isPending(memberActionKey('remove', row.original.userId))"
+                @click="removeMember(row.original.userId)"
+              />
+            </span>
+          </UTooltip>
         </div>
       </template>
     </UTable>

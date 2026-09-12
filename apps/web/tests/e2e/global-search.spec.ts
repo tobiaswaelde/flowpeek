@@ -128,6 +128,23 @@ test('groups authorized global results and keeps stale responses from replacing 
       },
     });
   });
+  await page.route('**/api/v1/repositories/repository-1', (route) =>
+    route.fulfill({
+      json: {
+        enabled: true,
+        id: 'repository-1',
+        lastSyncAt: null,
+        name: 'flowpeek',
+        owner: 'tobiaswaelde',
+        providerAccountId: 'provider-1',
+        url: 'https://github.com/tobiaswaelde/flowpeek',
+        workflowRunRetentionDays: null,
+      },
+    }),
+  );
+  await page.route('**/api/v1/repositories/repository-1/workflow-filters', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/v1/repositories/repository-1/memberships', (route) => route.fulfill({ json: [] }));
+  await page.route(/\/api\/v1\/users(?:\?.*)?$/, (route) => route.fulfill({ json: emptyPage }));
 
   await page.goto('/');
   const search = page.getByRole('combobox', { name: 'Search' });
@@ -144,7 +161,7 @@ test('groups authorized global results and keeps stale responses from replacing 
   await expect(results.getByText('Repositories', { exact: true })).toBeVisible();
   await expect(results.getByRole('option', { name: 'tobiaswaelde/flowpeek', exact: true })).toHaveAttribute(
     'href',
-    '/repositories/repository-1',
+    '/repositories?repository=repository-1',
   );
   await expect(results.getByText('Workflow runs', { exact: true })).toBeVisible();
   await expect(results.getByRole('option', { name: 'Flowpeek deployment, tobiaswaelde/flowpeek' })).toHaveAttribute(
@@ -166,6 +183,11 @@ test('groups authorized global results and keeps stale responses from replacing 
   await expect(results).not.toBeVisible();
   await page.keyboard.press('/');
   await expect(search).toBeFocused();
+  await page.getByRole('heading', { name: 'Workflow dashboard' }).click();
+  await search.click();
+  await results.getByRole('option', { name: 'tobiaswaelde/flowpeek', exact: true }).click();
+  await expect(page).toHaveURL(/\/repositories\?repository=repository-1$/);
+  await expect(page.getByRole('dialog', { name: 'tobiaswaelde/flowpeek' })).toBeVisible();
 });
 
 test('does not request or expose provider accounts to a viewer and preserves successful groups on partial failure', async ({
